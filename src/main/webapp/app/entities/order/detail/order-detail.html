@@ -1,0 +1,96 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (order(); as orderRef) {
+      <div>
+        <h2 data-cy="orderDetailsHeading"><span jhiTranslate="samabutikApp.order.detail.title">Order</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ orderRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.orderNumber">Order Number</span></dt>
+          <dd>
+            <span>{{ orderRef.orderNumber }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.status">Status</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.OrderStatus.' + (orderRef.status ?? 'null')">{{
+              {
+                null: '',
+                PENDING: 'PENDING',
+                PAID: 'PAID',
+                PREPARING: 'PREPARING',
+                SHIPPED: 'SHIPPED',
+                DELIVERED: 'DELIVERED',
+                CANCELLED: 'CANCELLED',
+              }[orderRef.status ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.totalAmount">Total Amount</span></dt>
+          <dd>
+            <span>{{ orderRef.totalAmount }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.currency">Currency</span></dt>
+          <dd>
+            <span>{{ orderRef.currency }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.paymentMethod">Payment Method</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.PaymentMethod.' + (orderRef.paymentMethod ?? 'null')">{{
+              { null: '', WAVE: 'WAVE', ORANGE_MONEY: 'ORANGE_MONEY', CASH: 'CASH' }[orderRef.paymentMethod ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.paymentStatus">Payment Status</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.PaymentStatus.' + (orderRef.paymentStatus ?? 'null')">{{
+              { null: '', PENDING: 'PENDING', SUCCESS: 'SUCCESS', FAILED: 'FAILED', REFUNDED: 'REFUNDED' }[orderRef.paymentStatus ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.paymentReference">Payment Reference</span></dt>
+          <dd>
+            <span>{{ orderRef.paymentReference }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.shippingAddress">Shipping Address</span></dt>
+          <dd>
+            <span>{{ orderRef.shippingAddress }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.shippingCost">Shipping Cost</span></dt>
+          <dd>
+            <span>{{ orderRef.shippingCost }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.deliveryNote">Delivery Note</span></dt>
+          <dd>
+            <span>{{ orderRef.deliveryNote }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.deliveredAt">Delivered At</span></dt>
+          <dd>
+            <span>{{ orderRef.deliveredAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.order.customer">Customer</span></dt>
+          <dd>
+            @if (order()!.customer) {
+              <div>
+                <a [routerLink]="['/customer', order()!.customer?.id, 'view']">{{ orderRef.customer?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/order', orderRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

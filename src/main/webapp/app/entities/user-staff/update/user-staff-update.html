@@ -1,0 +1,135 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-user-staff-heading" data-cy="UserStaffCreateUpdateHeading" jhiTranslate="samabutikApp.userStaff.home.createOrEditLabel">
+        Créer ou éditer un User Staff
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let emailRef = editForm.get('email')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_email" jhiTranslate="samabutikApp.userStaff.email">Email</label>
+          <input type="text" class="form-control" name="email" id="field_email" data-cy="email" formControlName="email" />
+          @if (emailRef.invalid && (emailRef.dirty || emailRef.touched)) {
+            <div>
+              @if (editForm.get('email')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('email')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '100' }"
+                  >Ce champ doit faire au maximum 100 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let phoneRef = editForm.get('phone')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_phone" jhiTranslate="samabutikApp.userStaff.phone">Phone</label>
+          <input type="text" class="form-control" name="phone" id="field_phone" data-cy="phone" formControlName="phone" />
+          @if (phoneRef.invalid && (phoneRef.dirty || phoneRef.touched)) {
+            <div>
+              @if (editForm.get('phone')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('phone')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '15' }"
+                  >Ce champ doit faire au maximum 15 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let passwordHashRef = editForm.get('passwordHash')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_passwordHash" jhiTranslate="samabutikApp.userStaff.passwordHash">Password Hash</label>
+          <input
+            type="text"
+            class="form-control"
+            name="passwordHash"
+            id="field_passwordHash"
+            data-cy="passwordHash"
+            formControlName="passwordHash"
+          />
+          @if (passwordHashRef.invalid && (passwordHashRef.dirty || passwordHashRef.touched)) {
+            <div>
+              @if (editForm.get('passwordHash')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('passwordHash')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '255' }"
+                  >Ce champ doit faire au maximum 255 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let roleRef = editForm.get('role')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_role" jhiTranslate="samabutikApp.userStaff.role">Role</label>
+          <select class="form-control" name="role" formControlName="role" id="field_role" data-cy="role">
+            <option [ngValue]="null">{{ 'samabutikApp.UserRole.null' | translate }}</option>
+            @for (userRole of userRoleValues; track $index) {
+              <option [value]="userRole">{{ 'samabutikApp.UserRole.' + userRole | translate }}</option>
+            }
+          </select>
+          @if (roleRef.invalid && (roleRef.dirty || roleRef.touched)) {
+            <div>
+              @if (editForm.get('role')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_isActive" jhiTranslate="samabutikApp.userStaff.isActive">Is Active</label>
+          <input type="checkbox" class="form-check" name="isActive" id="field_isActive" data-cy="isActive" formControlName="isActive" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_lastLoginAt" jhiTranslate="samabutikApp.userStaff.lastLoginAt">Last Login At</label>
+          <div class="d-flex">
+            <input
+              id="field_lastLoginAt"
+              data-cy="lastLoginAt"
+              type="datetime-local"
+              class="form-control"
+              name="lastLoginAt"
+              formControlName="lastLoginAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

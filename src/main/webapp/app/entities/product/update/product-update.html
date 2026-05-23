@@ -1,0 +1,239 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-product-heading" data-cy="ProductCreateUpdateHeading" jhiTranslate="samabutikApp.product.home.createOrEditLabel">
+        Créer ou éditer un Product
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let skuRef = editForm.get('sku')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_sku" jhiTranslate="samabutikApp.product.sku">Sku</label>
+          <input type="text" class="form-control" name="sku" id="field_sku" data-cy="sku" formControlName="sku" />
+          @if (skuRef.invalid && (skuRef.dirty || skuRef.touched)) {
+            <div>
+              @if (editForm.get('sku')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('sku')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '50' }"
+                  >Ce champ doit faire au maximum 50 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let nameRef = editForm.get('name')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_name" jhiTranslate="samabutikApp.product.name">Name</label>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          @if (nameRef.invalid && (nameRef.dirty || nameRef.touched)) {
+            <div>
+              @if (editForm.get('name')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('name')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '100' }"
+                  >Ce champ doit faire au maximum 100 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let descriptionRef = editForm.get('description')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_description" jhiTranslate="samabutikApp.product.description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            id="field_description"
+            data-cy="description"
+            formControlName="description"
+          />
+          @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
+            <div>
+              @if (editForm.get('description')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '2000' }"
+                  >Ce champ doit faire au maximum 2000 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let priceRef = editForm.get('price')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_price" jhiTranslate="samabutikApp.product.price">Price</label>
+          <input type="number" class="form-control" name="price" id="field_price" data-cy="price" formControlName="price" />
+          @if (priceRef.invalid && (priceRef.dirty || priceRef.touched)) {
+            <div>
+              @if (editForm.get('price')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('price')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('price')?.errors?.number" jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let costPriceRef = editForm.get('costPrice')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_costPrice" jhiTranslate="samabutikApp.product.costPrice">Cost Price</label>
+          <input type="number" class="form-control" name="costPrice" id="field_costPrice" data-cy="costPrice" formControlName="costPrice" />
+          @if (costPriceRef.invalid && (costPriceRef.dirty || costPriceRef.touched)) {
+            <div>
+              @if (editForm.get('costPrice')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('costPrice')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let currencyRef = editForm.get('currency')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_currency" jhiTranslate="samabutikApp.product.currency">Currency</label>
+          <input type="text" class="form-control" name="currency" id="field_currency" data-cy="currency" formControlName="currency" />
+          @if (currencyRef.invalid && (currencyRef.dirty || currencyRef.touched)) {
+            <div>
+              @if (editForm.get('currency')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '3' }"
+                  >Ce champ doit faire au maximum 3 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let stockRef = editForm.get('stock')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_stock" jhiTranslate="samabutikApp.product.stock">Stock</label>
+          <input type="number" class="form-control" name="stock" id="field_stock" data-cy="stock" formControlName="stock" />
+          @if (stockRef.invalid && (stockRef.dirty || stockRef.touched)) {
+            <div>
+              @if (editForm.get('stock')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('stock')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('stock')?.errors?.number" jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let lowStockThresholdRef = editForm.get('lowStockThreshold')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_lowStockThreshold" jhiTranslate="samabutikApp.product.lowStockThreshold"
+            >Low Stock Threshold</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="lowStockThreshold"
+            id="field_lowStockThreshold"
+            data-cy="lowStockThreshold"
+            formControlName="lowStockThreshold"
+          />
+          @if (lowStockThresholdRef.invalid && (lowStockThresholdRef.dirty || lowStockThresholdRef.touched)) {
+            <div>
+              @if (editForm.get('lowStockThreshold')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('lowStockThreshold')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let categoryRef = editForm.get('category')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_category" jhiTranslate="samabutikApp.product.category">Category</label>
+          <input type="text" class="form-control" name="category" id="field_category" data-cy="category" formControlName="category" />
+          @if (categoryRef.invalid && (categoryRef.dirty || categoryRef.touched)) {
+            <div>
+              @if (editForm.get('category')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '50' }"
+                  >Ce champ doit faire au maximum 50 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_isActive" jhiTranslate="samabutikApp.product.isActive">Is Active</label>
+          <input type="checkbox" class="form-check" name="isActive" id="field_isActive" data-cy="isActive" formControlName="isActive" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_mainMedia" jhiTranslate="samabutikApp.product.mainMedia">Main Media</label>
+          <select
+            class="form-control"
+            id="field_mainMedia"
+            data-cy="mainMedia"
+            name="mainMedia"
+            formControlName="mainMedia"
+            [compareWith]="compareMedia"
+          >
+            <option [ngValue]="null"></option>
+            @for (mediaOption of mainMediasCollection(); track $index) {
+              <option [ngValue]="mediaOption">{{ mediaOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

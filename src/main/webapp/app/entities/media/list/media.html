@@ -1,0 +1,213 @@
+<div>
+  <h2 id="page-heading" data-cy="MediaHeading">
+    <span jhiTranslate="samabutikApp.media.home.title">Medias</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span jhiTranslate="samabutikApp.media.home.refreshListLabel">Actualiser la liste</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-media"
+        [routerLink]="['/media/new']"
+      >
+        <fa-icon icon="plus" />
+        <span jhiTranslate="samabutikApp.media.home.createLabel">Créer un nouveau Media</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (medias().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="samabutikApp.media.home.notFound">Aucun Media trouvé</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="url">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.url">Url</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="type">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.type">Type</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="format">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.format">Format</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="sizeBytes">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.sizeBytes">Size Bytes</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="width">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.width">Width</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="height">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.height">Height</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="durationSec">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.durationSec">Duration Sec</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="isMain">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.isMain">Is Main</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="displayOrder">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.displayOrder">Display Order</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="altText">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.altText">Alt Text</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="uploadedAt">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.uploadedAt">Uploaded At</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="productGallery.id">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.productGallery">Product Gallery</span>
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="packGallery.id">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.media.packGallery">Pack Gallery</span>
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (media of medias(); track trackId(media)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/media', media.id, 'view']">{{ media.id }}</a>
+              </td>
+              <td>{{ media.url }}</td>
+              <td [jhiTranslate]="'samabutikApp.MediaType.' + (media.type ?? 'null')">
+                {{ { null: '', IMAGE: 'IMAGE', VIDEO: 'VIDEO' }[media.type ?? 'null'] }}
+              </td>
+              <td [jhiTranslate]="'samabutikApp.MediaFormat.' + (media.format ?? 'null')">
+                {{ { null: '', JPG: 'JPG', PNG: 'PNG', WEBP: 'WEBP', MP4: 'MP4', GIF: 'GIF' }[media.format ?? 'null'] }}
+              </td>
+              <td>{{ media.sizeBytes }}</td>
+              <td>{{ media.width }}</td>
+              <td>{{ media.height }}</td>
+              <td>{{ media.durationSec }}</td>
+              <td>{{ media.isMain }}</td>
+              <td>{{ media.displayOrder }}</td>
+              <td>{{ media.altText }}</td>
+              <td>{{ media.uploadedAt | formatMediumDatetime }}</td>
+              <td>
+                @if (media.productGallery) {
+                  <div>
+                    <a [routerLink]="['/product', media.productGallery.id, 'view']">{{ media.productGallery.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (media.packGallery) {
+                  <div>
+                    <a [routerLink]="['/pack', media.packGallery.id, 'view']">{{ media.packGallery.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/media', media.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">Voir</span>
+                  </a>
+
+                  <a [routerLink]="['/media', media.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Editer</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(media)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Supprimer</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (medias().length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems()"
+          [page]="page()"
+          [pageSize]="itemsPerPage()"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        />
+      </div>
+    </div>
+  }
+</div>

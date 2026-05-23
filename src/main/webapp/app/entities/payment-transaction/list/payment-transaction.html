@@ -1,0 +1,180 @@
+<div>
+  <h2 id="page-heading" data-cy="PaymentTransactionHeading">
+    <span jhiTranslate="samabutikApp.paymentTransaction.home.title">PaymentTransactions</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span jhiTranslate="samabutikApp.paymentTransaction.home.refreshListLabel">Actualiser la liste</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-payment-transaction"
+        [routerLink]="['/payment-transaction/new']"
+      >
+        <fa-icon icon="plus" />
+        <span jhiTranslate="samabutikApp.paymentTransaction.home.createLabel">Créer un nouveau Payment Transaction</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (paymentTransactions().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="samabutikApp.paymentTransaction.home.notFound">Aucun Payment Transaction trouvé</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="provider">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.provider">Provider</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="transactionId">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.transactionId">Transaction Id</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="amount">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.amount">Amount</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="currency">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.currency">Currency</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="status">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.status">Status</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="webhookPayload">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.webhookPayload">Webhook Payload</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="processedAt">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.processedAt">Processed At</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="order.id">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.paymentTransaction.order">Order</span>
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (paymentTransaction of paymentTransactions(); track trackId(paymentTransaction)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/payment-transaction', paymentTransaction.id, 'view']">{{ paymentTransaction.id }}</a>
+              </td>
+              <td [jhiTranslate]="'samabutikApp.PaymentProvider.' + (paymentTransaction.provider ?? 'null')">
+                {{ { null: '', WAVE: 'WAVE', ORANGE_MONEY: 'ORANGE_MONEY', INTOUCH: 'INTOUCH' }[paymentTransaction.provider ?? 'null'] }}
+              </td>
+              <td>{{ paymentTransaction.transactionId }}</td>
+              <td>{{ paymentTransaction.amount }}</td>
+              <td>{{ paymentTransaction.currency }}</td>
+              <td [jhiTranslate]="'samabutikApp.TransactionStatus.' + (paymentTransaction.status ?? 'null')">
+                {{
+                  { null: '', INITIATED: 'INITIATED', SUCCESS: 'SUCCESS', FAILED: 'FAILED', PENDING: 'PENDING' }[
+                    paymentTransaction.status ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>{{ paymentTransaction.webhookPayload }}</td>
+              <td>{{ paymentTransaction.processedAt | formatMediumDatetime }}</td>
+              <td>
+                @if (paymentTransaction.order) {
+                  <div>
+                    <a [routerLink]="['/order', paymentTransaction.order.id, 'view']">{{ paymentTransaction.order.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a
+                    [routerLink]="['/payment-transaction', paymentTransaction.id, 'view']"
+                    class="btn btn-info btn-sm"
+                    data-cy="entityDetailsButton"
+                  >
+                    <fa-icon icon="eye" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">Voir</span>
+                  </a>
+
+                  <a
+                    [routerLink]="['/payment-transaction', paymentTransaction.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
+                    <fa-icon icon="pencil-alt" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Editer</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(paymentTransaction)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Supprimer</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (paymentTransactions().length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems()"
+          [page]="page()"
+          [pageSize]="itemsPerPage()"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        />
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,10 @@
+{
+  "samabutikApp": {
+    "PaymentMethod": {
+      "null": "",
+      "WAVE": "WAVE",
+      "ORANGE_MONEY": "ORANGE_MONEY",
+      "CASH": "CASH"
+    }
+  }
+}

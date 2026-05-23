@@ -1,0 +1,37 @@
+{
+  "samabutikApp": {
+    "product": {
+      "home": {
+        "title": "Products",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Product",
+        "createOrEditLabel": "Créer ou éditer un Product",
+        "notFound": "Aucun Product trouvé"
+      },
+      "created": "Un nouveau Product a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Product avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Product avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Product {{ id }} ?"
+      },
+      "detail": {
+        "title": "Product"
+      },
+      "id": "ID",
+      "sku": "Sku",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "costPrice": "Cost Price",
+      "currency": "Currency",
+      "stock": "Stock",
+      "lowStockThreshold": "Low Stock Threshold",
+      "category": "Category",
+      "isActive": "Is Active",
+      "mainMedia": "Main Media",
+      "stockMovements": "Stock Movements",
+      "gallery": "Gallery",
+      "orderItem": "Order Item"
+    }
+  }
+}

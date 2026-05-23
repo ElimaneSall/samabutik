@@ -1,0 +1,28 @@
+{
+  "samabutikApp": {
+    "stockMovement": {
+      "home": {
+        "title": "StockMovements",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Stock Movement",
+        "createOrEditLabel": "Créer ou éditer un Stock Movement",
+        "notFound": "Aucun Stock Movement trouvé"
+      },
+      "created": "Un nouveau Stock Movement a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Stock Movement avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Stock Movement avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Stock Movement {{ id }} ?"
+      },
+      "detail": {
+        "title": "Stock Movement"
+      },
+      "id": "ID",
+      "quantity": "Quantity",
+      "reason": "Reason",
+      "reference": "Reference",
+      "performedBy": "Performed By",
+      "product": "Product"
+    }
+  }
+}

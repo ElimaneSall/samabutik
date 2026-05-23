@@ -1,0 +1,11 @@
+export enum StockReason {
+  SALE = 'SALE',
+
+  RESTOCK = 'RESTOCK',
+
+  ADJUSTMENT = 'ADJUSTMENT',
+
+  PACK_ASSEMBLY = 'PACK_ASSEMBLY',
+
+  DAMAGED = 'DAMAGED',
+}

@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (paymentTransaction(); as paymentTransactionRef) {
+      <div>
+        <h2 data-cy="paymentTransactionDetailsHeading">
+          <span jhiTranslate="samabutikApp.paymentTransaction.detail.title">Payment Transaction</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ paymentTransactionRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.provider">Provider</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.PaymentProvider.' + (paymentTransactionRef.provider ?? 'null')">{{
+              { null: '', WAVE: 'WAVE', ORANGE_MONEY: 'ORANGE_MONEY', INTOUCH: 'INTOUCH' }[paymentTransactionRef.provider ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.transactionId">Transaction Id</span></dt>
+          <dd>
+            <span>{{ paymentTransactionRef.transactionId }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.amount">Amount</span></dt>
+          <dd>
+            <span>{{ paymentTransactionRef.amount }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.currency">Currency</span></dt>
+          <dd>
+            <span>{{ paymentTransactionRef.currency }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.status">Status</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.TransactionStatus.' + (paymentTransactionRef.status ?? 'null')">{{
+              { null: '', INITIATED: 'INITIATED', SUCCESS: 'SUCCESS', FAILED: 'FAILED', PENDING: 'PENDING' }[
+                paymentTransactionRef.status ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.webhookPayload">Webhook Payload</span></dt>
+          <dd>
+            <span>{{ paymentTransactionRef.webhookPayload }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.processedAt">Processed At</span></dt>
+          <dd>
+            <span>{{ paymentTransactionRef.processedAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.paymentTransaction.order">Order</span></dt>
+          <dd>
+            @if (paymentTransaction()!.order) {
+              <div>
+                <a [routerLink]="['/order', paymentTransaction()!.order?.id, 'view']">{{ paymentTransactionRef.order?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/payment-transaction', paymentTransactionRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (product(); as productRef) {
+      <div>
+        <h2 data-cy="productDetailsHeading"><span jhiTranslate="samabutikApp.product.detail.title">Product</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ productRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.sku">Sku</span></dt>
+          <dd>
+            <span>{{ productRef.sku }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.name">Name</span></dt>
+          <dd>
+            <span>{{ productRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.description">Description</span></dt>
+          <dd>
+            <span>{{ productRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.price">Price</span></dt>
+          <dd>
+            <span>{{ productRef.price }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.costPrice">Cost Price</span></dt>
+          <dd>
+            <span>{{ productRef.costPrice }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.currency">Currency</span></dt>
+          <dd>
+            <span>{{ productRef.currency }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.stock">Stock</span></dt>
+          <dd>
+            <span>{{ productRef.stock }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.lowStockThreshold">Low Stock Threshold</span></dt>
+          <dd>
+            <span>{{ productRef.lowStockThreshold }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.category">Category</span></dt>
+          <dd>
+            <span>{{ productRef.category }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.isActive">Is Active</span></dt>
+          <dd>
+            <span>{{ productRef.isActive }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.product.mainMedia">Main Media</span></dt>
+          <dd>
+            @if (product()!.mainMedia) {
+              <div>
+                <a [routerLink]="['/media', product()!.mainMedia?.id, 'view']">{{ productRef.mainMedia?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/product', productRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

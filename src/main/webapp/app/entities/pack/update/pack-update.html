@@ -1,0 +1,219 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-pack-heading" data-cy="PackCreateUpdateHeading" jhiTranslate="samabutikApp.pack.home.createOrEditLabel">
+        Créer ou éditer un Pack
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let nameRef = editForm.get('name')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_name" jhiTranslate="samabutikApp.pack.name">Name</label>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          @if (nameRef.invalid && (nameRef.dirty || nameRef.touched)) {
+            <div>
+              @if (editForm.get('name')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('name')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '100' }"
+                  >Ce champ doit faire au maximum 100 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let descriptionRef = editForm.get('description')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_description" jhiTranslate="samabutikApp.pack.description">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            id="field_description"
+            data-cy="description"
+            formControlName="description"
+          />
+          @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
+            <div>
+              @if (editForm.get('description')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '2000' }"
+                  >Ce champ doit faire au maximum 2000 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let discountTypeRef = editForm.get('discountType')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_discountType" jhiTranslate="samabutikApp.pack.discountType">Discount Type</label>
+          <select class="form-control" name="discountType" formControlName="discountType" id="field_discountType" data-cy="discountType">
+            <option [ngValue]="null">{{ 'samabutikApp.DiscountType.null' | translate }}</option>
+            @for (discountType of discountTypeValues; track $index) {
+              <option [value]="discountType">{{ 'samabutikApp.DiscountType.' + discountType | translate }}</option>
+            }
+          </select>
+          @if (discountTypeRef.invalid && (discountTypeRef.dirty || discountTypeRef.touched)) {
+            <div>
+              @if (editForm.get('discountType')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let discountValueRef = editForm.get('discountValue')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_discountValue" jhiTranslate="samabutikApp.pack.discountValue">Discount Value</label>
+          <input
+            type="number"
+            class="form-control"
+            name="discountValue"
+            id="field_discountValue"
+            data-cy="discountValue"
+            formControlName="discountValue"
+          />
+          @if (discountValueRef.invalid && (discountValueRef.dirty || discountValueRef.touched)) {
+            <div>
+              @if (editForm.get('discountValue')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('discountValue')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('discountValue')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let startDateRef = editForm.get('startDate')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_startDate" jhiTranslate="samabutikApp.pack.startDate">Start Date</label>
+          <div class="d-flex">
+            <input
+              id="field_startDate"
+              data-cy="startDate"
+              type="datetime-local"
+              class="form-control"
+              name="startDate"
+              formControlName="startDate"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (startDateRef.invalid && (startDateRef.dirty || startDateRef.touched)) {
+            <div>
+              @if (editForm.get('startDate')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('startDate')?.errors?.datetimelocal"
+                jhiTranslate="entity.validation.datetimelocal"
+                >Ce champ doit être une date et une heure.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let endDateRef = editForm.get('endDate')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_endDate" jhiTranslate="samabutikApp.pack.endDate">End Date</label>
+          <div class="d-flex">
+            <input
+              id="field_endDate"
+              data-cy="endDate"
+              type="datetime-local"
+              class="form-control"
+              name="endDate"
+              formControlName="endDate"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (endDateRef.invalid && (endDateRef.dirty || endDateRef.touched)) {
+            <div>
+              @if (editForm.get('endDate')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('endDate')?.errors?.datetimelocal"
+                jhiTranslate="entity.validation.datetimelocal"
+                >Ce champ doit être une date et une heure.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_isActive" jhiTranslate="samabutikApp.pack.isActive">Is Active</label>
+          <input type="checkbox" class="form-check" name="isActive" id="field_isActive" data-cy="isActive" formControlName="isActive" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_displayOnHomepage" jhiTranslate="samabutikApp.pack.displayOnHomepage"
+            >Display On Homepage</label
+          >
+          <input
+            type="checkbox"
+            class="form-check"
+            name="displayOnHomepage"
+            id="field_displayOnHomepage"
+            data-cy="displayOnHomepage"
+            formControlName="displayOnHomepage"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_mainMedia" jhiTranslate="samabutikApp.pack.mainMedia">Main Media</label>
+          <select
+            class="form-control"
+            id="field_mainMedia"
+            data-cy="mainMedia"
+            name="mainMedia"
+            formControlName="mainMedia"
+            [compareWith]="compareMedia"
+          >
+            <option [ngValue]="null"></option>
+            @for (mediaOption of mainMediasCollection(); track $index) {
+              <option [ngValue]="mediaOption">{{ mediaOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

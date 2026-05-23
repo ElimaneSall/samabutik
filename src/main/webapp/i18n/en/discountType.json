@@ -1,0 +1,9 @@
+{
+  "samabutikApp": {
+    "DiscountType": {
+      "null": "",
+      "PERCENT": "PERCENT",
+      "FIXED": "FIXED"
+    }
+  }
+}

@@ -1,0 +1,72 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (pack(); as packRef) {
+      <div>
+        <h2 data-cy="packDetailsHeading"><span jhiTranslate="samabutikApp.pack.detail.title">Pack</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ packRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.name">Name</span></dt>
+          <dd>
+            <span>{{ packRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.description">Description</span></dt>
+          <dd>
+            <span>{{ packRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.discountType">Discount Type</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.DiscountType.' + (packRef.discountType ?? 'null')">{{
+              { null: '', PERCENT: 'PERCENT', FIXED: 'FIXED' }[packRef.discountType ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.discountValue">Discount Value</span></dt>
+          <dd>
+            <span>{{ packRef.discountValue }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.startDate">Start Date</span></dt>
+          <dd>
+            <span>{{ packRef.startDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.endDate">End Date</span></dt>
+          <dd>
+            <span>{{ packRef.endDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.isActive">Is Active</span></dt>
+          <dd>
+            <span>{{ packRef.isActive }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.displayOnHomepage">Display On Homepage</span></dt>
+          <dd>
+            <span>{{ packRef.displayOnHomepage }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.pack.mainMedia">Main Media</span></dt>
+          <dd>
+            @if (pack()!.mainMedia) {
+              <div>
+                <a [routerLink]="['/media', pack()!.mainMedia?.id, 'view']">{{ packRef.mainMedia?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/pack', packRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

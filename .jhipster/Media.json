@@ -1,0 +1,105 @@
+{
+  "annotations": {
+    "changelogDate": "20260523133603"
+  },
+  "applications": ["*"],
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "url",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "500"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "MediaType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "IMAGE,VIDEO"
+    },
+    {
+      "fieldName": "format",
+      "fieldType": "MediaFormat",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "JPG,PNG,WEBP,MP4,GIF"
+    },
+    {
+      "fieldName": "sizeBytes",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "width",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "height",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "durationSec",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "isMain",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "displayOrder",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "altText",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "255"
+    },
+    {
+      "fieldName": "uploadedAt",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "Media",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "product",
+      "otherEntityRelationshipName": "mainMedia",
+      "relationshipName": "productMain",
+      "relationshipSide": "right",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "pack",
+      "otherEntityRelationshipName": "mainMedia",
+      "relationshipName": "packMain",
+      "relationshipSide": "right",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "product",
+      "otherEntityRelationshipName": "gallery",
+      "relationshipName": "productGallery",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "pack",
+      "otherEntityRelationshipName": "gallery",
+      "relationshipName": "packGallery",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

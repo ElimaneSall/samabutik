@@ -1,0 +1,9 @@
+{
+  "samabutikApp": {
+    "MediaType": {
+      "null": "",
+      "IMAGE": "IMAGE",
+      "VIDEO": "VIDEO"
+    }
+  }
+}

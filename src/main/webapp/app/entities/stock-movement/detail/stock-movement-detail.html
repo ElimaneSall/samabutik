@@ -1,0 +1,62 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (stockMovement(); as stockMovementRef) {
+      <div>
+        <h2 data-cy="stockMovementDetailsHeading"><span jhiTranslate="samabutikApp.stockMovement.detail.title">Stock Movement</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ stockMovementRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.stockMovement.quantity">Quantity</span></dt>
+          <dd>
+            <span>{{ stockMovementRef.quantity }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.stockMovement.reason">Reason</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.StockReason.' + (stockMovementRef.reason ?? 'null')">{{
+              { null: '', SALE: 'SALE', RESTOCK: 'RESTOCK', ADJUSTMENT: 'ADJUSTMENT', PACK_ASSEMBLY: 'PACK_ASSEMBLY', DAMAGED: 'DAMAGED' }[
+                stockMovementRef.reason ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.stockMovement.reference">Reference</span></dt>
+          <dd>
+            <span>{{ stockMovementRef.reference }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.stockMovement.performedBy">Performed By</span></dt>
+          <dd>
+            @if (stockMovement()!.performedBy) {
+              <div>
+                <a [routerLink]="['/user-staff', stockMovement()!.performedBy?.id, 'view']">{{ stockMovementRef.performedBy?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.stockMovement.product">Product</span></dt>
+          <dd>
+            @if (stockMovement()!.product) {
+              <div>
+                <a [routerLink]="['/product', stockMovement()!.product?.id, 'view']">{{ stockMovementRef.product?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/stock-movement', stockMovementRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

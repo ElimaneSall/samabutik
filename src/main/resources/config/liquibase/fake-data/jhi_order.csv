@@ -1,0 +1,31 @@
+id;order_number;status;total_amount;currency;payment_method;payment_status;payment_reference;shipping_address;shipping_cost;delivery_note;delivered_at
+1;près;PENDING;14799.61;oui;WAVE;SUCCESS;pacifique loufoque;alors que à condition que;8909.87;à l'encontre de;2026-05-22T14:03:48
+2;rédaction à la faveu;PENDING;18043.97;tim;WAVE;REFUNDED;passablement;assimiler téméraire;15057.94;inquiéter fidèle;2026-05-23T01:40:35
+3;viser réduire en fac;PREPARING;20571.19;cra;ORANGE_MONEY;SUCCESS;sans que rectangulaire;quasiment adversaire;153.36;fonctionnaire louer euh;2026-05-23T02:57:25
+4;sincère;PREPARING;13902.8;cou;ORANGE_MONEY;PENDING;jusqu’à ce que partenaire masquer;du côté de agréable;2955.91;équipe sur;2026-05-23T10:13:06
+5;si;CANCELLED;21820.37;mie;WAVE;REFUNDED;à peine d'après;ici présidence équipe;21175.91;secouriste quoique population du Québec;2026-05-22T20:02:45
+6;antagoniste;DELIVERED;12768.03;pre;WAVE;FAILED;trop;vu que;20208.21;spécialiste loufoque en plus de;2026-05-23T00:33:52
+7;badaboum apparemment;PENDING;30443.09;ava;CASH;SUCCESS;aux alentours de d'après;séculaire prestataire de services;580.12;à cause de énergique altruiste;2026-05-22T19:00:34
+8;trop sombre;PENDING;25188.66;cli;CASH;REFUNDED;verser zzzz;brave presque d'avec;15371.15;réagir au cas où;2026-05-23T10:39:34
+9;ha ha membre du pers;SHIPPED;15637.65;au ;WAVE;PENDING;épuiser;nier;22705.01;lectorat introduire;2026-05-23T09:17:20
+10;commettre prévaloir;CANCELLED;23082.34;con;CASH;SUCCESS;y présidence copier;cuicui;21021.32;autour de;2026-05-23T08:51:11
+11;maintenant;PENDING;25020.85;de ;ORANGE_MONEY;REFUNDED;au point que à l'instar de;chef par;13635.55;en face de;2026-05-23T00:03:28
+12;guide;PAID;22865.87;che;WAVE;PENDING;en guise de quoique gestionnaire;tordre;5584.22;quasi même si membre de l’équipe;2026-05-23T12:31:19
+13;sans;CANCELLED;31017.82;mem;ORANGE_MONEY;FAILED;clientèle direction;que;4592.93;juriste diététiste;2026-05-23T05:21:41
+14;d’autant que sans qu;PREPARING;18366.99;aus;WAVE;SUCCESS;collègue;tandis que en outre de;29833.43;hors collègue;2026-05-22T16:56:06
+15;tolérer;DELIVERED;29096.42;mem;ORANGE_MONEY;PENDING;inspecter trop jadis;bof;16044.9;coin-coin;2026-05-22T20:52:35
+16;trop de crainte que ;PENDING;28067.12;pff;WAVE;SUCCESS;demain;terminer;8624.12;minuscule;2026-05-23T05:43:24
+17;depuis certes lentem;SHIPPED;6394.12;dir;WAVE;REFUNDED;sans que considérable effacer;ouille;26424.23;supporter;2026-05-23T09:52:42
+18;clac personnel si bi;PREPARING;24813.3;com;WAVE;FAILED;égoïste gestionnaire balancer;clientèle étant donné que;24503.26;ouille;2026-05-23T09:44:56
+19;secours simplifier;PAID;25666.64;ban;CASH;PENDING;au cas où;amorphe bang;9411.48;collègue toc vide;2026-05-23T03:59:14
+20;diététiste circulair;PENDING;6193.37;hor;CASH;REFUNDED;d’autant que incognito toc;exprès chut;15479.03;à peine;2026-05-23T11:14:15
+21;toc;PREPARING;19900.83;enf;CASH;SUCCESS;quasi quoique toc-toc;brusque;5216.81;en guise de hi;2026-05-22T21:42:41
+22;de sorte que que;CANCELLED;30547.95;cla;ORANGE_MONEY;SUCCESS;à force de;cot cot oublier tellement;2849.43;après meuh;2026-05-23T11:53:49
+23;ronron suivant;CANCELLED;8107.64;pro;WAVE;SUCCESS;aussitôt que;personnel professionnel;21478.87;ha croâ;2026-05-23T11:20:37
+24;turquoise terne;CANCELLED;7932.8;din;ORANGE_MONEY;PENDING;de manière à ce que clientèle;police appeler;19003.01;perplexe;2026-05-22T21:01:05
+25;tendre;PAID;26413.22;com;ORANGE_MONEY;REFUNDED;comment efficace;mature vlan meuh;22974.79;suffisamment;2026-05-22T14:05:56
+26;tard;CANCELLED;3436.07;cla;ORANGE_MONEY;FAILED;tic-tac;psitt police à moins de;6582.72;au-delà vers à l'encontre de;2026-05-22T20:26:14
+27;sitôt que;PREPARING;20004.51;réd;CASH;SUCCESS;affable au-dedans de;loin de conseil d’administration;7682.81;membre titulaire fonctionnaire;2026-05-23T02:44:15
+28;continuer à défaut d;SHIPPED;2984.12;sym;CASH;FAILED;téméraire;pendant que;25710.87;à moins de puisque aussitôt que;2026-05-22T15:13:00
+29;de peur de dynamique;DELIVERED;30807.39;ten;ORANGE_MONEY;REFUNDED;coin-coin porte-parole;partout;1279.02;également;2026-05-22T14:16:21
+30;émérite rejeter ça;CANCELLED;31205.4;éno;WAVE;PENDING;davantage crier;à côté de;3244.11;de peur que émouvoir combattre;2026-05-23T02:49:40

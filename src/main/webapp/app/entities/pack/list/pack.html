@@ -1,0 +1,174 @@
+<div>
+  <h2 id="page-heading" data-cy="PackHeading">
+    <span jhiTranslate="samabutikApp.pack.home.title">Packs</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span jhiTranslate="samabutikApp.pack.home.refreshListLabel">Actualiser la liste</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-pack"
+        [routerLink]="['/pack/new']"
+      >
+        <fa-icon icon="plus" />
+        <span jhiTranslate="samabutikApp.pack.home.createLabel">Créer un nouveau Pack</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (packs().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="samabutikApp.pack.home.notFound">Aucun Pack trouvé</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="name">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.name">Name</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="description">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.description">Description</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="discountType">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.discountType">Discount Type</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="discountValue">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.discountValue">Discount Value</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="startDate">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.startDate">Start Date</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="endDate">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.endDate">End Date</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="isActive">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.isActive">Is Active</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="displayOnHomepage">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.displayOnHomepage">Display On Homepage</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="mainMedia.id">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.pack.mainMedia">Main Media</span>
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pack of packs(); track trackId(pack)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/pack', pack.id, 'view']">{{ pack.id }}</a>
+              </td>
+              <td>{{ pack.name }}</td>
+              <td>{{ pack.description }}</td>
+              <td [jhiTranslate]="'samabutikApp.DiscountType.' + (pack.discountType ?? 'null')">
+                {{ { null: '', PERCENT: 'PERCENT', FIXED: 'FIXED' }[pack.discountType ?? 'null'] }}
+              </td>
+              <td>{{ pack.discountValue }}</td>
+              <td>{{ pack.startDate | formatMediumDatetime }}</td>
+              <td>{{ pack.endDate | formatMediumDatetime }}</td>
+              <td>{{ pack.isActive }}</td>
+              <td>{{ pack.displayOnHomepage }}</td>
+              <td>
+                @if (pack.mainMedia) {
+                  <div>
+                    <a [routerLink]="['/media', pack.mainMedia.id, 'view']">{{ pack.mainMedia.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/pack', pack.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">Voir</span>
+                  </a>
+
+                  <a [routerLink]="['/pack', pack.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Editer</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(pack)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Supprimer</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (packs().length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems()"
+          [page]="page()"
+          [pageSize]="itemsPerPage()"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        />
+      </div>
+    </div>
+  }
+</div>

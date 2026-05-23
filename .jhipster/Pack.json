@@ -1,0 +1,71 @@
+{
+  "annotations": {
+    "changelogDate": "20260523133559"
+  },
+  "applications": ["*"],
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "2000"
+    },
+    {
+      "fieldName": "discountType",
+      "fieldType": "DiscountType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "PERCENT,FIXED"
+    },
+    {
+      "fieldName": "discountValue",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "startDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "displayOnHomepage",
+      "fieldType": "Boolean"
+    }
+  ],
+  "name": "Pack",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "media",
+      "otherEntityRelationshipName": "packMain",
+      "relationshipName": "mainMedia",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "media",
+      "otherEntityRelationshipName": "packGallery",
+      "relationshipName": "gallery",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

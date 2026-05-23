@@ -1,0 +1,291 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-order-heading" data-cy="OrderCreateUpdateHeading" jhiTranslate="samabutikApp.order.home.createOrEditLabel">
+        Créer ou éditer un Order
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let orderNumberRef = editForm.get('orderNumber')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_orderNumber" jhiTranslate="samabutikApp.order.orderNumber">Order Number</label>
+          <input
+            type="text"
+            class="form-control"
+            name="orderNumber"
+            id="field_orderNumber"
+            data-cy="orderNumber"
+            formControlName="orderNumber"
+          />
+          @if (orderNumberRef.invalid && (orderNumberRef.dirty || orderNumberRef.touched)) {
+            <div>
+              @if (editForm.get('orderNumber')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('orderNumber')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '20' }"
+                  >Ce champ doit faire au maximum 20 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let statusRef = editForm.get('status')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_status" jhiTranslate="samabutikApp.order.status">Status</label>
+          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+            <option [ngValue]="null">{{ 'samabutikApp.OrderStatus.null' | translate }}</option>
+            @for (orderStatus of orderStatusValues; track $index) {
+              <option [value]="orderStatus">{{ 'samabutikApp.OrderStatus.' + orderStatus | translate }}</option>
+            }
+          </select>
+          @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
+            <div>
+              @if (editForm.get('status')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let totalAmountRef = editForm.get('totalAmount')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_totalAmount" jhiTranslate="samabutikApp.order.totalAmount">Total Amount</label>
+          <input
+            type="number"
+            class="form-control"
+            name="totalAmount"
+            id="field_totalAmount"
+            data-cy="totalAmount"
+            formControlName="totalAmount"
+          />
+          @if (totalAmountRef.invalid && (totalAmountRef.dirty || totalAmountRef.touched)) {
+            <div>
+              @if (editForm.get('totalAmount')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('totalAmount')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('totalAmount')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let currencyRef = editForm.get('currency')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_currency" jhiTranslate="samabutikApp.order.currency">Currency</label>
+          <input type="text" class="form-control" name="currency" id="field_currency" data-cy="currency" formControlName="currency" />
+          @if (currencyRef.invalid && (currencyRef.dirty || currencyRef.touched)) {
+            <div>
+              @if (editForm.get('currency')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('currency')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '3' }"
+                  >Ce champ doit faire au maximum 3 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_paymentMethod" jhiTranslate="samabutikApp.order.paymentMethod">Payment Method</label>
+          <select
+            class="form-control"
+            name="paymentMethod"
+            formControlName="paymentMethod"
+            id="field_paymentMethod"
+            data-cy="paymentMethod"
+          >
+            <option [ngValue]="null">{{ 'samabutikApp.PaymentMethod.null' | translate }}</option>
+            @for (paymentMethod of paymentMethodValues; track $index) {
+              <option [value]="paymentMethod">{{ 'samabutikApp.PaymentMethod.' + paymentMethod | translate }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_paymentStatus" jhiTranslate="samabutikApp.order.paymentStatus">Payment Status</label>
+          <select
+            class="form-control"
+            name="paymentStatus"
+            formControlName="paymentStatus"
+            id="field_paymentStatus"
+            data-cy="paymentStatus"
+          >
+            <option [ngValue]="null">{{ 'samabutikApp.PaymentStatus.null' | translate }}</option>
+            @for (paymentStatus of paymentStatusValues; track $index) {
+              <option [value]="paymentStatus">{{ 'samabutikApp.PaymentStatus.' + paymentStatus | translate }}</option>
+            }
+          </select>
+        </div>
+
+        @let paymentReferenceRef = editForm.get('paymentReference')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_paymentReference" jhiTranslate="samabutikApp.order.paymentReference"
+            >Payment Reference</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="paymentReference"
+            id="field_paymentReference"
+            data-cy="paymentReference"
+            formControlName="paymentReference"
+          />
+          @if (paymentReferenceRef.invalid && (paymentReferenceRef.dirty || paymentReferenceRef.touched)) {
+            <div>
+              @if (editForm.get('paymentReference')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '100' }"
+                  >Ce champ doit faire au maximum 100 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let shippingAddressRef = editForm.get('shippingAddress')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_shippingAddress" jhiTranslate="samabutikApp.order.shippingAddress">Shipping Address</label>
+          <input
+            type="text"
+            class="form-control"
+            name="shippingAddress"
+            id="field_shippingAddress"
+            data-cy="shippingAddress"
+            formControlName="shippingAddress"
+          />
+          @if (shippingAddressRef.invalid && (shippingAddressRef.dirty || shippingAddressRef.touched)) {
+            <div>
+              @if (editForm.get('shippingAddress')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('shippingAddress')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '500' }"
+                  >Ce champ doit faire au maximum 500 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let shippingCostRef = editForm.get('shippingCost')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_shippingCost" jhiTranslate="samabutikApp.order.shippingCost">Shipping Cost</label>
+          <input
+            type="number"
+            class="form-control"
+            name="shippingCost"
+            id="field_shippingCost"
+            data-cy="shippingCost"
+            formControlName="shippingCost"
+          />
+          @if (shippingCostRef.invalid && (shippingCostRef.dirty || shippingCostRef.touched)) {
+            <div>
+              @if (editForm.get('shippingCost')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('shippingCost')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let deliveryNoteRef = editForm.get('deliveryNote')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_deliveryNote" jhiTranslate="samabutikApp.order.deliveryNote">Delivery Note</label>
+          <input
+            type="text"
+            class="form-control"
+            name="deliveryNote"
+            id="field_deliveryNote"
+            data-cy="deliveryNote"
+            formControlName="deliveryNote"
+          />
+          @if (deliveryNoteRef.invalid && (deliveryNoteRef.dirty || deliveryNoteRef.touched)) {
+            <div>
+              @if (editForm.get('deliveryNote')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '1000' }"
+                  >Ce champ doit faire au maximum 1000 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_deliveredAt" jhiTranslate="samabutikApp.order.deliveredAt">Delivered At</label>
+          <div class="d-flex">
+            <input
+              id="field_deliveredAt"
+              data-cy="deliveredAt"
+              type="datetime-local"
+              class="form-control"
+              name="deliveredAt"
+              formControlName="deliveredAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_customer" jhiTranslate="samabutikApp.order.customer">Customer</label>
+          <select
+            class="form-control"
+            id="field_customer"
+            data-cy="customer"
+            name="customer"
+            formControlName="customer"
+            [compareWith]="compareCustomer"
+          >
+            <option [ngValue]="null"></option>
+            @for (customerOption of customersSharedCollection(); track $index) {
+              <option [ngValue]="customerOption">{{ customerOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

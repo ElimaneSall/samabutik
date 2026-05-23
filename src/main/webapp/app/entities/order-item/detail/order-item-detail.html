@@ -1,0 +1,70 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (orderItem(); as orderItemRef) {
+      <div>
+        <h2 data-cy="orderItemDetailsHeading"><span jhiTranslate="samabutikApp.orderItem.detail.title">Order Item</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ orderItemRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.productName">Product Name</span></dt>
+          <dd>
+            <span>{{ orderItemRef.productName }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.productSku">Product Sku</span></dt>
+          <dd>
+            <span>{{ orderItemRef.productSku }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.quantity">Quantity</span></dt>
+          <dd>
+            <span>{{ orderItemRef.quantity }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.unitPrice">Unit Price</span></dt>
+          <dd>
+            <span>{{ orderItemRef.unitPrice }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.subtotal">Subtotal</span></dt>
+          <dd>
+            <span>{{ orderItemRef.subtotal }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.isPackItem">Is Pack Item</span></dt>
+          <dd>
+            <span>{{ orderItemRef.isPackItem }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.productSnapshot">Product Snapshot</span></dt>
+          <dd>
+            @if (orderItem()!.productSnapshot) {
+              <div>
+                <a [routerLink]="['/product', orderItem()!.productSnapshot?.id, 'view']">{{ orderItemRef.productSnapshot?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.orderItem.order">Order</span></dt>
+          <dd>
+            @if (orderItem()!.order) {
+              <div>
+                <a [routerLink]="['/order', orderItem()!.order?.id, 'view']">{{ orderItemRef.order?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/order-item', orderItemRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

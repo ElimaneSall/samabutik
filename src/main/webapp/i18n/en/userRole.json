@@ -1,0 +1,10 @@
+{
+  "samabutikApp": {
+    "UserRole": {
+      "null": "",
+      "ADMIN": "ADMIN",
+      "MANAGER": "MANAGER",
+      "SELLER": "SELLER"
+    }
+  }
+}

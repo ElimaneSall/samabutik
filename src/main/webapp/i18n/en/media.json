@@ -1,0 +1,38 @@
+{
+  "samabutikApp": {
+    "media": {
+      "home": {
+        "title": "Media",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Media",
+        "createOrEditLabel": "Create or edit a Media",
+        "notFound": "No Media found"
+      },
+      "created": "A new Media is created with identifier {{ param }}",
+      "updated": "A Media is updated with identifier {{ param }}",
+      "deleted": "A Media is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Media {{ id }}?"
+      },
+      "detail": {
+        "title": "Media"
+      },
+      "id": "ID",
+      "url": "Url",
+      "type": "Type",
+      "format": "Format",
+      "sizeBytes": "Size Bytes",
+      "width": "Width",
+      "height": "Height",
+      "durationSec": "Duration Sec",
+      "isMain": "Is Main",
+      "displayOrder": "Display Order",
+      "altText": "Alt Text",
+      "uploadedAt": "Uploaded At",
+      "productMain": "Product Main",
+      "packMain": "Pack Main",
+      "productGallery": "Product Gallery",
+      "packGallery": "Pack Gallery"
+    }
+  }
+}

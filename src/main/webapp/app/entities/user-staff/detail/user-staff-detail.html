@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (userStaff(); as userStaffRef) {
+      <div>
+        <h2 data-cy="userStaffDetailsHeading"><span jhiTranslate="samabutikApp.userStaff.detail.title">User Staff</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ userStaffRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.userStaff.email">Email</span></dt>
+          <dd>
+            <span>{{ userStaffRef.email }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.userStaff.phone">Phone</span></dt>
+          <dd>
+            <span>{{ userStaffRef.phone }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.userStaff.passwordHash">Password Hash</span></dt>
+          <dd>
+            <span>{{ userStaffRef.passwordHash }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.userStaff.role">Role</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.UserRole.' + (userStaffRef.role ?? 'null')">{{
+              { null: '', ADMIN: 'ADMIN', MANAGER: 'MANAGER', SELLER: 'SELLER' }[userStaffRef.role ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.userStaff.isActive">Is Active</span></dt>
+          <dd>
+            <span>{{ userStaffRef.isActive }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.userStaff.lastLoginAt">Last Login At</span></dt>
+          <dd>
+            <span>{{ userStaffRef.lastLoginAt | formatMediumDatetime }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/user-staff', userStaffRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

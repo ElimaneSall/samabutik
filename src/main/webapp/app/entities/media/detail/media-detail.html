@@ -1,0 +1,94 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (media(); as mediaRef) {
+      <div>
+        <h2 data-cy="mediaDetailsHeading"><span jhiTranslate="samabutikApp.media.detail.title">Media</span></h2>
+
+        <hr />
+
+        <jhi-alert-error />
+
+        <jhi-alert />
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ mediaRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.url">Url</span></dt>
+          <dd>
+            <span>{{ mediaRef.url }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.type">Type</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.MediaType.' + (mediaRef.type ?? 'null')">{{
+              { null: '', IMAGE: 'IMAGE', VIDEO: 'VIDEO' }[mediaRef.type ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.format">Format</span></dt>
+          <dd>
+            <span [jhiTranslate]="'samabutikApp.MediaFormat.' + (mediaRef.format ?? 'null')">{{
+              { null: '', JPG: 'JPG', PNG: 'PNG', WEBP: 'WEBP', MP4: 'MP4', GIF: 'GIF' }[mediaRef.format ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.sizeBytes">Size Bytes</span></dt>
+          <dd>
+            <span>{{ mediaRef.sizeBytes }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.width">Width</span></dt>
+          <dd>
+            <span>{{ mediaRef.width }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.height">Height</span></dt>
+          <dd>
+            <span>{{ mediaRef.height }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.durationSec">Duration Sec</span></dt>
+          <dd>
+            <span>{{ mediaRef.durationSec }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.isMain">Is Main</span></dt>
+          <dd>
+            <span>{{ mediaRef.isMain }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.displayOrder">Display Order</span></dt>
+          <dd>
+            <span>{{ mediaRef.displayOrder }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.altText">Alt Text</span></dt>
+          <dd>
+            <span>{{ mediaRef.altText }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.uploadedAt">Uploaded At</span></dt>
+          <dd>
+            <span>{{ mediaRef.uploadedAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.productGallery">Product Gallery</span></dt>
+          <dd>
+            @if (media()!.productGallery) {
+              <div>
+                <a [routerLink]="['/product', media()!.productGallery?.id, 'view']">{{ mediaRef.productGallery?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="samabutikApp.media.packGallery">Pack Gallery</span></dt>
+          <dd>
+            @if (media()!.packGallery) {
+              <div>
+                <a [routerLink]="['/pack', media()!.packGallery?.id, 'view']">{{ mediaRef.packGallery?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
+        </button>
+
+        <button type="button" [routerLink]="['/media', mediaRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

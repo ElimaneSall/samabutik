@@ -1,0 +1,278 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-media-heading" data-cy="MediaCreateUpdateHeading" jhiTranslate="samabutikApp.media.home.createOrEditLabel">
+        Créer ou éditer un Media
+      </h2>
+
+      <div>
+        <jhi-alert-error />
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let urlRef = editForm.get('url')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_url" jhiTranslate="samabutikApp.media.url">Url</label>
+          <input type="text" class="form-control" name="url" id="field_url" data-cy="url" formControlName="url" />
+          @if (urlRef.invalid && (urlRef.dirty || urlRef.touched)) {
+            <div>
+              @if (editForm.get('url')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('url')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '500' }"
+                  >Ce champ doit faire au maximum 500 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        @let typeRef = editForm.get('type')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_type" jhiTranslate="samabutikApp.media.type">Type</label>
+          <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
+            <option [ngValue]="null">{{ 'samabutikApp.MediaType.null' | translate }}</option>
+            @for (mediaType of mediaTypeValues; track $index) {
+              <option [value]="mediaType">{{ 'samabutikApp.MediaType.' + mediaType | translate }}</option>
+            }
+          </select>
+          @if (typeRef.invalid && (typeRef.dirty || typeRef.touched)) {
+            <div>
+              @if (editForm.get('type')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let formatRef = editForm.get('format')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_format" jhiTranslate="samabutikApp.media.format">Format</label>
+          <select class="form-control" name="format" formControlName="format" id="field_format" data-cy="format">
+            <option [ngValue]="null">{{ 'samabutikApp.MediaFormat.null' | translate }}</option>
+            @for (mediaFormat of mediaFormatValues; track $index) {
+              <option [value]="mediaFormat">{{ 'samabutikApp.MediaFormat.' + mediaFormat | translate }}</option>
+            }
+          </select>
+          @if (formatRef.invalid && (formatRef.dirty || formatRef.touched)) {
+            <div>
+              @if (editForm.get('format')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let sizeBytesRef = editForm.get('sizeBytes')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_sizeBytes" jhiTranslate="samabutikApp.media.sizeBytes">Size Bytes</label>
+          <input type="number" class="form-control" name="sizeBytes" id="field_sizeBytes" data-cy="sizeBytes" formControlName="sizeBytes" />
+          @if (sizeBytesRef.invalid && (sizeBytesRef.dirty || sizeBytesRef.touched)) {
+            <div>
+              @if (editForm.get('sizeBytes')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
+              }
+              @if (editForm.get('sizeBytes')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('sizeBytes')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let widthRef = editForm.get('width')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_width" jhiTranslate="samabutikApp.media.width">Width</label>
+          <input type="number" class="form-control" name="width" id="field_width" data-cy="width" formControlName="width" />
+          @if (widthRef.invalid && (widthRef.dirty || widthRef.touched)) {
+            <div>
+              @if (editForm.get('width')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('width')?.errors?.number" jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let heightRef = editForm.get('height')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_height" jhiTranslate="samabutikApp.media.height">Height</label>
+          <input type="number" class="form-control" name="height" id="field_height" data-cy="height" formControlName="height" />
+          @if (heightRef.invalid && (heightRef.dirty || heightRef.touched)) {
+            <div>
+              @if (editForm.get('height')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('height')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let durationSecRef = editForm.get('durationSec')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_durationSec" jhiTranslate="samabutikApp.media.durationSec">Duration Sec</label>
+          <input
+            type="number"
+            class="form-control"
+            name="durationSec"
+            id="field_durationSec"
+            data-cy="durationSec"
+            formControlName="durationSec"
+          />
+          @if (durationSecRef.invalid && (durationSecRef.dirty || durationSecRef.touched)) {
+            <div>
+              @if (editForm.get('durationSec')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('durationSec')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_isMain" jhiTranslate="samabutikApp.media.isMain">Is Main</label>
+          <input type="checkbox" class="form-check" name="isMain" id="field_isMain" data-cy="isMain" formControlName="isMain" />
+        </div>
+
+        @let displayOrderRef = editForm.get('displayOrder')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_displayOrder" jhiTranslate="samabutikApp.media.displayOrder">Display Order</label>
+          <input
+            type="number"
+            class="form-control"
+            name="displayOrder"
+            id="field_displayOrder"
+            data-cy="displayOrder"
+            formControlName="displayOrder"
+          />
+          @if (displayOrderRef.invalid && (displayOrderRef.dirty || displayOrderRef.touched)) {
+            <div>
+              @if (editForm.get('displayOrder')?.errors?.min) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
+                  >Ce champ doit être supérieur à 0.</small
+                >
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('displayOrder')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >Ce champ doit être un nombre.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let altTextRef = editForm.get('altText')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_altText" jhiTranslate="samabutikApp.media.altText">Alt Text</label>
+          <input type="text" class="form-control" name="altText" id="field_altText" data-cy="altText" formControlName="altText" />
+          @if (altTextRef.invalid && (altTextRef.dirty || altTextRef.touched)) {
+            <div>
+              @if (editForm.get('altText')?.errors?.maxlength) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '255' }"
+                  >Ce champ doit faire au maximum 255 caractères.</small
+                >
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_uploadedAt" jhiTranslate="samabutikApp.media.uploadedAt">Uploaded At</label>
+          <div class="d-flex">
+            <input
+              id="field_uploadedAt"
+              data-cy="uploadedAt"
+              type="datetime-local"
+              class="form-control"
+              name="uploadedAt"
+              formControlName="uploadedAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_productGallery" jhiTranslate="samabutikApp.media.productGallery">Product Gallery</label>
+          <select
+            class="form-control"
+            id="field_productGallery"
+            data-cy="productGallery"
+            name="productGallery"
+            formControlName="productGallery"
+            [compareWith]="compareProduct"
+          >
+            <option [ngValue]="null"></option>
+            @for (productOption of productsSharedCollection(); track $index) {
+              <option [ngValue]="productOption">{{ productOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_packGallery" jhiTranslate="samabutikApp.media.packGallery">Pack Gallery</label>
+          <select
+            class="form-control"
+            id="field_packGallery"
+            data-cy="packGallery"
+            name="packGallery"
+            formControlName="packGallery"
+            [compareWith]="comparePack"
+          >
+            <option [ngValue]="null"></option>
+            @for (packOption of packsSharedCollection(); track $index) {
+              <option [ngValue]="packOption">{{ packOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving()"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

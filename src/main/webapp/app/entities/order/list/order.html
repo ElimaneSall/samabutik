@@ -1,0 +1,216 @@
+<div>
+  <h2 id="page-heading" data-cy="OrderHeading">
+    <span jhiTranslate="samabutikApp.order.home.title">Orders</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
+        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+        <span jhiTranslate="samabutikApp.order.home.refreshListLabel">Actualiser la liste</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-order"
+        [routerLink]="['/order/new']"
+      >
+        <fa-icon icon="plus" />
+        <span jhiTranslate="samabutikApp.order.home.createLabel">Créer un nouveau Order</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error />
+
+  <jhi-alert />
+
+  @if (orders().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="samabutikApp.order.home.notFound">Aucun Order trouvé</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="global.field.id">ID</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="orderNumber">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.orderNumber">Order Number</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="status">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.status">Status</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="totalAmount">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.totalAmount">Total Amount</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="currency">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.currency">Currency</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="paymentMethod">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.paymentMethod">Payment Method</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="paymentStatus">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.paymentStatus">Payment Status</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="paymentReference">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.paymentReference">Payment Reference</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="shippingAddress">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.shippingAddress">Shipping Address</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="shippingCost">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.shippingCost">Shipping Cost</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="deliveryNote">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.deliveryNote">Delivery Note</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="deliveredAt">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.deliveredAt">Delivered At</span>
+
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="customer.id">
+              <div class="d-flex">
+                <span jhiTranslate="samabutikApp.order.customer">Customer</span>
+                <fa-icon class="p-1" icon="sort" />
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of orders(); track trackId(order)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/order', order.id, 'view']">{{ order.id }}</a>
+              </td>
+              <td>{{ order.orderNumber }}</td>
+              <td [jhiTranslate]="'samabutikApp.OrderStatus.' + (order.status ?? 'null')">
+                {{
+                  {
+                    null: '',
+                    PENDING: 'PENDING',
+                    PAID: 'PAID',
+                    PREPARING: 'PREPARING',
+                    SHIPPED: 'SHIPPED',
+                    DELIVERED: 'DELIVERED',
+                    CANCELLED: 'CANCELLED',
+                  }[order.status ?? 'null']
+                }}
+              </td>
+              <td>{{ order.totalAmount }}</td>
+              <td>{{ order.currency }}</td>
+              <td [jhiTranslate]="'samabutikApp.PaymentMethod.' + (order.paymentMethod ?? 'null')">
+                {{ { null: '', WAVE: 'WAVE', ORANGE_MONEY: 'ORANGE_MONEY', CASH: 'CASH' }[order.paymentMethod ?? 'null'] }}
+              </td>
+              <td [jhiTranslate]="'samabutikApp.PaymentStatus.' + (order.paymentStatus ?? 'null')">
+                {{
+                  { null: '', PENDING: 'PENDING', SUCCESS: 'SUCCESS', FAILED: 'FAILED', REFUNDED: 'REFUNDED' }[
+                    order.paymentStatus ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>{{ order.paymentReference }}</td>
+              <td>{{ order.shippingAddress }}</td>
+              <td>{{ order.shippingCost }}</td>
+              <td>{{ order.deliveryNote }}</td>
+              <td>{{ order.deliveredAt | formatMediumDatetime }}</td>
+              <td>
+                @if (order.customer) {
+                  <div>
+                    <a [routerLink]="['/customer', order.customer.id, 'view']">{{ order.customer.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/order', order.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">Voir</span>
+                  </a>
+
+                  <a [routerLink]="['/order', order.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Editer</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(order)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times" />
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Supprimer</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (orders().length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems()"
+          [page]="page()"
+          [pageSize]="itemsPerPage()"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        />
+      </div>
+    </div>
+  }
+</div>

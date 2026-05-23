@@ -1,0 +1,45 @@
+{
+  "annotations": {
+    "changelogDate": "20260523133606"
+  },
+  "applications": ["*"],
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "quantity",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "reason",
+      "fieldType": "StockReason",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SALE,RESTOCK,ADJUSTMENT,PACK_ASSEMBLY,DAMAGED"
+    },
+    {
+      "fieldName": "reference",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    }
+  ],
+  "name": "StockMovement",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "userStaff",
+      "relationshipName": "performedBy",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "product",
+      "otherEntityRelationshipName": "stockMovements",
+      "relationshipName": "product",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

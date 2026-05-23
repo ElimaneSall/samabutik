@@ -1,0 +1,11 @@
+{
+  "samabutikApp": {
+    "PaymentStatus": {
+      "null": "",
+      "PENDING": "PENDING",
+      "SUCCESS": "SUCCESS",
+      "FAILED": "FAILED",
+      "REFUNDED": "REFUNDED"
+    }
+  }
+}

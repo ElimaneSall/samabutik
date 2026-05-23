@@ -1,0 +1,30 @@
+{
+  "samabutikApp": {
+    "userStaff": {
+      "home": {
+        "title": "UserStaffs",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau User Staff",
+        "createOrEditLabel": "Créer ou éditer un User Staff",
+        "notFound": "Aucun User Staff trouvé"
+      },
+      "created": "Un nouveau User Staff a été créé avec l'identifiant {{ param }}",
+      "updated": "Le User Staff avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le User Staff avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le User Staff {{ id }} ?"
+      },
+      "detail": {
+        "title": "User Staff"
+      },
+      "id": "ID",
+      "email": "Email",
+      "phone": "Phone",
+      "passwordHash": "Password Hash",
+      "role": "Role",
+      "isActive": "Is Active",
+      "lastLoginAt": "Last Login At",
+      "stockMovement": "Stock Movement"
+    }
+  }
+}

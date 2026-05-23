@@ -1,0 +1,180 @@
+// ============================================
+// SamaButik V1.1 - JHipster Domain Language
+// Stack: Spring Boot + Angular + PostgreSQL
+// Ajout: Gestion multi-médias Produits/Packs
+// ============================================
+
+// Enums
+enum OrderStatus { PENDING, PAID, PREPARING, SHIPPED, DELIVERED, CANCELLED }
+enum PaymentStatus { PENDING, SUCCESS, FAILED, REFUNDED }
+enum PaymentMethod { WAVE, ORANGE_MONEY, CASH }
+enum PaymentProvider { WAVE, ORANGE_MONEY, INTOUCH }
+enum TransactionStatus { INITIATED, SUCCESS, FAILED, PENDING }
+enum StockReason { SALE, RESTOCK, ADJUSTMENT, PACK_ASSEMBLY, DAMAGED }
+enum UserRole { ADMIN, MANAGER, SELLER }
+enum DiscountType { PERCENT, FIXED }
+enum MediaType { IMAGE, VIDEO }
+enum MediaFormat { JPG, PNG, WEBP, MP4, GIF }
+
+// ==================== ENTITÉS ====================
+
+entity Customer {
+  phone String required maxlength(15) unique,
+  firstName String required maxlength(50),
+  lastName String required maxlength(50),
+  email String maxlength(100),
+  description String maxlength(500),
+  city String maxlength(50)
+}
+
+entity Product {
+  sku String required maxlength(50) unique,
+  name String required maxlength(100),
+  description String maxlength(2000),
+  price BigDecimal required min(0),
+  costPrice BigDecimal min(0),
+  currency String maxlength(3),
+  stock Integer required min(0),
+  lowStockThreshold Integer min(0),
+  category String maxlength(50),
+  isActive Boolean
+}
+
+entity Pack {
+  name String required maxlength(100),
+  description String maxlength(2000),
+  discountType DiscountType required,
+  discountValue BigDecimal required min(0),
+  startDate Instant required,
+  endDate Instant required,
+  isActive Boolean,
+  displayOnHomepage Boolean
+}
+
+entity PackItem {
+  quantity Integer required min(1)
+}
+
+entity Order {
+  orderNumber String required maxlength(20) unique,
+  status OrderStatus required,
+  totalAmount BigDecimal required min(0),
+  currency String required maxlength(3),
+  paymentMethod PaymentMethod,
+  paymentStatus PaymentStatus,
+  paymentReference String maxlength(100),
+  shippingAddress String maxlength(500) required,
+  shippingCost BigDecimal min(0),
+  deliveryNote String maxlength(1000),
+  deliveredAt Instant
+}
+
+entity OrderItem {
+  productName String required maxlength(100),
+  productSku String required maxlength(50),
+  quantity Integer required min(1),
+  unitPrice BigDecimal required min(0),
+  subtotal BigDecimal required min(0),
+  isPackItem Boolean
+}
+
+// ==================== GESTION MÉDIAS ====================
+
+entity Media {
+  url String required maxlength(500),
+  type MediaType required,
+  format MediaFormat required,
+  sizeBytes Integer required min(0),
+  width Integer min(0),
+  height Integer min(0),
+  durationSec Integer min(0),
+  isMain Boolean,
+  displayOrder Integer min(0),
+  altText String maxlength(255),
+  uploadedAt Instant
+}
+
+// ==================== PAIEMENT & AUDIT ====================
+
+entity PaymentTransaction {
+  provider PaymentProvider required,
+  transactionId String required maxlength(100) unique,
+  amount BigDecimal required min(0),
+  currency String required maxlength(3),
+  status TransactionStatus required,
+  webhookPayload String maxlength(10000),
+  processedAt Instant
+}
+
+// Fixed Entity Name: Changed from UserStaff to Staff
+entity Staff {
+  email String required maxlength(100) unique,
+  phone String required maxlength(15) unique,
+  passwordHash String required maxlength(255),
+  role UserRole required,
+  isActive Boolean,
+  lastLoginAt Instant
+}
+
+entity StockMovement {
+  quantity Integer required,
+  reason StockReason required,
+  reference String maxlength(100)
+}
+
+entity AppSettings {
+  paramKey String required unique maxlength(50),
+  paramValue String
+}
+
+// ==================== RELATIONSHIPS ====================
+relationship OneToMany {
+  Customer{orders} to Order{customer}
+}
+relationship OneToMany {
+  Order{orderItems} to OrderItem{order}
+}
+relationship OneToOne {
+  OrderItem{productSnapshot} to Product
+}
+relationship ManyToOne {
+  PackItem{pack} to Pack
+}
+relationship ManyToOne {
+  PackItem{product} to Product
+}
+relationship OneToMany {
+  Order{transactions} to PaymentTransaction{order}
+}
+relationship OneToMany {
+  Product{stockMovements} to StockMovement{product}
+}
+// Fixed Relationship target to Staff
+relationship OneToOne {
+  StockMovement{performedBy} to Staff
+}
+
+// Media relationships
+// ==================== MÉDIAS : RELATIONS CLÉS ====================
+
+relationship OneToMany {
+  Product{gallery} to Media{productGallery}
+}
+
+relationship OneToOne {
+  Product{mainMedia} to Media{productMain}
+}
+
+relationship OneToMany {
+  Pack{gallery} to Media{packGallery}
+}
+
+relationship OneToOne {
+  Pack{mainMedia} to Media{packMain}
+}
+
+// ==================== CONFIG GÉNÉRATION ====================
+
+dto * with mapstruct
+paginate * with pagination
+service * with serviceImpl

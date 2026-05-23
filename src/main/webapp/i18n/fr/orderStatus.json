@@ -1,0 +1,13 @@
+{
+  "samabutikApp": {
+    "OrderStatus": {
+      "null": "",
+      "PENDING": "PENDING",
+      "PAID": "PAID",
+      "PREPARING": "PREPARING",
+      "SHIPPED": "SHIPPED",
+      "DELIVERED": "DELIVERED",
+      "CANCELLED": "CANCELLED"
+    }
+  }
+}

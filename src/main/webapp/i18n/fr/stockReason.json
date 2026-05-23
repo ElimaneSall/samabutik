@@ -1,0 +1,12 @@
+{
+  "samabutikApp": {
+    "StockReason": {
+      "null": "",
+      "SALE": "SALE",
+      "RESTOCK": "RESTOCK",
+      "ADJUSTMENT": "ADJUSTMENT",
+      "PACK_ASSEMBLY": "PACK_ASSEMBLY",
+      "DAMAGED": "DAMAGED"
+    }
+  }
+}

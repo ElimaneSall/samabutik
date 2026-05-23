@@ -1,0 +1,31 @@
+{
+  "samabutikApp": {
+    "paymentTransaction": {
+      "home": {
+        "title": "PaymentTransactions",
+        "refreshListLabel": "Actualiser la liste",
+        "createLabel": "Créer un nouveau Payment Transaction",
+        "createOrEditLabel": "Créer ou éditer un Payment Transaction",
+        "notFound": "Aucun Payment Transaction trouvé"
+      },
+      "created": "Un nouveau Payment Transaction a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Payment Transaction avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Payment Transaction avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Êtes-vous certain de vouloir supprimer le Payment Transaction {{ id }} ?"
+      },
+      "detail": {
+        "title": "Payment Transaction"
+      },
+      "id": "ID",
+      "provider": "Provider",
+      "transactionId": "Transaction Id",
+      "amount": "Amount",
+      "currency": "Currency",
+      "status": "Status",
+      "webhookPayload": "Webhook Payload",
+      "processedAt": "Processed At",
+      "order": "Order"
+    }
+  }
+}

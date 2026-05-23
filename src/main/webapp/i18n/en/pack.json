@@ -1,0 +1,33 @@
+{
+  "samabutikApp": {
+    "pack": {
+      "home": {
+        "title": "Packs",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Pack",
+        "createOrEditLabel": "Create or edit a Pack",
+        "notFound": "No Packs found"
+      },
+      "created": "A new Pack is created with identifier {{ param }}",
+      "updated": "A Pack is updated with identifier {{ param }}",
+      "deleted": "A Pack is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Pack {{ id }}?"
+      },
+      "detail": {
+        "title": "Pack"
+      },
+      "id": "ID",
+      "name": "Name",
+      "description": "Description",
+      "discountType": "Discount Type",
+      "discountValue": "Discount Value",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "isActive": "Is Active",
+      "displayOnHomepage": "Display On Homepage",
+      "mainMedia": "Main Media",
+      "gallery": "Gallery"
+    }
+  }
+}
