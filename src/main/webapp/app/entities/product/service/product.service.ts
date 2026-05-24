@@ -53,9 +53,11 @@ export class ProductService extends ProductsService {
 
   query(req?: any): Observable<HttpResponse<IProduct[]>> {
     const options = createRequestOption(req);
-    return this.http.get<IProduct[]>(this.resourceUrl, { params: options, observe: 'response' });
+    return this.http.get<IProduct[]>(this.resourceUrl, {
+      params: options,
+      observe: 'response',
+    });
   }
-
   delete(id: number): Observable<undefined> {
     return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }

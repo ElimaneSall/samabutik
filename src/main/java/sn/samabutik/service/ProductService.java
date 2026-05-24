@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import sn.samabutik.domain.Product;
 import sn.samabutik.service.dto.ProductDTO;
 
 /**
@@ -40,7 +42,7 @@ public interface ProductService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<ProductDTO> findAll(Pageable pageable);
+    Page<ProductDTO> findAll(Specification<Product> spec, Pageable pageable);
 
     /**
      * Get all the ProductDTO where OrderItem is {@code null}.

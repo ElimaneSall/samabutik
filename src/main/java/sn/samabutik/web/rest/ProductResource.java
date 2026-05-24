@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,10 +25,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import sn.samabutik.domain.Product;
 import sn.samabutik.repository.ProductRepository;
 import sn.samabutik.service.MediaService;
 import sn.samabutik.service.MediaStorageService;
 import sn.samabutik.service.ProductService;
+import sn.samabutik.service.criteria.ProductSpecifications;
 import sn.samabutik.service.dto.MediaDTO;
 import sn.samabutik.service.dto.ProductDTO;
 import sn.samabutik.web.rest.errors.BadRequestAlertException;
@@ -268,14 +271,33 @@ public class ProductResource {
     @GetMapping("")
     public ResponseEntity<List<ProductDTO>> getAllProducts(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(name = "filter", required = false) String filter
+        @RequestParam(name = "filter", required = false) String filter,
+        @RequestParam(name = "search", required = false) String search,
+        @RequestParam(name = "category", required = false) String category,
+        @RequestParam(name = "stockFilter", required = false) String stockFilter
     ) {
+        LOG.debug("REST request to get products : {}, search={}, category={}, stockFilter={}", pageable, search, category, stockFilter);
+
         if ("orderitem-is-null".equals(filter)) {
             LOG.debug("REST request to get all Products where orderItem is null");
             return new ResponseEntity<>(productService.findAllWhereOrderItemIsNull(), HttpStatus.OK);
         }
-        LOG.debug("REST request to get a page of Products");
-        Page<ProductDTO> page = productService.findAll(pageable);
+
+        Specification<Product> spec = Specification.where((root, query, cb) -> cb.conjunction());
+
+        if (search != null && !search.isBlank()) {
+            spec = spec.and(ProductSpecifications.searchByNameOrSku(search));
+        }
+        if (category != null && !category.isBlank()) {
+            spec = spec.and(ProductSpecifications.byCategory(category));
+        }
+        if (stockFilter != null && !stockFilter.equals("all")) {
+            spec = spec.and(ProductSpecifications.byStockStatus(stockFilter));
+        }
+
+        // Exécuter la requête avec pagination
+        Page<ProductDTO> page = productService.findAll(spec, pageable);
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

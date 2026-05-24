@@ -165,7 +165,6 @@ export class Product implements OnInit {
   protected fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {
     this.totalItems.set(Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER)));
   }
-
   protected queryBackend(): void {
     const pageToLoad: number = this.page();
     const queryObject: any = {
@@ -174,7 +173,6 @@ export class Product implements OnInit {
       sort: this.sortService.buildSortParam(this.sortState()),
     };
 
-    // 🔹 Ajout des filtres
     if (this.searchTerm) {
       queryObject.search = this.searchTerm;
     }

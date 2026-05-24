@@ -1,7 +1,5 @@
-<!-- Main Container -->
 <div class="bg-slate-50 min-h-screen font-sans">
   <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header Section -->
     <div class="flex items-center gap-4 mb-8 fade-in">
       <button
         type="button"
@@ -24,7 +22,6 @@
       </div>
     </div>
 
-    <!-- Error Alert -->
     @if (uploadError()) {
       <div class="mb-6 error-toast bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 fade-in">
         <fa-icon icon="exclamation-circle" class="text-red-500 mt-0.5" />
@@ -41,11 +38,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- LEFT COLUMN: Form -->
       <div class="lg:col-span-8 space-y-6">
-        <!-- Section: Informations générales -->
-        <div
-          class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in"
-          style="animation-delay: 0.1s"
-        >
+        <!-- General Info -->
+        <div class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.1s">
           <div class="px-6 py-5 border-b border-slate-100">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
@@ -55,43 +49,36 @@
             </div>
           </div>
           <div class="p-6 space-y-5" [formGroup]="editForm">
-            <!-- Nom du produit -->
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1.5"> Nom du produit <span class="text-red-500">*</span> </label>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Nom du produit <span class="text-red-500">*</span></label>
               <input
                 type="text"
                 formControlName="name"
-                placeholder="Ex: Riz Brisé 5kg"
+                placeholder="Nom du produit"
                 class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
               />
               @if (editForm.controls.name.invalid && editForm.controls.name.touched) {
                 <p class="text-xs text-red-500 mt-1">Ce champ est requis</p>
               }
             </div>
-
-            <!-- SKU -->
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1.5"> SKU <span class="text-red-500">*</span> </label>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">SKU <span class="text-red-500">*</span></label>
               <input
                 type="text"
                 formControlName="sku"
-                placeholder="Ex: RIZ-5KG-001"
+                placeholder="SKU"
                 class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all font-mono uppercase"
               />
             </div>
-
-            <!-- Description -->
             <div>
               <label class="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
               <textarea
                 rows="4"
                 formControlName="description"
-                placeholder="Décrivez les caractéristiques du produit..."
+                placeholder="Description du produit..."
                 class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all resize-none"
               ></textarea>
             </div>
-
-            <!-- Toggle: Actif -->
             <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
               <div>
                 <span class="text-sm font-medium text-slate-700">Produit actif</span>
@@ -107,11 +94,8 @@
           </div>
         </div>
 
-        <!-- Section: Configuration des prix & stock -->
-        <div
-          class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in"
-          style="animation-delay: 0.2s"
-        >
+        <!-- Pricing & Stock -->
+        <div class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.2s">
           <div class="px-6 py-5 border-b border-slate-100">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
@@ -122,59 +106,48 @@
           </div>
           <div class="p-6" [formGroup]="editForm">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <!-- Prix -->
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1.5">
-                  Prix de vente (XOF) <span class="text-red-500">*</span>
-                </label>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Prix de vente <span class="text-red-500">*</span></label>
                 <div class="relative">
                   <input
                     type="number"
                     formControlName="price"
-                    placeholder="3500"
+                    placeholder="0"
                     class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
                   />
                   <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium">XOF</span>
                 </div>
               </div>
-
-              <!-- Prix de revient -->
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1.5">Prix de revient (XOF)</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Prix de revient</label>
                 <div class="relative">
                   <input
                     type="number"
                     formControlName="costPrice"
-                    placeholder="2800"
+                    placeholder="0"
                     class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
                   />
                   <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium">XOF</span>
                 </div>
               </div>
-
-              <!-- Stock -->
               <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1.5"> Stock initial <span class="text-red-500">*</span> </label>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Stock initial <span class="text-red-500">*</span></label>
                 <input
                   type="number"
                   formControlName="stock"
-                  placeholder="50"
+                  placeholder="0"
                   class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
                 />
               </div>
-
-              <!-- Seuil stock faible -->
               <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1.5">Seuil stock faible</label>
                 <input
                   type="number"
                   formControlName="lowStockThreshold"
-                  placeholder="10"
+                  placeholder="0"
                   class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
                 />
               </div>
-
-              <!-- Catégorie -->
               <div class="sm:col-span-2">
                 <label class="block text-sm font-medium text-slate-700 mb-1.5">Catégorie</label>
                 <div class="relative">
@@ -183,11 +156,9 @@
                     class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none appearance-none cursor-pointer transition-all"
                   >
                     <option value="">Sélectionner une catégorie</option>
-                    <option>Alimentation</option>
-                    <option>Électronique</option>
-                    <option>Mode</option>
-                    <option>Maison & Jardin</option>
-                    <option>Sport</option>
+                    @for (cat of categoriesList(); track cat) {
+                      <option [value]="cat">{{ cat }}</option>
+                    }
                   </select>
                   <fa-icon
                     icon="chevron-down"
@@ -199,11 +170,8 @@
           </div>
         </div>
 
-        <!-- Section: Supports Visuels (Médias) -->
-        <div
-          class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in"
-          style="animation-delay: 0.3s"
-        >
+        <!-- Media Upload -->
+        <div class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.3s">
           <div class="px-6 py-5 border-b border-slate-100">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -220,8 +188,6 @@
             <div
               class="upload-zone rounded-xl p-8 text-center cursor-pointer relative transition-all"
               [class.dragover]="dragOver()"
-              [class.border-orange-300]="dragOver()"
-              [class.bg-orange-50]="dragOver()"
               (click)="triggerFileInput()"
               (dragover)="onDragOver($event)"
               (dragleave)="onDragLeave($event)"
@@ -241,29 +207,32 @@
               <p class="text-sm font-medium text-slate-700 mb-1">Glissez-déposez vos fichiers ici</p>
               <p class="text-xs text-slate-400">ou <span class="text-orange-500 font-medium">cliquez pour parcourir</span></p>
             </div>
-            <!-- Dans la section Upload Zone, après le paragraphe "cliquez pour parcourir" -->
-            @if (selectedGalleryFiles.length > 0) {
+
+            @if (selectedGalleryFiles().length > 0 || selectedMainFile) {
               <div class="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-violet-50 border border-violet-200 rounded-full">
                 <fa-icon icon="images" class="text-violet-500 text-xs" />
-                <span class="text-xs font-medium text-violet-700">
-                  {{ selectedGalleryFiles.length }} fichier{{ selectedGalleryFiles.length > 1 ? 's' : '' }} en galerie
-                </span>
+                <span class="text-xs font-medium text-violet-700"
+                  >{{ selectedGalleryFiles().length + (selectedMainFile != null ? 1 : 0) }} fichier{{
+                    selectedGalleryFiles().length >= 1 ? 's' : ''
+                  }}</span
+                >
                 <button type="button" (click)="clearAllFiles()" class="ml-1 text-violet-400 hover:text-violet-600" title="Tout supprimer">
                   <fa-icon icon="times" class="text-[10px]" />
                 </button>
               </div>
             }
-            <!-- Main Image Section -->
+
+            <!-- Main Image -->
             @if (selectedMainFile) {
-              <div id="mainImageSection">
+              <div>
                 <div class="flex items-center gap-2 mb-3">
                   <span class="text-sm font-semibold text-slate-700">Image principale</span>
-                  <span class="badge-main text-white text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500">PRINCIPALE</span>
+                  <span class="badge-main text-white text-[10px] font-bold px-2 py-0.5 rounded-full">PRINCIPALE</span>
                 </div>
                 <div class="media-card main-selected rounded-xl border-2 border-orange-300 bg-orange-50/30 p-4 relative group">
                   <div class="flex items-center gap-4">
                     <div class="w-24 h-24 rounded-lg overflow-hidden bg-white shadow-sm flex-shrink-0">
-                      @if (isImage(selectedMainFile)) {
+                      @if (isImageFile(selectedMainFile)) {
                         <img [src]="selectedMainFile.previewUrl" [alt]="selectedMainFile.name" class="w-full h-full object-cover" />
                       } @else {
                         <div class="w-full h-full flex items-center justify-center bg-slate-800 text-white">
@@ -294,27 +263,23 @@
               </div>
             }
 
-            <!-- Gallery Section -->
-            @if (selectedGalleryFiles.length > 0) {
-              <div id="gallerySection">
+            <!-- Gallery -->
+            @if (selectedGalleryFiles().length > 0) {
+              <div>
                 <div class="flex items-center justify-between mb-3">
-                  <span class="text-sm font-semibold text-slate-700">Galerie ({{ selectedGalleryFiles.length }} médias)</span>
-                  <span class="text-xs text-slate-400">Glissez pour réordonner</span>
+                  <span class="text-sm font-semibold text-slate-700">Galerie ({{ selectedGalleryFiles().length }} médias)</span>
                 </div>
-                <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  @for (item of selectedGalleryFiles; track item.id) {
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  @for (item of selectedGalleryFiles(); track item.id) {
                     <div class="gallery-item media-card rounded-xl border border-slate-200 bg-white overflow-hidden relative group">
-                      <button
-                        type="button"
-                        (click)="removeGalleryFile($index)"
-                        class="absolute top-2 right-2 w-6 h-6 rounded bg-white/90 backdrop-blur flex items-center justify-center text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
-                      >
-                        <fa-icon icon="times" class="text-xs" />
-                      </button>
+                      <!-- 1. Zone Média (Image / Vidéo) -->
                       <div class="aspect-square bg-slate-100 relative">
-                        @if (isImage(item.file)) {
+                        @if (item.file && isImageFile(item.file)) {
                           <img [src]="item.previewUrl" class="w-full h-full object-cover" [alt]="item.file.name" />
-                        } @else {
+                        } @else if (item.media?.url) {
+                          <img [src]="item.media?.url" class="w-full h-full object-cover" [alt]="'Media ' + item.media?.id" />
+                        } @else if (item.file && isVideoFile(item.file)) {
                           <div class="w-full h-full flex items-center justify-center bg-slate-800 text-white">
                             <fa-icon icon="video" class="text-2xl" />
                           </div>
@@ -323,9 +288,23 @@
                           >
                         }
                       </div>
-                      <div class="p-2.5">
-                        <p class="text-xs font-medium text-slate-700 truncate">{{ item.file.name }}</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">{{ formatFileSize(item.file.size) }}</p>
+
+                      <!-- 2. Zone d'infos + Bouton Supprimer alignés en Space-Between -->
+                      <div class="p-2.5 flex items-center justify-between gap-2">
+                        <!-- Bloc de gauche (Textes) -->
+                        <div class="min-w-0 flex-1">
+                          <p class="text-xs font-medium text-slate-700 truncate">{{ item.file?.name || 'Média existant' }}</p>
+                          <p class="text-[10px] text-slate-400 mt-0.5">{{ item.file ? formatFileSize(item.file.size) : '' }}</p>
+                        </div>
+
+                        <!-- Bloc de droite (Bouton Supprimer) -->
+                        <button
+                          type="button"
+                          (click)="removeGalleryFile($index)"
+                          class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm"
+                        >
+                          <fa-icon icon="trash" class="text-[10px]" />
+                        </button>
                       </div>
                     </div>
                   }
@@ -336,120 +315,111 @@
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: Preview & Actions -->
-      <div class="lg:col-span-4 space-y-6">
-        <!-- Preview Card -->
-        <div
-          class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-6 fade-in"
-          style="animation-delay: 0.4s"
-        >
-          <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider">Aperçu Client</span>
-            <span class="text-[10px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-bold">LIVE</span>
-          </div>
-          <div class="p-4">
-            <!-- Product Image Preview -->
-            <div class="aspect-square rounded-lg bg-slate-100 overflow-hidden mb-4 relative">
-              @if (selectedMainFile && isImage(selectedMainFile)) {
-                <img [src]="selectedMainFile.previewUrl" [alt]="previewData().name" class="w-full h-full object-cover" />
-              } @else {
-                <img
-                  src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop"
-                  alt="Preview"
-                  class="w-full h-full object-cover"
-                />
-              }
-              @if (getGalleryDots().length > 1) {
-                <div id="previewGalleryDots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  @for (dot of getGalleryDots(); track dot) {
-                    <span class="w-2 h-2 rounded-full" [class.bg-white]="dot === 0" [class.bg-white-50]="dot !== 0"></span>
-                  }
-                </div>
-              }
+      <!-- RIGHT COLUMN: Sticky Sidebar -->
+      <div class="lg:col-span-4">
+        <div class="sticky-wrapper lg:sticky lg:top-6 lg:self-start space-y-6">
+          <!-- Preview -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.4s">
+            <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider">Aperçu</span>
+              <span class="text-[10px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-bold">LIVE</span>
             </div>
-
-            <!-- Product Info Preview -->
-            <h3 id="previewName" class="text-base font-bold text-slate-900 mb-1">{{ previewData().name }}</h3>
-            <p id="previewSku" class="text-xs text-slate-400 font-mono mb-3">{{ previewData().sku }}</p>
-
-            <div class="flex items-baseline gap-2 mb-4">
-              <span id="previewPrice" class="text-2xl font-bold text-orange-600"
-                >{{ previewData().price | number: '1.0-0' : 'fr-FR' }} XOF</span
+            <div class="p-4">
+              <div class="aspect-square rounded-lg bg-slate-100 overflow-hidden mb-4 relative">
+                @if (selectedMainFile && isImageFile(selectedMainFile)) {
+                  <img [src]="selectedMainFile.previewUrl" [alt]="previewData().name" class="w-full h-full object-cover" />
+                } @else if (product?.mainMedia?.url; as imageUrl) {
+                  <img [src]="imageUrl" [alt]="previewData().name" class="w-full h-full object-cover" />
+                } @else {
+                  <img src="./content/images/placeholder.jpg" alt="Preview" class="w-full h-full object-cover" />
+                }
+                @if (getGalleryDots().length > 1) {
+                  <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    @for (dot of getGalleryDots(); track dot) {
+                      <span class="w-2 h-2 rounded-full" [class.bg-white]="dot === 0" [class.bg-white-50]="dot !== 0"></span>
+                    }
+                  </div>
+                }
+              </div>
+              <h3 class="text-base font-bold text-slate-900 mb-1">{{ previewData().name || 'Nom du produit' }}</h3>
+              <p class="text-xs text-slate-400 font-mono mb-3">{{ previewData().sku || 'SKU' }}</p>
+              <div class="flex items-baseline gap-2 mb-4">
+                <span class="text-2xl font-bold text-orange-600">{{ previewData().price | number: '1.0-0' : 'fr-FR' }} XOF</span>
+              </div>
+              <button
+                type="button"
+                class="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
               >
+                <fa-icon icon="shopping-cart" class="text-xs" />
+                Ajouter au panier
+              </button>
             </div>
+          </div>
 
+          <!-- Summary -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.5s">
+            <div class="px-4 py-3 border-b border-slate-100">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Résumé</span>
+            </div>
+            <div class="p-4 space-y-3">
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">Statut</span>
+                @if (editForm.controls.isActive.value) {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Actif
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Inactif
+                  </span>
+                }
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">Marge estimée</span>
+                <span class="text-sm font-semibold text-slate-900"
+                  >{{ calculateMarginValue() | number: '1.0-0' : 'fr-FR' }} XOF ({{ calculateMarginPercent() }}%)</span
+                >
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">Médias</span>
+                <span class="text-sm font-semibold text-slate-900">{{ totalFilesCount }} fichier{{ totalFilesCount > 1 ? 's' : '' }}</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">Image principale</span>
+                <span
+                  class="text-xs"
+                  [class.text-emerald-600]="selectedMainFile || product?.mainMedia"
+                  [class.text-slate-400]="!selectedMainFile && !product?.mainMedia"
+                >
+                  {{ selectedMainFile?.name || product?.mainMedia?.url ? 'Définie' : 'Non définie' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="space-y-3 fade-in" style="animation-delay: 0.6s">
             <button
               type="button"
-              class="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
+              (click)="save()"
+              [disabled]="isSaving()"
+              class="btn-primary-orange w-full py-3 text-white font-semibold text-sm rounded-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <fa-icon icon="shopping-cart" class="text-xs" />
-              Ajouter au panier
+              @if (isSaving()) {
+                <fa-icon icon="spinner" animation="spin" />
+              } @else {
+                <fa-icon icon="save" />
+              }
+              {{ isSaving() ? 'Enregistrement...' : 'Enregistrer le produit' }}
+            </button>
+            <button
+              type="button"
+              (click)="previousState()"
+              class="w-full py-3 bg-white border border-slate-200 text-slate-600 font-medium text-sm rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all"
+            >
+              Annuler
             </button>
           </div>
-        </div>
-
-        <!-- Summary Card -->
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in" style="animation-delay: 0.5s">
-          <div class="px-4 py-3 border-b border-slate-100">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Résumé du produit</span>
-          </div>
-          <div class="p-4 space-y-3">
-            <div class="stat-row flex justify-between items-center py-2">
-              <span class="text-sm text-slate-500">Statut</span>
-              @if (editForm.controls.isActive.value) {
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  Actif
-                </span>
-              } @else {
-                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                  Inactif
-                </span>
-              }
-            </div>
-            <div class="stat-row flex justify-between items-center py-2">
-              <span class="text-sm text-slate-500">Marge estimée</span>
-              <span id="summaryMargin" class="text-sm font-semibold text-slate-900">
-                {{ calculateMarginValue() | number: '1.0-0' : 'fr-FR' }} XOF ({{ calculateMarginPercent() }}%)
-              </span>
-            </div>
-            <div class="stat-row flex justify-between items-center py-2">
-              <span class="text-sm text-slate-500">Médias</span>
-              <span id="summaryMedia" class="text-sm font-semibold text-slate-900">
-                {{ totalFilesCount }} fichier{{ totalFilesCount > 1 ? 's' : '' }}
-              </span>
-            </div>
-            <div class="stat-row flex justify-between items-center py-2">
-              <span class="text-sm text-slate-500">Image principale</span>
-              <span id="summaryMain" class="text-xs" [class.text-emerald-600]="selectedMainFile" [class.text-slate-400]="!selectedMainFile">
-                {{ selectedMainFile?.name || 'Non définie' }}
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- Action Buttons -->
-        <div class="space-y-3 fade-in" style="animation-delay: 0.6s">
-          <button
-            type="button"
-            (click)="save()"
-            [disabled]="isSaving()"
-            class="btn-primary-orange w-full py-3 text-white font-semibold text-sm rounded-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            @if (isSaving()) {
-              <fa-icon icon="spinner" animation="spin" />
-            } @else {
-              <fa-icon icon="save" />
-            }
-            {{ isSaving() ? 'Enregistrement...' : 'Enregistrer le produit' }}
-          </button>
-          <button
-            type="button"
-            (click)="previousState()"
-            class="w-full py-3 bg-white border border-slate-200 text-slate-600 font-medium text-sm rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all"
-          >
-            Annuler les modifications
-          </button>
         </div>
       </div>
     </div>
