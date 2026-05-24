@@ -1,239 +1,457 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-product-heading" data-cy="ProductCreateUpdateHeading" jhiTranslate="samabutikApp.product.home.createOrEditLabel">
-        Créer ou éditer un Product
-      </h2>
-
+<!-- Main Container -->
+<div class="bg-slate-50 min-h-screen font-sans">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="flex items-center gap-4 mb-8 fade-in">
+      <button
+        type="button"
+        class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all shadow-sm"
+        (click)="previousState()"
+      >
+        <fa-icon icon="arrow-left" />
+      </button>
       <div>
-        <jhi-alert-error />
-
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
-
-        @let skuRef = editForm.get('sku')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_sku" jhiTranslate="samabutikApp.product.sku">Sku</label>
-          <input type="text" class="form-control" name="sku" id="field_sku" data-cy="sku" formControlName="sku" />
-          @if (skuRef.invalid && (skuRef.dirty || skuRef.touched)) {
-            <div>
-              @if (editForm.get('sku')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('sku')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '50' }"
-                  >Ce champ doit faire au maximum 50 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        @let nameRef = editForm.get('name')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_name" jhiTranslate="samabutikApp.product.name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
-          @if (nameRef.invalid && (nameRef.dirty || nameRef.touched)) {
-            <div>
-              @if (editForm.get('name')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('name')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '100' }"
-                  >Ce champ doit faire au maximum 100 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        @let descriptionRef = editForm.get('description')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_description" jhiTranslate="samabutikApp.product.description">Description</label>
-          <input
-            type="text"
-            class="form-control"
-            name="description"
-            id="field_description"
-            data-cy="description"
-            formControlName="description"
-          />
-          @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
-            <div>
-              @if (editForm.get('description')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '2000' }"
-                  >Ce champ doit faire au maximum 2000 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        @let priceRef = editForm.get('price')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_price" jhiTranslate="samabutikApp.product.price">Price</label>
-          <input type="number" class="form-control" name="price" id="field_price" data-cy="price" formControlName="price" />
-          @if (priceRef.invalid && (priceRef.dirty || priceRef.touched)) {
-            <div>
-              @if (editForm.get('price')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('price')?.errors?.min) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
-                  >Ce champ doit être supérieur à 0.</small
-                >
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('price')?.errors?.number" jhiTranslate="entity.validation.number"
-                >Ce champ doit être un nombre.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let costPriceRef = editForm.get('costPrice')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_costPrice" jhiTranslate="samabutikApp.product.costPrice">Cost Price</label>
-          <input type="number" class="form-control" name="costPrice" id="field_costPrice" data-cy="costPrice" formControlName="costPrice" />
-          @if (costPriceRef.invalid && (costPriceRef.dirty || costPriceRef.touched)) {
-            <div>
-              @if (editForm.get('costPrice')?.errors?.min) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
-                  >Ce champ doit être supérieur à 0.</small
-                >
-              }
-              <small
-                class="form-text text-danger"
-                [hidden]="!editForm.get('costPrice')?.errors?.number"
-                jhiTranslate="entity.validation.number"
-                >Ce champ doit être un nombre.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let currencyRef = editForm.get('currency')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_currency" jhiTranslate="samabutikApp.product.currency">Currency</label>
-          <input type="text" class="form-control" name="currency" id="field_currency" data-cy="currency" formControlName="currency" />
-          @if (currencyRef.invalid && (currencyRef.dirty || currencyRef.touched)) {
-            <div>
-              @if (editForm.get('currency')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '3' }"
-                  >Ce champ doit faire au maximum 3 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        @let stockRef = editForm.get('stock')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_stock" jhiTranslate="samabutikApp.product.stock">Stock</label>
-          <input type="number" class="form-control" name="stock" id="field_stock" data-cy="stock" formControlName="stock" />
-          @if (stockRef.invalid && (stockRef.dirty || stockRef.touched)) {
-            <div>
-              @if (editForm.get('stock')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('stock')?.errors?.min) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
-                  >Ce champ doit être supérieur à 0.</small
-                >
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('stock')?.errors?.number" jhiTranslate="entity.validation.number"
-                >Ce champ doit être un nombre.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let lowStockThresholdRef = editForm.get('lowStockThreshold')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_lowStockThreshold" jhiTranslate="samabutikApp.product.lowStockThreshold"
-            >Low Stock Threshold</label
-          >
-          <input
-            type="number"
-            class="form-control"
-            name="lowStockThreshold"
-            id="field_lowStockThreshold"
-            data-cy="lowStockThreshold"
-            formControlName="lowStockThreshold"
-          />
-          @if (lowStockThresholdRef.invalid && (lowStockThresholdRef.dirty || lowStockThresholdRef.touched)) {
-            <div>
-              @if (editForm.get('lowStockThreshold')?.errors?.min) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
-                  >Ce champ doit être supérieur à 0.</small
-                >
-              }
-              <small
-                class="form-text text-danger"
-                [hidden]="!editForm.get('lowStockThreshold')?.errors?.number"
-                jhiTranslate="entity.validation.number"
-                >Ce champ doit être un nombre.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let categoryRef = editForm.get('category')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_category" jhiTranslate="samabutikApp.product.category">Category</label>
-          <input type="text" class="form-control" name="category" id="field_category" data-cy="category" formControlName="category" />
-          @if (categoryRef.invalid && (categoryRef.dirty || categoryRef.touched)) {
-            <div>
-              @if (editForm.get('category')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '50' }"
-                  >Ce champ doit faire au maximum 50 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_isActive" jhiTranslate="samabutikApp.product.isActive">Is Active</label>
-          <input type="checkbox" class="form-check" name="isActive" id="field_isActive" data-cy="isActive" formControlName="isActive" />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_mainMedia" jhiTranslate="samabutikApp.product.mainMedia">Main Media</label>
-          <select
-            class="form-control"
-            id="field_mainMedia"
-            data-cy="mainMedia"
-            name="mainMedia"
-            formControlName="mainMedia"
-            [compareWith]="compareMedia"
-          >
-            <option [ngValue]="null"></option>
-            @for (mediaOption of mainMediasCollection(); track $index) {
-              <option [ngValue]="mediaOption">{{ mediaOption.id }}</option>
-            }
-          </select>
-        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          {{ saveMode() === 'create' ? 'Créer un Produit' : 'Modifier le Produit' }}
+        </h1>
+        <p class="text-slate-500 mt-1 text-sm">
+          {{
+            saveMode() === 'create'
+              ? 'Ajoutez un nouveau produit avec ses médias et informations.'
+              : 'Modifiez les informations du produit.'
+          }}
+        </p>
       </div>
+    </div>
 
-      <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
+    <!-- Error Alert -->
+    @if (uploadError()) {
+      <div class="mb-6 error-toast bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 fade-in">
+        <fa-icon icon="exclamation-circle" class="text-red-500 mt-0.5" />
+        <div class="flex-1">
+          <p class="text-sm font-medium text-red-700">Erreur</p>
+          <p class="text-xs text-red-600 mt-0.5">{{ uploadError() }}</p>
+        </div>
+        <button type="button" (click)="uploadError.set(null)" class="text-red-400 hover:text-red-600">
+          <fa-icon icon="times" />
         </button>
+      </div>
+    }
 
-        <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- LEFT COLUMN: Form -->
+      <div class="lg:col-span-8 space-y-6">
+        <!-- Section: Informations générales -->
+        <div
+          class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in"
+          style="animation-delay: 0.1s"
         >
-          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
-        </button>
+          <div class="px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                <fa-icon icon="info-circle" class="text-orange-500 text-sm" />
+              </div>
+              <h2 class="text-lg font-semibold text-slate-900">Informations générales</h2>
+            </div>
+          </div>
+          <div class="p-6 space-y-5" [formGroup]="editForm">
+            <!-- Nom du produit -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5"> Nom du produit <span class="text-red-500">*</span> </label>
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Ex: Riz Brisé 5kg"
+                class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
+              />
+              @if (editForm.controls.name.invalid && editForm.controls.name.touched) {
+                <p class="text-xs text-red-500 mt-1">Ce champ est requis</p>
+              }
+            </div>
+
+            <!-- SKU -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5"> SKU <span class="text-red-500">*</span> </label>
+              <input
+                type="text"
+                formControlName="sku"
+                placeholder="Ex: RIZ-5KG-001"
+                class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all font-mono uppercase"
+              />
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
+              <textarea
+                rows="4"
+                formControlName="description"
+                placeholder="Décrivez les caractéristiques du produit..."
+                class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all resize-none"
+              ></textarea>
+            </div>
+
+            <!-- Toggle: Actif -->
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <div>
+                <span class="text-sm font-medium text-slate-700">Produit actif</span>
+                <p class="text-xs text-slate-500 mt-0.5">Le produit sera visible sur la boutique.</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" formControlName="isActive" class="sr-only peer" />
+                <div
+                  class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"
+                ></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Configuration des prix & stock -->
+        <div
+          class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in"
+          style="animation-delay: 0.2s"
+        >
+          <div class="px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <fa-icon icon="coins" class="text-emerald-500 text-sm" />
+              </div>
+              <h2 class="text-lg font-semibold text-slate-900">Configuration des prix & stock</h2>
+            </div>
+          </div>
+          <div class="p-6" [formGroup]="editForm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <!-- Prix -->
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                  Prix de vente (XOF) <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <input
+                    type="number"
+                    formControlName="price"
+                    placeholder="3500"
+                    class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium">XOF</span>
+                </div>
+              </div>
+
+              <!-- Prix de revient -->
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Prix de revient (XOF)</label>
+                <div class="relative">
+                  <input
+                    type="number"
+                    formControlName="costPrice"
+                    placeholder="2800"
+                    class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium">XOF</span>
+                </div>
+              </div>
+
+              <!-- Stock -->
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5"> Stock initial <span class="text-red-500">*</span> </label>
+                <input
+                  type="number"
+                  formControlName="stock"
+                  placeholder="50"
+                  class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
+                />
+              </div>
+
+              <!-- Seuil stock faible -->
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Seuil stock faible</label>
+                <input
+                  type="number"
+                  formControlName="lowStockThreshold"
+                  placeholder="10"
+                  class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
+                />
+              </div>
+
+              <!-- Catégorie -->
+              <div class="sm:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Catégorie</label>
+                <div class="relative">
+                  <select
+                    formControlName="category"
+                    class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none appearance-none cursor-pointer transition-all"
+                  >
+                    <option value="">Sélectionner une catégorie</option>
+                    <option>Alimentation</option>
+                    <option>Électronique</option>
+                    <option>Mode</option>
+                    <option>Maison & Jardin</option>
+                    <option>Sport</option>
+                  </select>
+                  <fa-icon
+                    icon="chevron-down"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Supports Visuels (Médias) -->
+        <div
+          class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in"
+          style="animation-delay: 0.3s"
+        >
+          <div class="px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                  <fa-icon icon="images" class="text-violet-500 text-sm" />
+                </div>
+                <h2 class="text-lg font-semibold text-slate-900">Supports Visuels</h2>
+              </div>
+              <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md">JPG/PNG/WEBP &lt;2Mo • MP4 &lt;50Mo</span>
+            </div>
+          </div>
+          <div class="p-6 space-y-6">
+            <!-- Upload Zone -->
+            <div
+              class="upload-zone rounded-xl p-8 text-center cursor-pointer relative transition-all"
+              [class.dragover]="dragOver()"
+              [class.border-orange-300]="dragOver()"
+              [class.bg-orange-50]="dragOver()"
+              (click)="triggerFileInput()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)"
+            >
+              <input
+                #fileInput
+                type="file"
+                class="hidden"
+                multiple
+                accept="image/jpeg,image/png,image/webp,video/mp4"
+                (change)="onFilesSelected($event)"
+              />
+              <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+                <fa-icon icon="cloud-upload-alt" class="text-orange-500 text-2xl" />
+              </div>
+              <p class="text-sm font-medium text-slate-700 mb-1">Glissez-déposez vos fichiers ici</p>
+              <p class="text-xs text-slate-400">ou <span class="text-orange-500 font-medium">cliquez pour parcourir</span></p>
+            </div>
+            <!-- Dans la section Upload Zone, après le paragraphe "cliquez pour parcourir" -->
+            @if (selectedGalleryFiles.length > 0) {
+              <div class="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-violet-50 border border-violet-200 rounded-full">
+                <fa-icon icon="images" class="text-violet-500 text-xs" />
+                <span class="text-xs font-medium text-violet-700">
+                  {{ selectedGalleryFiles.length }} fichier{{ selectedGalleryFiles.length > 1 ? 's' : '' }} en galerie
+                </span>
+                <button type="button" (click)="clearAllFiles()" class="ml-1 text-violet-400 hover:text-violet-600" title="Tout supprimer">
+                  <fa-icon icon="times" class="text-[10px]" />
+                </button>
+              </div>
+            }
+            <!-- Main Image Section -->
+            @if (selectedMainFile) {
+              <div id="mainImageSection">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="text-sm font-semibold text-slate-700">Image principale</span>
+                  <span class="badge-main text-white text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500">PRINCIPALE</span>
+                </div>
+                <div class="media-card main-selected rounded-xl border-2 border-orange-300 bg-orange-50/30 p-4 relative group">
+                  <div class="flex items-center gap-4">
+                    <div class="w-24 h-24 rounded-lg overflow-hidden bg-white shadow-sm flex-shrink-0">
+                      @if (isImage(selectedMainFile)) {
+                        <img [src]="selectedMainFile.previewUrl" [alt]="selectedMainFile.name" class="w-full h-full object-cover" />
+                      } @else {
+                        <div class="w-full h-full flex items-center justify-center bg-slate-800 text-white">
+                          <fa-icon icon="video" class="text-2xl" />
+                        </div>
+                      }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-slate-900 truncate">{{ selectedMainFile.name }}</p>
+                      <p class="text-xs text-slate-500 mt-1">
+                        {{ formatFileSize(selectedMainFile.size) }} • {{ getFileExtension(selectedMainFile) }}
+                      </p>
+                      <div class="flex items-center gap-2 mt-2">
+                        <span class="inline-flex items-center gap-1 text-xs font-medium text-orange-600 bg-orange-100 px-2 py-0.5 rounded">
+                          <fa-icon icon="star" class="text-[10px]" /> Image de couverture
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="removeMainImage()"
+                      class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm"
+                    >
+                      <fa-icon icon="trash" class="text-xs" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Gallery Section -->
+            @if (selectedGalleryFiles.length > 0) {
+              <div id="gallerySection">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-sm font-semibold text-slate-700">Galerie ({{ selectedGalleryFiles.length }} médias)</span>
+                  <span class="text-xs text-slate-400">Glissez pour réordonner</span>
+                </div>
+                <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  @for (item of selectedGalleryFiles; track item.id) {
+                    <div class="gallery-item media-card rounded-xl border border-slate-200 bg-white overflow-hidden relative group">
+                      <button
+                        type="button"
+                        (click)="removeGalleryFile($index)"
+                        class="absolute top-2 right-2 w-6 h-6 rounded bg-white/90 backdrop-blur flex items-center justify-center text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
+                      >
+                        <fa-icon icon="times" class="text-xs" />
+                      </button>
+                      <div class="aspect-square bg-slate-100 relative">
+                        @if (isImage(item.file)) {
+                          <img [src]="item.previewUrl" class="w-full h-full object-cover" [alt]="item.file.name" />
+                        } @else {
+                          <div class="w-full h-full flex items-center justify-center bg-slate-800 text-white">
+                            <fa-icon icon="video" class="text-2xl" />
+                          </div>
+                          <span class="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-medium"
+                            >MP4</span
+                          >
+                        }
+                      </div>
+                      <div class="p-2.5">
+                        <p class="text-xs font-medium text-slate-700 truncate">{{ item.file.name }}</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">{{ formatFileSize(item.file.size) }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
       </div>
-    </form>
+
+      <!-- RIGHT COLUMN: Preview & Actions -->
+      <div class="lg:col-span-4 space-y-6">
+        <!-- Preview Card -->
+        <div
+          class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-6 fade-in"
+          style="animation-delay: 0.4s"
+        >
+          <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider">Aperçu Client</span>
+            <span class="text-[10px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-bold">LIVE</span>
+          </div>
+          <div class="p-4">
+            <!-- Product Image Preview -->
+            <div class="aspect-square rounded-lg bg-slate-100 overflow-hidden mb-4 relative">
+              @if (selectedMainFile && isImage(selectedMainFile)) {
+                <img [src]="selectedMainFile.previewUrl" [alt]="previewData().name" class="w-full h-full object-cover" />
+              } @else {
+                <img
+                  src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop"
+                  alt="Preview"
+                  class="w-full h-full object-cover"
+                />
+              }
+              @if (getGalleryDots().length > 1) {
+                <div id="previewGalleryDots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  @for (dot of getGalleryDots(); track dot) {
+                    <span class="w-2 h-2 rounded-full" [class.bg-white]="dot === 0" [class.bg-white-50]="dot !== 0"></span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Product Info Preview -->
+            <h3 id="previewName" class="text-base font-bold text-slate-900 mb-1">{{ previewData().name }}</h3>
+            <p id="previewSku" class="text-xs text-slate-400 font-mono mb-3">{{ previewData().sku }}</p>
+
+            <div class="flex items-baseline gap-2 mb-4">
+              <span id="previewPrice" class="text-2xl font-bold text-orange-600"
+                >{{ previewData().price | number: '1.0-0' : 'fr-FR' }} XOF</span
+              >
+            </div>
+
+            <button
+              type="button"
+              class="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <fa-icon icon="shopping-cart" class="text-xs" />
+              Ajouter au panier
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in" style="animation-delay: 0.5s">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Résumé du produit</span>
+          </div>
+          <div class="p-4 space-y-3">
+            <div class="stat-row flex justify-between items-center py-2">
+              <span class="text-sm text-slate-500">Statut</span>
+              @if (editForm.controls.isActive.value) {
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Actif
+                </span>
+              } @else {
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                  Inactif
+                </span>
+              }
+            </div>
+            <div class="stat-row flex justify-between items-center py-2">
+              <span class="text-sm text-slate-500">Marge estimée</span>
+              <span id="summaryMargin" class="text-sm font-semibold text-slate-900">
+                {{ calculateMarginValue() | number: '1.0-0' : 'fr-FR' }} XOF ({{ calculateMarginPercent() }}%)
+              </span>
+            </div>
+            <div class="stat-row flex justify-between items-center py-2">
+              <span class="text-sm text-slate-500">Médias</span>
+              <span id="summaryMedia" class="text-sm font-semibold text-slate-900">
+                {{ totalFilesCount }} fichier{{ totalFilesCount > 1 ? 's' : '' }}
+              </span>
+            </div>
+            <div class="stat-row flex justify-between items-center py-2">
+              <span class="text-sm text-slate-500">Image principale</span>
+              <span id="summaryMain" class="text-xs" [class.text-emerald-600]="selectedMainFile" [class.text-slate-400]="!selectedMainFile">
+                {{ selectedMainFile?.name || 'Non définie' }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- Action Buttons -->
+        <div class="space-y-3 fade-in" style="animation-delay: 0.6s">
+          <button
+            type="button"
+            (click)="save()"
+            [disabled]="isSaving()"
+            class="btn-primary-orange w-full py-3 text-white font-semibold text-sm rounded-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            @if (isSaving()) {
+              <fa-icon icon="spinner" animation="spin" />
+            } @else {
+              <fa-icon icon="save" />
+            }
+            {{ isSaving() ? 'Enregistrement...' : 'Enregistrer le produit' }}
+          </button>
+          <button
+            type="button"
+            (click)="previousState()"
+            class="w-full py-3 bg-white border border-slate-200 text-slate-600 font-medium text-sm rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all"
+          >
+            Annuler les modifications
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

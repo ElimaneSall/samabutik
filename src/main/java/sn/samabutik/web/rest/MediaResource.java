@@ -2,8 +2,10 @@ package sn.samabutik.web.rest;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,11 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import sn.samabutik.repository.MediaRepository;
 import sn.samabutik.service.MediaService;
+import sn.samabutik.service.MediaStorageService;
 import sn.samabutik.service.dto.MediaDTO;
 import sn.samabutik.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
@@ -41,10 +46,13 @@ public class MediaResource {
 
     private final MediaService mediaService;
 
+    private final MediaStorageService mediaStorageService;
+
     private final MediaRepository mediaRepository;
 
-    public MediaResource(MediaService mediaService, MediaRepository mediaRepository) {
+    public MediaResource(MediaService mediaService, MediaStorageService mediaStorageService, MediaRepository mediaRepository) {
         this.mediaService = mediaService;
+        this.mediaStorageService = mediaStorageService;
         this.mediaRepository = mediaRepository;
     }
 
@@ -189,5 +197,33 @@ public class MediaResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MediaDTO> uploadMedia(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam(value = "entityType", required = false) String entityType, // "product" or "pack"
+        @RequestParam(value = "entityId", required = false) Long entityId,
+        @RequestParam(value = "isMain", defaultValue = "false") Boolean isMain
+    ) throws IOException {
+        LOG.debug("REST request to upload media: {}, entityType={}, entityId={}", file.getOriginalFilename(), entityType, entityId);
+
+        // Upload file to local storage
+        MediaStorageService.MediaUploadResult result = mediaStorageService.uploadFile(file, entityType, entityId);
+
+        // Create Media entity
+        MediaDTO mediaDTO = new MediaDTO();
+        mediaDTO.setUrl(result.url());
+        mediaDTO.setType(result.type());
+        mediaDTO.setFormat(result.format());
+        mediaDTO.setSizeBytes(result.sizeBytes().intValue());
+        mediaDTO.setIsMain(isMain);
+        mediaDTO.setUploadedAt(Instant.now());
+        mediaDTO.setAltText(file.getOriginalFilename());
+
+        // Save to database
+        MediaDTO saved = mediaService.save(mediaDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 }

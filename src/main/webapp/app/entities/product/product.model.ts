@@ -12,7 +12,8 @@ export interface IProduct {
   lowStockThreshold?: number | null;
   category?: string | null;
   isActive?: boolean | null;
-  mainMedia?: Pick<IMedia, 'id'> | null;
+  mainMedia?: Pick<IMedia, 'id' | 'url'> | null;
+  gallery?: Pick<IMedia, 'id' | 'url'>[];
 }
 
 export type NewProduct = Omit<IProduct, 'id'> & { id: null };

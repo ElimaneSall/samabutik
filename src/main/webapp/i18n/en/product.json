@@ -2,36 +2,75 @@
   "samabutikApp": {
     "product": {
       "home": {
-        "title": "Products",
-        "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Product",
-        "createOrEditLabel": "Create or edit a Product",
-        "notFound": "No Products found"
+        "title": "Product Management",
+        "subtitle": "Manage your inventory, prices, and product categories.",
+        "refreshListLabel": "Refresh",
+        "createLabel": "New Product",
+        "createOrEditLabel": "Create or edit Product",
+        "notFound": "No products found",
+        "exportCSV": "Export CSV"
       },
-      "created": "A new Product is created with identifier {{ param }}",
-      "updated": "A Product is updated with identifier {{ param }}",
-      "deleted": "A Product is deleted with identifier {{ param }}",
-      "delete": {
-        "question": "Are you sure you want to delete Product {{ id }}?"
+      "stats": {
+        "totalProducts": "Total Products",
+        "stockValue": "Stock Value",
+        "lowStock": "Low Stock",
+        "categories": "Active Categories"
+      },
+      "search": {
+        "placeholder": "Search by name or SKU..."
+      },
+      "filter": {
+        "allCategories": "All categories",
+        "allStock": "All stock",
+        "inStock": "In stock",
+        "lowStock": "Low stock",
+        "outOfStock": "Out of stock",
+        "reset": "Reset"
+      },
+      "table": {
+        "image": "Image",
+        "name": "Name",
+        "sku": "SKU",
+        "price": "Price (XOF)",
+        "stock": "Stock",
+        "category": "Category",
+        "actions": "Actions"
+      },
+      "stock": {
+        "in": "in stock",
+        "low": "in stock (low)",
+        "out": "Out of stock"
       },
       "detail": {
-        "title": "Product"
+        "title": "Product Details"
+      },
+      "update": {
+        "title": "Edit Product"
+      },
+      "delete": {
+        "title": "Delete Product",
+        "question": "Are you sure you want to delete product \"{{ name }}\"?"
       },
       "id": "ID",
-      "sku": "Sku",
+      "sku": "SKU",
       "name": "Name",
       "description": "Description",
       "price": "Price",
       "costPrice": "Cost Price",
       "currency": "Currency",
-      "stock": "Stock",
+      "stockQuantity": "Stock Quantity",
       "lowStockThreshold": "Low Stock Threshold",
       "category": "Category",
-      "isActive": "Is Active",
-      "mainMedia": "Main Media",
+      "isActive": "Active",
+      "mainMedia": "Main Image",
       "stockMovements": "Stock Movements",
       "gallery": "Gallery",
-      "orderItem": "Order Item"
+      "orderItem": "Order Item",
+      "created": "Product created successfully",
+      "updated": "Product updated successfully",
+      "deleted": "Product deleted successfully",
+      "image": "Image",
+      "actions": "Actions"
     }
   }
 }

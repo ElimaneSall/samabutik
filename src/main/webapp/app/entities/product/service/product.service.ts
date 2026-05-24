@@ -1,4 +1,4 @@
-import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { HttpClient, HttpResponse, httpResource, HttpHeaders } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
@@ -86,5 +86,18 @@ export class ProductService extends ProductsService {
       return [...productsToAdd, ...productCollection];
     }
     return productCollection;
+  }
+  createWithMedia(formData: FormData): Observable<IProduct> {
+    return this.http.post<IProduct>(this.resourceUrl, formData, {
+      // Important: don't set Content-Type header, let browser set it with boundary
+      headers: new HttpHeaders().delete('Content-Type'),
+    });
+  }
+  exportCSV(): Observable<Blob> {
+    const params = this.productsParams();
+    return this.http.get(`${this.resourceUrl}/export`, {
+      params: params as any,
+      responseType: 'blob',
+    });
   }
 }

@@ -17,6 +17,14 @@
 ---
 # Conditionally disable springdoc on missing api-docs profile
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB # Max video size
+      max-request-size: 100MB # Total request (multiple files)
+    jackson:
+      serialization:
+        fail-on-empty-beans: false
   docker:
     compose:
       enabled: false
@@ -230,3 +238,6 @@ jhipster:
 # ===================================================================
 
 # application:
+
+samabutik:
+  upload-dir: medias

@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+.stat-card {
+  transition: all 0.3s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+.product-row {
+  transition: all 0.2s ease;
+}
+.product-row:hover {
+  background-color: #f8fafc;
+}
+.btn-primary-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+.btn-primary-orange:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+.low-stock {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.in-stock {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  border-color: #f97316;
+}
+.custom-select:focus {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  border-color: #f97316;
+}
+.action-btn {
+  transition: all 0.2s ease;
+}
+.action-btn:hover {
+  transform: scale(1.05);
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.image-placeholder {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+}

@@ -9,4 +9,6 @@ import sn.samabutik.domain.Product;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {}
+public interface ProductRepository extends JpaRepository<Product, Long> {
+    boolean existsBySku(String sku);
+}

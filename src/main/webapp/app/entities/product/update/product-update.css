@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+.section-card {
+  transition: all 0.3s ease;
+}
+.section-card:hover {
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.08),
+    0 8px 10px -6px rgba(0, 0, 0, 0.08);
+}
+.form-input:focus {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  border-color: #f97316;
+}
+.upload-zone {
+  transition: all 0.3s ease;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23CBD5E1FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+.upload-zone:hover {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23F97316FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+  background-color: #fff7ed;
+}
+.upload-zone.dragover {
+  background-color: #fff7ed;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23F97316FF' stroke-width='2' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+}
+.media-card {
+  transition: all 0.2s ease;
+}
+.media-card:hover {
+  transform: translateY(-2px);
+}
+.media-card.main-selected {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+.badge-main {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+.btn-primary-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+.btn-primary-orange:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+.toggle-switch {
+  transition: all 0.3s ease;
+}
+.toggle-switch:checked {
+  background-color: #f97316;
+  border-color: #f97316;
+}
+.preview-panel {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+.stat-row {
+  border-bottom: 1px dashed #e2e8f0;
+}
+.stat-row:last-child {
+  border-bottom: none;
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.drag-handle {
+  cursor: grab;
+}
+.drag-handle:active {
+  cursor: grabbing;
+}
+.gallery-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+.error-toast {
+  animation: slideIn 0.3s ease-out;
+}
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+/* Drag & Drop states */
+.upload-zone.dragover {
+  border-color: #f97316;
+  background-color: #fff7ed;
+}
+
+.upload-zone.dragover .fa-cloud-upload-alt {
+  color: #ea580c;
+}
+
+/* Form inputs focus */
+.form-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  outline: none;
+}
+
+/* Toggle switch */
+.toggle-switch:checked + div {
+  background-color: #f97316;
+}
+
+/* Media cards hover */
+.media-card {
+  transition: all 0.2s ease;
+}
+
+.media-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Gallery item actions */
+.gallery-item .absolute {
+  transition: opacity 0.2s ease;
+}
+
+/* Fade-in animation */
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered delays */
+.fade-in:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.fade-in:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.fade-in:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.fade-in:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.fade-in:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.fade-in:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+/* Button primary orange */
+.btn-primary-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.btn-primary-orange:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .sticky {
+    position: static;
+  }
+}

@@ -1,3 +1,4 @@
+import { DecimalPipe, NgFor } from '@angular/common';
 import { HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -23,18 +24,18 @@ import { ProductService } from '../service/product.service';
 @Component({
   selector: 'jhi-product',
   templateUrl: './product.html',
+  styleUrls: ['./product.scss'],
   imports: [
     RouterLink,
     FormsModule,
     FontAwesomeModule,
     AlertError,
     Alert,
-    SortDirective,
-    SortByDirective,
     TranslateDirective,
     TranslateModule,
     NgbPagination,
     ItemCount,
+    DecimalPipe,
   ],
 })
 export class Product implements OnInit {
@@ -47,41 +48,85 @@ export class Product implements OnInit {
   readonly totalItems = signal(0);
   readonly page = signal(1);
 
+  // 🔹 Filtres (requis par le template)
+  searchTerm = '';
+  selectedCategory = '';
+  stockFilter = 'all';
+
   readonly router = inject(Router);
   protected readonly productService = inject(ProductService);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly isLoading = this.productService.productsResource.isLoading;
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
 
+  // Dans ngOnInit(), juste après le subscribe
+  ngOnInit(): void {
+    console.log('🚀 Product component initializing...');
+
+    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
+      .pipe(
+        tap(([params, data]) => {
+          console.log('📦 Route params:', params);
+          console.log('📦 Route data:', data);
+          this.fillComponentAttributeFromRoute(params, data);
+        }),
+        tap(() => {
+          console.log('🔄 Calling load()...');
+          this.load();
+        }),
+      )
+      .subscribe({
+        next: () => console.log('✅ Subscription successful'),
+        error: err => console.error('❌ Subscription error:', err),
+      });
+  }
+
+  // Dans le constructor, après les effects
   constructor() {
+    console.log('🔧 Product constructor called');
+
     effect(() => {
       const headers = this.productService.productsResource.headers();
       if (headers) {
+        console.log('📬 Headers received:', headers.get('X-Total-Count'));
         this.fillComponentAttributesFromResponseHeader(headers);
       }
     });
+
     effect(() => {
-      this.products.set(this.fillComponentAttributesFromResponseBody([...this.productService.products()]));
+      const products = this.productService.products();
+      console.log('📦 Products signal updated:', products.length, 'items');
+      this.products.set(this.fillComponentAttributesFromResponseBody([...products]));
     });
   }
+  // 🔹 Computed values pour les stats cards
+  totalStockValue = (): number => {
+    return this.products().reduce((sum, p) => sum + (p.price ?? 0) * (p.stock ?? 0), 0);
+  };
+
+  lowStockCount = (): number => {
+    return this.products().filter(p => (p.stock ?? 0) <= (p.lowStockThreshold ?? 5)).length;
+  };
+
+  categoriesList = (): string[] => {
+    const categories = new Set(
+      this.products()
+        .map(p => p.category)
+        .filter(c => c) as string[],
+    );
+    return Array.from(categories);
+  };
+
+  categoriesCount = (): number => {
+    return this.categoriesList().length;
+  };
 
   trackId = (item: IProduct): number => this.productService.getProductIdentifier(item);
-
-  ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
 
   delete(product: IProduct): void {
     const modalRef = this.modalService.open(ProductDeleteDialog, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.product = product;
-    // unsubscribe not needed because closed completes on modal close
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
@@ -106,6 +151,11 @@ export class Product implements OnInit {
     const page = params.get(PAGE_HEADER);
     this.page.set(+(page ?? 1));
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
+
+    // 🔹 Restaurer les filtres depuis l'URL
+    this.searchTerm = params.get('search') ?? '';
+    this.selectedCategory = params.get('category') ?? '';
+    this.stockFilter = params.get('stockFilter') ?? 'all';
   }
 
   protected fillComponentAttributesFromResponseBody(data: IProduct[]): IProduct[] {
@@ -123,19 +173,94 @@ export class Product implements OnInit {
       size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(this.sortState()),
     };
+
+    // 🔹 Ajout des filtres
+    if (this.searchTerm) {
+      queryObject.search = this.searchTerm;
+    }
+    if (this.selectedCategory) {
+      queryObject.category = this.selectedCategory;
+    }
+    if (this.stockFilter !== 'all') {
+      queryObject.stockFilter = this.stockFilter;
+    }
+
     this.productService.productsParams.set(queryObject);
   }
 
   protected handleNavigation(page: number, sortState: SortState): void {
-    const queryParamsObj = {
+    const queryParamsObj: any = {
       page,
       size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(sortState),
     };
 
+    // 🔹 Conserver les filtres dans l'URL
+    if (this.searchTerm) {
+      queryParamsObj.search = this.searchTerm;
+    }
+    if (this.selectedCategory) {
+      queryParamsObj.category = this.selectedCategory;
+    }
+    if (this.stockFilter !== 'all') {
+      queryParamsObj.stockFilter = this.stockFilter;
+    }
+
     this.router.navigate(['./'], {
       relativeTo: this.activatedRoute,
       queryParams: queryParamsObj,
     });
+  }
+
+  // 🔹 Méthodes de filtrage (requis par le template)
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
+    this.page.set(1);
+    this.load();
+  }
+
+  onCategoryChange(value: string): void {
+    this.selectedCategory = value;
+    this.page.set(1);
+    this.load();
+  }
+
+  onStockFilterChange(value: string): void {
+    this.stockFilter = value;
+    this.page.set(1);
+    this.load();
+  }
+
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.selectedCategory = '';
+    this.stockFilter = 'all';
+    this.page.set(1);
+    this.load();
+  }
+
+  // 🔹 Méthode d'export CSV (requis par le template)
+  exportCSV(): void {
+    this.productService.exportCSV().subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `products_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: err => {
+        console.error("Erreur lors de l'export CSV:", err);
+      },
+    });
+  }
+
+  // 🔹 Méthode de tri des colonnes (requis par le template)
+  sort(predicate: string): void {
+    const currentOrder = this.sortState().order;
+    const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+    this.sortState.set({ predicate, order: newOrder });
+    this.navigateToWithComponentValues(this.sortState());
   }
 }

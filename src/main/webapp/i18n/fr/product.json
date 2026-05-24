@@ -2,36 +2,73 @@
   "samabutikApp": {
     "product": {
       "home": {
-        "title": "Products",
-        "refreshListLabel": "Actualiser la liste",
-        "createLabel": "Créer un nouveau Product",
-        "createOrEditLabel": "Créer ou éditer un Product",
-        "notFound": "Aucun Product trouvé"
+        "title": "Gestion des Produits",
+        "subtitle": "Gérez votre inventaire, les prix et les catégories de produits.",
+        "refreshListLabel": "Actualiser",
+        "createLabel": "Nouveau produit",
+        "createOrEditLabel": "Créer ou modifier un produit",
+        "notFound": "Aucun produit trouvé",
+        "exportCSV": "Exporter CSV"
       },
-      "created": "Un nouveau Product a été créé avec l'identifiant {{ param }}",
-      "updated": "Le Product avec l'identifiant {{ param }} a été mis à jour",
-      "deleted": "Le Product avec l'identifiant {{ param }} a été supprimé",
-      "delete": {
-        "question": "Êtes-vous certain de vouloir supprimer le Product {{ id }} ?"
+      "stats": {
+        "totalProducts": "Total Produits",
+        "stockValue": "Valeur de Stock",
+        "lowStock": "Stock Faible",
+        "categories": "Catégories Actives"
+      },
+      "search": {
+        "placeholder": "Rechercher par nom ou SKU..."
+      },
+      "filter": {
+        "allCategories": "Toutes catégories",
+        "allStock": "Tous les stocks",
+        "inStock": "En stock",
+        "lowStock": "Stock faible",
+        "outOfStock": "Rupture",
+        "reset": "Réinitialiser"
+      },
+      "table": {
+        "image": "Image",
+        "name": "Nom",
+        "sku": "SKU",
+        "price": "Prix (XOF)",
+        "stock": "Stock",
+        "category": "Catégorie",
+        "actions": "Actions"
+      },
+      "stock": {
+        "in": "en stock",
+        "low": "en stock (faible)",
+        "out": "Rupture"
       },
       "detail": {
-        "title": "Product"
+        "title": "Détails du produit"
+      },
+      "update": {
+        "title": "Éditer le produit"
+      },
+      "delete": {
+        "title": "Supprimer le produit",
+        "question": "Êtes-vous certain de vouloir supprimer le produit \"{{ name }}\" ?"
       },
       "id": "ID",
-      "sku": "Sku",
-      "name": "Name",
+      "sku": "SKU",
+      "name": "Nom",
       "description": "Description",
-      "price": "Price",
-      "costPrice": "Cost Price",
-      "currency": "Currency",
-      "stock": "Stock",
-      "lowStockThreshold": "Low Stock Threshold",
-      "category": "Category",
-      "isActive": "Is Active",
-      "mainMedia": "Main Media",
-      "stockMovements": "Stock Movements",
-      "gallery": "Gallery",
-      "orderItem": "Order Item"
+      "price": "Prix",
+      "costPrice": "Prix d'achat",
+      "currency": "Devise",
+      "stockQuantity": "Quantité en stock",
+      "lowStockThreshold": "Seuil d'alerte stock",
+      "category": "Catégorie",
+      "isActive": "Actif",
+      "mainMedia": "Image principale",
+      "stockMovements": "Mouvements de stock",
+      "gallery": "Galerie",
+      "orderItem": "Ligne de commande",
+      "created": "Le produit a été créé avec succès",
+      "updated": "Le produit a été mis à jour avec succès",
+      "deleted": "Le produit a été supprimé avec succès"
     }
   }
 }
