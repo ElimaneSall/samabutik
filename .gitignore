@@ -152,4 +152,4 @@ Desktop.ini
 coverage/
 .nyc_output/
 
-./medias/*
+/medias/
