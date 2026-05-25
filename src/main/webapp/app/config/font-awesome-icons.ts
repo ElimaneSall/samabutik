@@ -70,6 +70,20 @@ import {
   // États & Feedback
   faSpinner, // Loading state
   faGripVertical, // Handle drag & drop gallery (optionnel)
+  faChevronRight,
+  faChevronLeft,
+  faArrowDown,
+  faArrowRight,
+  faCopy,
+  faBolt,
+  faLayerGroup,
+  faPercent,
+  faCircleCheck,
+  faHouse,
+  faTag,
+  faBoxes,
+  faPlusCircle,
+  faMinus,
 
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
@@ -146,6 +160,20 @@ export const fontAwesomeIcons = [
   // États & Feedback
   faSpinner,
   faGripVertical, // Optionnel : pour drag & drop gallery
+  faChevronRight,
+  faChevronLeft,
+  faArrowDown,
+  faArrowRight,
+  faCopy,
+  faBolt,
+  faLayerGroup,
+  faPercent,
+  faCircleCheck,
+  faHouse,
+  faTag,
+  faBoxes,
+  faPlusCircle,
+  faMinus,
 
   // jhipster-needle-add-icon-import
 ];

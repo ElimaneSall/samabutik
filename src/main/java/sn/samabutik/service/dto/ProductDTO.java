@@ -3,7 +3,10 @@ package sn.samabutik.service.dto;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A DTO for the {@link sn.samabutik.domain.Product} entity.
@@ -47,6 +50,8 @@ public class ProductDTO implements Serializable {
     private Boolean isActive;
 
     private MediaDTO mainMedia;
+
+    private Set<MediaDTO> gallery = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -182,5 +187,13 @@ public class ProductDTO implements Serializable {
             ", isActive='" + getIsActive() + "'" +
             ", mainMedia=" + getMainMedia() +
             "}";
+    }
+
+    public Set<MediaDTO> getGallery() {
+        return gallery;
+    }
+
+    public void setGallery(Set<MediaDTO> gallery) {
+        this.gallery = gallery;
     }
 }

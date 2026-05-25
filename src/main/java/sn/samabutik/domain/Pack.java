@@ -69,6 +69,10 @@ public class Pack implements Serializable {
     @JsonIgnoreProperties(value = { "productMain", "packMain", "productGallery", "packGallery" }, allowSetters = true)
     private Set<Media> galleries = new HashSet<>();
 
+    @OneToMany(mappedBy = "pack", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties(value = "pack", allowSetters = true)
+    private Set<PackItem> packItems = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -232,6 +236,16 @@ public class Pack implements Serializable {
         return this;
     }
 
+    public void addPackItem(PackItem item) {
+        this.packItems.add(item);
+        item.setPack(this);
+    }
+
+    public void removePackItem(PackItem item) {
+        this.packItems.remove(item);
+        item.setPack(null);
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -265,5 +279,13 @@ public class Pack implements Serializable {
             ", isActive='" + getIsActive() + "'" +
             ", displayOnHomepage='" + getDisplayOnHomepage() + "'" +
             "}";
+    }
+
+    public Set<PackItem> getPackItems() {
+        return packItems;
+    }
+
+    public void setPackItems(Set<PackItem> packItems) {
+        this.packItems = packItems;
     }
 }

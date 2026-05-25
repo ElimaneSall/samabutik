@@ -3,10 +3,33 @@
     "pack": {
       "home": {
         "title": "Packs",
+        "subtitle": "Gérez vos packs de produits et vos offres",
         "refreshListLabel": "Actualiser la liste",
         "createLabel": "Créer un nouveau Pack",
         "createOrEditLabel": "Créer ou éditer un Pack",
-        "notFound": "Aucun Pack trouvé"
+        "notFound": "Aucun Pack trouvé",
+        "exportCSV": "Exporter en CSV"
+      },
+      "stats": {
+        "totalPacks": "Total des packs",
+        "totalDiscount": "Total des réductions",
+        "activePacks": "Packs actifs",
+        "homepage": "En page d'accueil"
+      },
+      "filter": {
+        "allTypes": "Tous les types",
+        "allStatus": "Tous les statuts",
+        "reset": "Réinitialiser"
+      },
+      "table": {
+        "name": "Nom",
+        "description": "Description",
+        "discountType": "Type de réduction",
+        "discountValue": "Valeur",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "status": "Statut",
+        "actions": "Actions"
       },
       "created": "Un nouveau Pack a été créé avec l'identifiant {{ param }}",
       "updated": "Le Pack avec l'identifiant {{ param }} a été mis à jour",
@@ -17,17 +40,21 @@
       "detail": {
         "title": "Pack"
       },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
       "id": "ID",
-      "name": "Name",
+      "name": "Nom",
       "description": "Description",
-      "discountType": "Discount Type",
-      "discountValue": "Discount Value",
-      "startDate": "Start Date",
-      "endDate": "End Date",
-      "isActive": "Is Active",
-      "displayOnHomepage": "Display On Homepage",
-      "mainMedia": "Main Media",
-      "gallery": "Gallery"
+      "discountType": "Type de réduction",
+      "discountValue": "Valeur de la réduction",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "isActive": "Est actif",
+      "displayOnHomepage": "Afficher sur l'accueil",
+      "mainMedia": "Média principal",
+      "gallery": "Galerie"
     }
   }
 }

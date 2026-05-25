@@ -8,7 +8,8 @@ import { ApplicationConfigService } from 'app/core/config/application-config.ser
 import { createRequestOption } from 'app/core/request/request-util';
 import { isPresent } from 'app/core/util/operators';
 import { IPack, NewPack } from '../pack.model';
-
+import { IProduct } from '../../product/product.model';
+import { HttpHeaders } from '@angular/common/http';
 export type PartialUpdatePack = Partial<IPack> & Pick<IPack, 'id'>;
 
 type RestOf<T extends IPack | NewPack> = Omit<T, 'startDate' | 'endDate'> & {
@@ -131,5 +132,20 @@ export class PackService extends PacksService {
 
   protected convertResponseArrayFromServer(res: RestPack[]): IPack[] {
     return res.map(item => this.convertValueFromServer(item));
+  }
+
+  createWithMedia(formData: FormData): Observable<IPack> {
+    // Important: Ne pas définir Content-Type, laissez le navigateur le définir avec la boundary
+    return this.http.post<RestPack>(this.resourceUrl, formData).pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  updateWithMedia(id: number, formData: FormData): Observable<IPack> {
+    return this.http.put<RestPack>(`${this.resourceUrl}/${id}`, formData).pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  exportCSV(): Observable<Blob> {
+    return this.http.get(`${this.resourceUrl}/export`, {
+      responseType: 'blob',
+    });
   }
 }

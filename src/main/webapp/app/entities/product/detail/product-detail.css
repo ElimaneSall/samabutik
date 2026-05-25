@@ -1,0 +1,260 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.product-image-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+.badge-discount {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+.btn-primary-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+.btn-primary-orange:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+.btn-buy-now {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+.btn-buy-now:hover {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+}
+.info-row {
+  transition: background-color 0.2s ease;
+}
+.info-row:hover {
+  background-color: #f8fafc;
+}
+.gallery-thumb {
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+.gallery-thumb:hover,
+.gallery-thumb.active {
+  border-color: #f97316;
+  transform: scale(1.05);
+}
+.tab-btn {
+  position: relative;
+  transition: all 0.2s ease;
+}
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #f97316;
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.recommendation-card {
+  transition: all 0.3s ease;
+}
+.recommendation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+.stock-badge {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+.low-stock-badge {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+@media (max-width: 768px) {
+  .mobile-full {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+}
+
+/* ==============================================================
+   Product Detail - Carousel & Layout Styles
+   ============================================================== */
+
+/* Hide scrollbar for thumbnails */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Product image container */
+.product-image-container {
+  position: relative;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.product-image-container img {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+/* Thumbnail buttons */
+.thumbnail-btn {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumbnail-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.2s ease;
+  border-radius: inherit;
+}
+
+.thumbnail-btn:hover::after {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.thumbnail-btn:hover img {
+  transform: scale(1.05);
+}
+
+/* Active thumbnail glow effect */
+.thumbnail-btn.border-orange-500 {
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+}
+
+/* Badge discount */
+.badge-discount {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Stock badges */
+.stock-badge {
+  transition: all 0.2s ease;
+}
+
+/* Info rows hover */
+.info-row {
+  transition: background-color 0.2s ease;
+}
+
+.info-row:hover {
+  background-color: #f8fafc;
+}
+
+/* Primary orange button */
+.btn-primary-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.btn-primary-orange:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+}
+
+.btn-primary-orange:active {
+  transform: translateY(1px);
+}
+
+/* Buy now button */
+.btn-buy-now {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.btn-buy-now:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+/* Recommendation cards */
+.recommendation-card {
+  transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile touch swipe area */
+@media (max-width: 1023px) {
+  .product-image-container {
+    touch-action: pan-y;
+  }
+}
+
+/* Thumbnail scroll snap for mobile */
+.snap-x {
+  scroll-snap-type: x mandatory;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* Dot indicators animation */
+.dot-indicator {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Image loading states */
+.img-loading {
+  opacity: 0;
+}
+
+.img-loaded {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .product-image-container {
+    border-radius: 1rem;
+  }
+
+  .thumbnail-btn {
+    border-radius: 0.5rem;
+  }
+}

@@ -102,4 +102,8 @@ export class ProductService extends ProductsService {
       responseType: 'blob',
     });
   }
+
+  updateWithMedia(id: number, formData: FormData): Observable<IProduct> {
+    return this.http.put<IProduct>(`${this.resourceUrl}/${encodeURIComponent(id)}`, formData);
+  }
 }

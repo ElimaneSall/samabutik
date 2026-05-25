@@ -1,174 +1,341 @@
-<div>
-  <h2 id="page-heading" data-cy="PackHeading">
-    <span jhiTranslate="samabutikApp.pack.home.title">Packs</span>
-
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
-        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
-        <span jhiTranslate="samabutikApp.pack.home.refreshListLabel">Actualiser la liste</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-pack"
-        [routerLink]="['/pack/new']"
-      >
-        <fa-icon icon="plus" />
-        <span jhiTranslate="samabutikApp.pack.home.createLabel">Créer un nouveau Pack</span>
-      </button>
+<div class="bg-slate-50 min-h-screen font-sans">
+  <!-- Main Container -->
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4 fade-in">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <span jhiTranslate="samabutikApp.pack.home.title">Gestion des Packs</span>
+        </h1>
+        <p class="text-slate-500 mt-1 text-sm" jhiTranslate="samabutikApp.pack.home.subtitle">
+          Créez et gérez vos packs promotionnels avec réductions.
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <button
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-medium text-sm hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+          (click)="exportCSV()"
+          [disabled]="isLoading()"
+        >
+          <fa-icon icon="download" class="text-slate-400" />
+          <span jhiTranslate="samabutikApp.pack.home.exportCSV">Exporter CSV</span>
+        </button>
+        <button
+          id="jh-create-entity"
+          data-cy="entityCreateButton"
+          class="btn-primary-orange inline-flex items-center gap-2 px-5 py-2.5 text-white font-medium text-sm rounded-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40 transition-all"
+          [routerLink]="['/pack/new']"
+        >
+          <fa-icon icon="plus" />
+          <span jhiTranslate="samabutikApp.pack.home.createLabel">Nouveau pack</span>
+        </button>
+      </div>
     </div>
-  </h2>
 
-  <jhi-alert-error />
+    <!-- Alerts -->
+    <jhi-alert-error />
+    <jhi-alert />
 
-  <jhi-alert />
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 fade-in" style="animation-delay: 0.1s">
+      <!-- Total Packs -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.pack.stats.totalPacks"
+            >Total Packs</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+            <fa-icon icon="layer-group" class="text-purple-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-900">{{ totalItems() }}</span>
+        </div>
+      </div>
 
-  @if (packs().length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span jhiTranslate="samabutikApp.pack.home.notFound">Aucun Pack trouvé</span>
+      <!-- Valeur Totale Réductions -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.pack.stats.totalDiscount"
+            >Valeur Réductions</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+            <fa-icon icon="percent" class="text-emerald-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-900">{{ totalDiscountValue() | number }}</span>
+          <span class="text-xs text-slate-500">unité(s)</span>
+        </div>
+      </div>
+
+      <!-- Packs Actifs -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.pack.stats.activePacks"
+            >Packs Actifs</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+            <fa-icon icon="circle-check" class="text-blue-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-emerald-600">{{ activePacksCount() }}</span>
+          <span class="text-xs text-slate-500">actifs</span>
+        </div>
+      </div>
+
+      <!-- Affichage Homepage -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.pack.stats.homepage"
+            >Homepage</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+            <fa-icon icon="house" class="text-amber-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-900">{{ homepagePacksCount() }}</span>
+          <span class="text-xs text-slate-500">affichés</span>
+        </div>
+      </div>
     </div>
-  } @else {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span jhiTranslate="global.field.id">ID</span>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="name">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.name">Name</span>
+    <!-- Filters & Search Bar -->
+    <div class="bg-white rounded-xl border border-slate-200 p-4 mb-6 shadow-sm fade-in" style="animation-delay: 0.2s">
+      <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
+        <!-- Search -->
+        <div class="relative flex-1">
+          <fa-icon icon="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            [placeholder]="'samabutikApp.pack.search.placeholder' | translate"
+            class="search-input w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none focus:border-orange-300 focus:ring-1 focus:ring-orange-200 transition-all"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange($event)"
+          />
+        </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="description">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.description">Description</span>
+        <!-- Discount Type Filter -->
+        <div class="relative min-w-[180px]">
+          <select
+            class="custom-select w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none appearance-none cursor-pointer focus:border-orange-300 focus:ring-1 focus:ring-orange-200 transition-all"
+            [(ngModel)]="selectedDiscountType"
+            (ngModelChange)="onDiscountTypeChange($event)"
+          >
+            <option value="">{{ 'samabutikApp.pack.filter.allTypes' | translate }}</option>
+            @for (type of discountTypesList(); track type) {
+              <option [value]="type">{{ getDiscountLabel($any(type)) }}</option>
+            }
+          </select>
+          <fa-icon icon="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs" />
+        </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="discountType">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.discountType">Discount Type</span>
+        <!-- Active Status Filter -->
+        <div class="relative min-w-[160px]">
+          <select
+            class="custom-select w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none appearance-none cursor-pointer focus:border-orange-300 focus:ring-1 focus:ring-orange-200 transition-all"
+            [(ngModel)]="activeFilter"
+            (ngModelChange)="onActiveFilterChange($event)"
+          >
+            <option value="all">{{ 'samabutikApp.pack.filter.allStatus' | translate }}</option>
+            <option value="active">{{ 'samabutikApp.pack.filter.active' | translate }}</option>
+            <option value="inactive">{{ 'samabutikApp.pack.filter.inactive' | translate }}</option>
+          </select>
+          <fa-icon icon="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs" />
+        </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="discountValue">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.discountValue">Discount Value</span>
+        <!-- Reset Button -->
+        <button
+          class="px-4 py-2.5 text-orange-500 font-medium text-sm hover:bg-orange-50 rounded-lg transition-colors whitespace-nowrap"
+          (click)="resetFilters()"
+        >
+          <fa-icon icon="undo-alt" class="mr-1.5" />
+          <span jhiTranslate="samabutikApp.pack.filter.reset">Réinitialiser</span>
+        </button>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="startDate">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.startDate">Start Date</span>
+        <!-- Refresh Button -->
+        <button
+          class="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-medium text-sm hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm whitespace-nowrap flex items-center gap-2"
+          (click)="load()"
+          [disabled]="isLoading()"
+        >
+          <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+          <span jhiTranslate="samabutikApp.pack.home.refreshListLabel">Actualiser</span>
+        </button>
+      </div>
+    </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="endDate">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.endDate">End Date</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="isActive">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.isActive">Is Active</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="displayOnHomepage">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.displayOnHomepage">Display On Homepage</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="mainMedia.id">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.pack.mainMedia">Main Media</span>
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (pack of packs(); track trackId(pack)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/pack', pack.id, 'view']">{{ pack.id }}</a>
-              </td>
-              <td>{{ pack.name }}</td>
-              <td>{{ pack.description }}</td>
-              <td [jhiTranslate]="'samabutikApp.DiscountType.' + (pack.discountType ?? 'null')">
-                {{ { null: '', PERCENT: 'PERCENT', FIXED: 'FIXED' }[pack.discountType ?? 'null'] }}
-              </td>
-              <td>{{ pack.discountValue }}</td>
-              <td>{{ pack.startDate | formatMediumDatetime }}</td>
-              <td>{{ pack.endDate | formatMediumDatetime }}</td>
-              <td>{{ pack.isActive }}</td>
-              <td>{{ pack.displayOnHomepage }}</td>
-              <td>
-                @if (pack.mainMedia) {
-                  <div>
-                    <a [routerLink]="['/media', pack.mainMedia.id, 'view']">{{ pack.mainMedia.id }}</a>
-                  </div>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/pack', pack.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye" />
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">Voir</span>
-                  </a>
-
-                  <a [routerLink]="['/pack', pack.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt" />
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Editer</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(pack)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times" />
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Supprimer</span>
-                  </button>
+    <!-- Packs Table -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in" style="animation-delay: 0.3s">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('id')">
+                  <span jhiTranslate="samabutikApp.pack.id">id</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
                 </div>
-              </td>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('name')">
+                  <span jhiTranslate="samabutikApp.pack.table.name">Nom</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span jhiTranslate="samabutikApp.pack.table.description">Description</span>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('discountType')">
+                  <span jhiTranslate="samabutikApp.pack.table.discountType">Type</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('discountValue')">
+                  <span jhiTranslate="samabutikApp.pack.table.discountValue">Valeur</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('startDate')">
+                  <span jhiTranslate="samabutikApp.pack.table.startDate">Début</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('endDate')">
+                  <span jhiTranslate="samabutikApp.pack.table.endDate">Fin</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span jhiTranslate="samabutikApp.pack.table.status">Statut</span>
+              </th>
+              <th class="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <span jhiTranslate="samabutikApp.pack.table.actions">Actions</span>
+              </th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-  @if (packs().length > 0) {
-    <div>
-      <div class="d-flex justify-content-center">
-        <jhi-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (pack of packs(); track trackId(pack)) {
+              <tr class="pack-row hover:bg-slate-50 transition-colors" data-cy="entityTable">
+                <td class="px-6 py-4">
+                  <a
+                    class="text-sm font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded underline"
+                    [routerLink]="['/pack', pack.id, 'view']"
+                    >{{ pack.id }}</a
+                  >
+                </td>
+                <td class="px-6 py-4">
+                  <span class="text-sm font-semibold text-slate-900">{{ pack.name }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="text-sm text-slate-600 line-clamp-2">{{ pack.description || '-' }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  @if (pack.discountType) {
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                      {{ getDiscountLabel(pack.discountType) }}
+                    </span>
+                  } @else {
+                    <span class="text-sm text-slate-400">-</span>
+                  }
+                </td>
+                <td class="px-6 py-4">
+                  @if (pack.discountValue) {
+                    <span class="text-sm font-semibold text-slate-900">
+                      {{ pack.discountValue }}{{ pack.discountType === 'PERCENT' ? '%' : ' FCFA' }}
+                    </span>
+                  } @else {
+                    <span class="text-sm text-slate-400">-</span>
+                  }
+                </td>
+                <td class="px-6 py-4">
+                  <span class="text-sm text-slate-600">{{ formatDate(pack.startDate) }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="text-sm text-slate-600">{{ formatDate(pack.endDate) }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  @if (pack.isActive) {
+                    <span
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span jhiTranslate="samabutikApp.pack.status.active">Actif</span>
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-500">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                      <span jhiTranslate="samabutikApp.pack.status.inactive">Inactif</span>
+                    </span>
+                  }
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center justify-end gap-1">
+                    <a
+                      [routerLink]="['/pack', pack.id, 'view']"
+                      class="action-btn w-8 h-8 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-400 hover:text-blue-500 flex items-center justify-center transition-all"
+                      [title]="'entity.action.view' | translate"
+                    >
+                      <fa-icon icon="eye" class="text-xs" />
+                    </a>
+                    <a
+                      [routerLink]="['/pack', pack.id, 'edit']"
+                      class="action-btn w-8 h-8 rounded-lg bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-500 flex items-center justify-center transition-all"
+                      [title]="'entity.action.edit' | translate"
+                    >
+                      <fa-icon icon="pencil-alt" class="text-xs" />
+                    </a>
+                    <button
+                      (click)="delete(pack)"
+                      class="action-btn w-8 h-8 rounded-lg bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 flex items-center justify-center transition-all"
+                      [title]="'entity.action.delete' | translate"
+                    >
+                      <fa-icon icon="times" class="text-xs" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="px-6 py-12 text-center">
+                  <div class="flex flex-col items-center gap-2 text-slate-400">
+                    <fa-icon icon="layer-group" size="3x" />
+                    <span jhiTranslate="samabutikApp.pack.home.notFound">Aucun pack trouvé</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
 
-      <div class="d-flex justify-content-center">
-        <ngb-pagination
-          [collectionSize]="totalItems()"
-          [page]="page()"
-          [pageSize]="itemsPerPage()"
-          [maxSize]="5"
-          [rotate]="true"
-          [boundaryLinks]="true"
-          (pageChange)="navigateToPage($event)"
-        />
-      </div>
+      <!-- Pagination -->
+      @if (packs().length > 0) {
+        <div class="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <jhi-item-count
+            [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }"
+            class="text-sm text-slate-500"
+          />
+          <div class="flex items-center gap-1">
+            <ngb-pagination
+              [collectionSize]="totalItems()"
+              [page]="page()"
+              [pageSize]="itemsPerPage()"
+              [maxSize]="5"
+              [rotate]="true"
+              [boundaryLinks]="true"
+              (pageChange)="navigateToPage($event)"
+              [disabled]="isLoading()"
+            />
+          </div>
+        </div>
+      }
     </div>
-  }
+  </div>
 </div>

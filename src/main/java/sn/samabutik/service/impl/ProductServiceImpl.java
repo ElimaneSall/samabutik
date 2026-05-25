@@ -91,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public Optional<ProductDTO> findOne(Long id) {
         LOG.debug("Request to get Product : {}", id);
-        return productRepository.findById(id).map(productMapper::toDto);
+        return productRepository.findByIdWithMedia(id).map(productMapper::toDto);
     }
 
     @Override

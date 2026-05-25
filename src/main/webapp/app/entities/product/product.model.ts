@@ -12,7 +12,7 @@ export interface IProduct {
   lowStockThreshold?: number | null;
   category?: string | null;
   isActive?: boolean | null;
-  mainMedia?: Pick<IMedia, 'id' | 'url'> | null;
+  mainMedia?: Pick<IMedia, 'id' | 'url' | 'type' | 'sizeBytes'> | null;
   gallery?: Pick<IMedia, 'id' | 'url'>[];
 }
 

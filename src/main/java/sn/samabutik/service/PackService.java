@@ -3,7 +3,11 @@ package sn.samabutik.service;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import sn.samabutik.domain.Pack;
+import sn.samabutik.domain.Product;
 import sn.samabutik.service.dto.PackDTO;
+import sn.samabutik.service.dto.ProductDTO;
 
 /**
  * Service Interface for managing {@link sn.samabutik.domain.Pack}.
@@ -39,7 +43,7 @@ public interface PackService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<PackDTO> findAll(Pageable pageable);
+    Page<PackDTO> findAll(Specification<Pack> spec, Pageable pageable);
 
     /**
      * Get the "id" pack.

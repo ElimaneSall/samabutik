@@ -3,10 +3,33 @@
     "pack": {
       "home": {
         "title": "Packs",
+        "subtitle": "Manage your product packs and offers",
         "refreshListLabel": "Refresh list",
         "createLabel": "Create a new Pack",
         "createOrEditLabel": "Create or edit a Pack",
-        "notFound": "No Packs found"
+        "notFound": "No Packs found",
+        "exportCSV": "Export to CSV"
+      },
+      "stats": {
+        "totalPacks": "Total Packs",
+        "totalDiscount": "Total Discounts",
+        "activePacks": "Active Packs",
+        "homepage": "On Homepage"
+      },
+      "filter": {
+        "allTypes": "All types",
+        "allStatus": "All statuses",
+        "reset": "Reset"
+      },
+      "table": {
+        "name": "Name",
+        "description": "Description",
+        "discountType": "Discount Type",
+        "discountValue": "Value",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "status": "Status",
+        "actions": "Actions"
       },
       "created": "A new Pack is created with identifier {{ param }}",
       "updated": "A Pack is updated with identifier {{ param }}",
@@ -16,6 +39,10 @@
       },
       "detail": {
         "title": "Pack"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
       },
       "id": "ID",
       "name": "Name",

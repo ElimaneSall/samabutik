@@ -1,5 +1,6 @@
 package sn.samabutik.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -18,6 +19,7 @@ public class PackItemDTO implements Serializable {
 
     private PackDTO pack;
 
+    @JsonIgnoreProperties(value = { "packItems", "galleries", "mainMedia" }, allowGetters = true)
     private ProductDTO product;
 
     public Long getId() {

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sn.samabutik.domain.Pack;
@@ -64,16 +65,22 @@ public class PackServiceImpl implements PackService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PackDTO> findAll(Pageable pageable) {
+    public Page<PackDTO> findAll(Specification<Pack> specification, Pageable pageable) {
         LOG.debug("Request to get all Packs");
-        return packRepository.findAll(pageable).map(packMapper::toDto);
+        return packRepository.findAll(specification, pageable).map(packMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<PackDTO> findOne(Long id) {
         LOG.debug("Request to get Pack : {}", id);
-        return packRepository.findById(id).map(packMapper::toDto);
+        return packRepository
+            .findByIdWithMediaAndItems(id)
+            .map(pack -> {
+                PackDTO dto = packMapper.toDto(pack);
+                LOG.debug("Pack items count: {}", dto.getPackItems().size());
+                return dto;
+            });
     }
 
     @Override

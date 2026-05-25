@@ -1,10 +1,16 @@
 package sn.samabutik.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import sn.samabutik.domain.enumeration.DiscountType;
 
 /**
@@ -40,6 +46,8 @@ public class PackDTO implements Serializable {
     private Boolean displayOnHomepage;
 
     private MediaDTO mainMedia;
+    private Set<MediaDTO> galleries = new HashSet<>();
+    private Set<PackItemDTO> packItems = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -157,5 +165,31 @@ public class PackDTO implements Serializable {
             ", displayOnHomepage='" + getDisplayOnHomepage() + "'" +
             ", mainMedia=" + getMainMedia() +
             "}";
+    }
+
+    public Set<MediaDTO> getGalleries() {
+        return galleries;
+    }
+
+    public void setGalleries(Set<MediaDTO> galleries) {
+        this.galleries = galleries;
+    }
+
+    public Set<PackItemDTO> getPackItems() {
+        return packItems;
+    }
+
+    public void setPackItems(Set<PackItemDTO> packItems) {
+        this.packItems = packItems;
+    }
+
+    public void addPackItem(PackItemDTO item) {
+        this.packItems.add(item);
+        item.setPack(this);
+    }
+
+    public void removePackItem(PackItemDTO item) {
+        this.packItems.remove(item);
+        item.setPack(null);
     }
 }

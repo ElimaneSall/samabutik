@@ -69,7 +69,7 @@ public class Product implements Serializable {
     private Boolean isActive;
 
     @JsonIgnoreProperties(value = { "productMain", "packMain", "productGallery", "packGallery" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(unique = true)
     private Media mainMedia;
 
@@ -77,7 +77,7 @@ public class Product implements Serializable {
     @JsonIgnoreProperties(value = { "performedBy", "product" }, allowSetters = true)
     private Set<StockMovement> stockMovementses = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "productGallery")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "productGallery", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "productMain", "packMain", "productGallery", "packGallery" }, allowSetters = true)
     private Set<Media> galleries = new HashSet<>();
 

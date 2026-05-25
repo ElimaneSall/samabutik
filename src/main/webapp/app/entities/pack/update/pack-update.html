@@ -1,219 +1,577 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-pack-heading" data-cy="PackCreateUpdateHeading" jhiTranslate="samabutikApp.pack.home.createOrEditLabel">
-        Créer ou éditer un Pack
-      </h2>
-
+<div class="bg-slate-50 min-h-screen font-sans">
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="flex items-center gap-4 mb-8 fade-in">
+      <button
+        type="button"
+        class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all shadow-sm"
+        (click)="previousState()"
+      >
+        <fa-icon icon="arrow-left" />
+      </button>
       <div>
-        <jhi-alert-error />
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          {{ saveMode() === 'create' ? 'Créer un Pack Promo' : 'Modifier le Pack' }}
+        </h1>
+        <p class="text-slate-500 mt-1 text-sm">
+          {{ saveMode() === 'create' ? 'Configurez une offre groupée attractive pour vos clients.' : 'Modifiez les informations du pack.' }}
+        </p>
+      </div>
+    </div>
 
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+    @if (uploadError()) {
+      <div class="mb-6 error-toast bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 fade-in">
+        <fa-icon icon="exclamation-circle" class="text-red-500 mt-0.5" />
+        <div class="flex-1">
+          <p class="text-sm font-medium text-red-700">Erreur</p>
+          <p class="text-xs text-red-600 mt-0.5">{{ uploadError() }}</p>
+        </div>
+        <button type="button" (click)="uploadError.set(null)" class="text-red-400 hover:text-red-600">
+          <fa-icon icon="times" />
+        </button>
+      </div>
+    }
+
+    @if (qualityWarning()) {
+      <div class="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3 fade-in">
+        <fa-icon icon="exclamation-triangle" class="text-amber-500 mt-0.5" />
+        <div class="flex-1">
+          <p class="text-sm font-medium text-amber-700">Qualité du pack</p>
+          <p class="text-xs text-amber-600 mt-0.5">{{ qualityWarning() }}</p>
+        </div>
+        <button type="button" (click)="qualityWarning.set(null)" class="text-amber-400 hover:text-amber-600">
+          <fa-icon icon="times" />
+        </button>
+      </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- LEFT COLUMN: Form -->
+      <div class="lg:col-span-8 space-y-6">
+        <!-- General Info -->
+        <div class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.1s">
+          <div class="px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+                <fa-icon icon="info-circle" class="text-orange-500 text-sm" />
+              </div>
+              <h2 class="text-lg font-semibold text-slate-900">Informations générales</h2>
+            </div>
           </div>
-        }
-
-        @let nameRef = editForm.get('name')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_name" jhiTranslate="samabutikApp.pack.name">Name</label>
-          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
-          @if (nameRef.invalid && (nameRef.dirty || nameRef.touched)) {
+          <div class="p-6 space-y-5" [formGroup]="editForm">
             <div>
-              @if (editForm.get('name')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('name')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '100' }"
-                  >Ce champ doit faire au maximum 100 caractères.</small
-                >
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Nom du pack <span class="text-red-500">*</span></label>
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="Ex: Pack Essentiels Cuisine"
+                class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
+              />
+              @if (editForm.controls.name.invalid && editForm.controls.name.touched) {
+                <p class="text-xs text-red-500 mt-1">Ce champ est requis</p>
               }
             </div>
-          }
-        </div>
-
-        @let descriptionRef = editForm.get('description')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_description" jhiTranslate="samabutikApp.pack.description">Description</label>
-          <input
-            type="text"
-            class="form-control"
-            name="description"
-            id="field_description"
-            data-cy="description"
-            formControlName="description"
-          />
-          @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
             <div>
-              @if (editForm.get('description')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '2000' }"
-                  >Ce champ doit faire au maximum 2000 caractères.</small
-                >
-              }
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
+              <textarea
+                rows="4"
+                formControlName="description"
+                placeholder="Décrivez les avantages de ce pack..."
+                class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all resize-none"
+              ></textarea>
             </div>
-          }
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <div>
+                <span class="text-sm font-medium text-slate-700">Afficher en homepage</span>
+                <p class="text-xs text-slate-500 mt-0.5">Le pack sera mis en avant sur la page d'accueil.</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" formControlName="displayOnHomepage" class="sr-only peer" />
+                <div
+                  class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"
+                ></div>
+              </label>
+            </div>
+          </div>
         </div>
 
-        @let discountTypeRef = editForm.get('discountType')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_discountType" jhiTranslate="samabutikApp.pack.discountType">Discount Type</label>
-          <select class="form-control" name="discountType" formControlName="discountType" id="field_discountType" data-cy="discountType">
-            <option [ngValue]="null">{{ 'samabutikApp.DiscountType.null' | translate }}</option>
-            @for (discountType of discountTypeValues; track $index) {
-              <option [value]="discountType">{{ 'samabutikApp.DiscountType.' + discountType | translate }}</option>
+        <!-- Promotion Config -->
+        <div class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.2s">
+          <div class="px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                <fa-icon icon="tag" class="text-red-500 text-sm" />
+              </div>
+              <h2 class="text-lg font-semibold text-slate-900">Configuration de la promotion</h2>
+            </div>
+          </div>
+          <div class="p-6" [formGroup]="editForm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Date de début</label>
+                <input
+                  type="date"
+                  formControlName="startDate"
+                  class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1.5">Date de fin</label>
+                <input
+                  type="date"
+                  formControlName="endDate"
+                  class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none transition-all"
+                />
+              </div>
+            </div>
+            <div class="mt-5">
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Type de réduction</label>
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  class="px-4 py-2 rounded-lg border text-sm font-medium transition-all"
+                  [class.bg-orange-50]="editForm.controls.discountType.value === 'PERCENT'"
+                  (click)="editForm.controls.discountType.setValue('PERCENT')"
+                  [class.border-orange-300]="editForm.controls.discountType.value === 'PERCENT'"
+                  [class.text-orange-700]="editForm.controls.discountType.value === 'PERCENT'"
+                  [class.bg-white]="editForm.controls.discountType.value !== 'PERCENT'"
+                  [class.border-slate-200]="editForm.controls.discountType.value !== 'PERCENT'"
+                  [class.text-slate-600]="editForm.controls.discountType.value !== 'PERCENT'"
+                >
+                  % Pourcentage
+                </button>
+                <button
+                  type="button"
+                  class="px-4 py-2 rounded-lg border text-sm font-medium transition-all"
+                  [class.bg-orange-50]="editForm.controls.discountType.value === 'FIXED'"
+                  [class.border-orange-300]="editForm.controls.discountType.value === 'FIXED'"
+                  [class.text-orange-700]="editForm.controls.discountType.value === 'FIXED'"
+                  [class.bg-white]="editForm.controls.discountType.value !== 'FIXED'"
+                  [class.border-slate-200]="editForm.controls.discountType.value !== 'FIXED'"
+                  [class.text-slate-600]="editForm.controls.discountType.value !== 'FIXED'"
+                  (click)="editForm.controls.discountType.setValue('FIXED')"
+                >
+                  XOF Fixe
+                </button>
+              </div>
+            </div>
+            <div class="mt-5">
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Valeur de la réduction</label>
+              <div class="relative">
+                <input
+                  type="number"
+                  formControlName="discountValue"
+                  placeholder="0"
+                  class="form-input w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none transition-all"
+                />
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-medium">
+                  {{ editForm.controls.discountType.value === 'PERCENT' ? '%' : 'XOF' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Media Upload -->
+        <div class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.3s">
+          <div class="px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                  <fa-icon icon="images" class="text-violet-500 text-sm" />
+                </div>
+                <h2 class="text-lg font-semibold text-slate-900">Visuels du pack</h2>
+              </div>
+              <span class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md">JPG/PNG/WEBP &lt;2Mo • MP4 &lt;10Mo</span>
+            </div>
+          </div>
+          <div class="p-6 space-y-6">
+            <!-- Upload Zone -->
+            <div
+              class="upload-zone rounded-xl p-8 text-center cursor-pointer relative transition-all"
+              [class.dragover]="dragOver()"
+              (click)="triggerFileInput()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)"
+            >
+              <input
+                #fileInput
+                type="file"
+                class="hidden"
+                multiple
+                accept="image/jpeg,image/png,image/webp,video/mp4"
+                (change)="onFilesSelected($event)"
+              />
+              <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+                <fa-icon icon="cloud-upload-alt" class="text-orange-500 text-2xl" />
+              </div>
+              <p class="text-sm font-medium text-slate-700 mb-1">Glissez-déposez vos fichiers ici</p>
+              <p class="text-xs text-slate-400">ou <span class="text-orange-500 font-medium">cliquez pour parcourir</span></p>
+            </div>
+
+            @if (selectedGalleryFiles().length > 0 || selectedMainFile) {
+              <div class="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-violet-50 border border-violet-200 rounded-full">
+                <fa-icon icon="images" class="text-violet-500 text-xs" />
+                <span class="text-xs font-medium text-violet-700">
+                  {{ selectedGalleryFiles().length + (selectedMainFile != null ? 1 : 0) }} fichier{{
+                    selectedGalleryFiles().length >= 1 ? 's' : ''
+                  }}
+                </span>
+                <button type="button" (click)="clearAllFiles()" class="ml-1 text-violet-400 hover:text-violet-600" title="Tout supprimer">
+                  <fa-icon icon="times" class="text-[10px]" />
+                </button>
+              </div>
             }
-          </select>
-          @if (discountTypeRef.invalid && (discountTypeRef.dirty || discountTypeRef.touched)) {
-            <div>
-              @if (editForm.get('discountType')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-            </div>
-          }
-        </div>
 
-        @let discountValueRef = editForm.get('discountValue')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_discountValue" jhiTranslate="samabutikApp.pack.discountValue">Discount Value</label>
-          <input
-            type="number"
-            class="form-control"
-            name="discountValue"
-            id="field_discountValue"
-            data-cy="discountValue"
-            formControlName="discountValue"
-          />
-          @if (discountValueRef.invalid && (discountValueRef.dirty || discountValueRef.touched)) {
-            <div>
-              @if (editForm.get('discountValue')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('discountValue')?.errors?.min) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
-                  >Ce champ doit être supérieur à 0.</small
-                >
-              }
-              <small
-                class="form-text text-danger"
-                [hidden]="!editForm.get('discountValue')?.errors?.number"
-                jhiTranslate="entity.validation.number"
-                >Ce champ doit être un nombre.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let startDateRef = editForm.get('startDate')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_startDate" jhiTranslate="samabutikApp.pack.startDate">Start Date</label>
-          <div class="d-flex">
-            <input
-              id="field_startDate"
-              data-cy="startDate"
-              type="datetime-local"
-              class="form-control"
-              name="startDate"
-              formControlName="startDate"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
-          @if (startDateRef.invalid && (startDateRef.dirty || startDateRef.touched)) {
-            <div>
-              @if (editForm.get('startDate')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              <small
-                class="form-text text-danger"
-                [hidden]="!editForm.get('startDate')?.errors?.datetimelocal"
-                jhiTranslate="entity.validation.datetimelocal"
-                >Ce champ doit être une date et une heure.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let endDateRef = editForm.get('endDate')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_endDate" jhiTranslate="samabutikApp.pack.endDate">End Date</label>
-          <div class="d-flex">
-            <input
-              id="field_endDate"
-              data-cy="endDate"
-              type="datetime-local"
-              class="form-control"
-              name="endDate"
-              formControlName="endDate"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
-          @if (endDateRef.invalid && (endDateRef.dirty || endDateRef.touched)) {
-            <div>
-              @if (editForm.get('endDate')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              <small
-                class="form-text text-danger"
-                [hidden]="!editForm.get('endDate')?.errors?.datetimelocal"
-                jhiTranslate="entity.validation.datetimelocal"
-                >Ce champ doit être une date et une heure.</small
-              >
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_isActive" jhiTranslate="samabutikApp.pack.isActive">Is Active</label>
-          <input type="checkbox" class="form-check" name="isActive" id="field_isActive" data-cy="isActive" formControlName="isActive" />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_displayOnHomepage" jhiTranslate="samabutikApp.pack.displayOnHomepage"
-            >Display On Homepage</label
-          >
-          <input
-            type="checkbox"
-            class="form-check"
-            name="displayOnHomepage"
-            id="field_displayOnHomepage"
-            data-cy="displayOnHomepage"
-            formControlName="displayOnHomepage"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_mainMedia" jhiTranslate="samabutikApp.pack.mainMedia">Main Media</label>
-          <select
-            class="form-control"
-            id="field_mainMedia"
-            data-cy="mainMedia"
-            name="mainMedia"
-            formControlName="mainMedia"
-            [compareWith]="compareMedia"
-          >
-            <option [ngValue]="null"></option>
-            @for (mediaOption of mainMediasCollection(); track $index) {
-              <option [ngValue]="mediaOption">{{ mediaOption.id }}</option>
+            <!-- Main Image -->
+            @if (selectedMainFile) {
+              <div>
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="text-sm font-semibold text-slate-700">Image principale</span>
+                  <span class="badge-main text-white text-[10px] font-bold px-2 py-0.5 rounded-full">PRINCIPALE</span>
+                </div>
+                <div class="media-card main-selected rounded-xl border-2 border-orange-300 bg-orange-50/30 p-4 relative group">
+                  <div class="flex items-center gap-4">
+                    <div class="w-24 h-24 rounded-lg overflow-hidden bg-white shadow-sm flex-shrink-0">
+                      @if (isImageFile(selectedMainFile)) {
+                        <img [src]="selectedMainFile.previewUrl" [alt]="selectedMainFile.name" class="w-full h-full object-cover" />
+                      } @else {
+                        <div class="w-full h-full flex items-center justify-center bg-slate-800 text-white">
+                          <fa-icon icon="video" class="text-2xl" />
+                        </div>
+                      }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-slate-900 truncate">{{ selectedMainFile.name }}</p>
+                      <p class="text-xs text-slate-500 mt-1">
+                        {{ formatFileSize(selectedMainFile.size) }} • {{ getFileExtension(selectedMainFile) }}
+                      </p>
+                      <div class="flex items-center gap-2 mt-2">
+                        <span class="inline-flex items-center gap-1 text-xs font-medium text-orange-600 bg-orange-100 px-2 py-0.5 rounded">
+                          <fa-icon icon="star" class="text-[10px]" /> Image de couverture
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="removeMainImage()"
+                      class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm"
+                    >
+                      <fa-icon icon="trash" class="text-xs" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             }
-          </select>
+
+            <!-- Gallery -->
+            @if (selectedGalleryFiles().length > 0) {
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-sm font-semibold text-slate-700">Galerie ({{ selectedGalleryFiles().length }} médias)</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  @for (item of selectedGalleryFiles(); track item.id) {
+                    <div class="gallery-item media-card rounded-xl border border-slate-200 bg-white overflow-hidden relative group">
+                      <div class="aspect-square bg-slate-100 relative">
+                        @if (item.file && isImageFile(item.file)) {
+                          <img [src]="item.previewUrl" class="w-full h-full object-cover" [alt]="item.file.name" />
+                        } @else if (item.media?.url) {
+                          <img [src]="item.media?.url" class="w-full h-full object-cover" [alt]="'Media ' + item.media?.id" />
+                        } @else if (item.file && isVideoFile(item.file)) {
+                          <div class="w-full h-full flex items-center justify-center bg-slate-800 text-white">
+                            <fa-icon icon="video" class="text-2xl" />
+                          </div>
+                          <span class="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-medium"
+                            >MP4</span
+                          >
+                        }
+                      </div>
+                      <div class="p-2.5 flex items-center justify-between gap-2">
+                        <div class="min-w-0 flex-1">
+                          <p class="text-xs font-medium text-slate-700 truncate">{{ item.file?.name || 'Média existant' }}</p>
+                          <p class="text-[10px] text-slate-400 mt-0.5">{{ item.file ? formatFileSize(item.file.size) : '' }}</p>
+                        </div>
+                        <button
+                          type="button"
+                          (click)="removeGalleryFile($index)"
+                          class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm"
+                        >
+                          <fa-icon icon="trash" class="text-[10px]" />
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Products in Pack -->
+        <div class="section-card bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.4s">
+          <div class="px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <fa-icon icon="boxes" class="text-emerald-500 text-sm" />
+              </div>
+              <h2 class="text-lg font-semibold text-slate-900">Produits inclus dans le pack</h2>
+            </div>
+          </div>
+          <div class="p-6 space-y-4">
+            <!-- Search/Add Product -->
+            <div class="relative">
+              <div class="flex items-center gap-2 px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg">
+                <fa-icon icon="plus-circle" class="text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Ajouter un produit (rechercher par nom ou code)..."
+                  class="bg-transparent outline-none text-sm text-slate-700 placeholder-slate-400 flex-1"
+                  (input)="searchProducts($event)"
+                />
+              </div>
+              @if (searchResults().length > 0) {
+                <div class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  @for (prod of searchResults(); track prod.id) {
+                    <button
+                      type="button"
+                      class="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left"
+                      (click)="addPackItem(prod)"
+                    >
+                      @if (prod.mainMedia?.url) {
+                        <img [src]="getMediaUrl(prod.mainMedia!.url)" class="w-10 h-10 rounded object-cover" [alt]="prod.name" />
+                      } @else {
+                        <div class="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
+                          <fa-icon icon="box" class="text-slate-400 text-xs" />
+                        </div>
+                      }
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-slate-900 truncate">{{ prod.name }}</p>
+                        <p class="text-xs text-slate-500">{{ prod.sku }} • {{ prod.price | number: '1.0-0' : 'fr-FR' }} XOF</p>
+                      </div>
+                      <fa-icon icon="plus" class="text-emerald-500 text-sm" />
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Pack Items List -->
+            @if (packItems().length > 0) {
+              <div class="space-y-3">
+                @for (item of packItems(); track item.id; let i = $index) {
+                  <div class="pack-item-card flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    @if (item.product?.mainMedia?.url) {
+                      <img
+                        [src]="getMediaUrl(item.product!.mainMedia!.url)"
+                        class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                        [alt]="item.product?.name"
+                      />
+                    } @else {
+                      <div class="w-16 h-16 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
+                        <fa-icon icon="box" class="text-slate-300 text-xl" />
+                      </div>
+                    }
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-semibold text-slate-900 truncate">{{ item.product?.name }}</p>
+                      <p class="text-xs text-slate-500">
+                        {{ item.product?.sku }} • {{ item.product?.price | number: '1.0-0' : 'fr-FR' }} XOF / unité
+                      </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-all"
+                        (click)="decrementQuantity(item)"
+                      >
+                        <fa-icon icon="minus" class="text-xs" />
+                      </button>
+                      <span class="w-10 text-center text-sm font-semibold text-slate-700">{{ item.quantity }}</span>
+                      <button
+                        type="button"
+                        class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-all"
+                        (click)="incrementQuantity(item)"
+                      >
+                        <fa-icon icon="plus" class="text-xs" />
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="removePackItem(i)"
+                      class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all"
+                    >
+                      <fa-icon icon="trash" class="text-xs" />
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-8 text-slate-400">
+                <fa-icon icon="boxes" class="text-4xl mb-3" />
+                <p class="text-sm">Aucun produit dans le pack</p>
+                <p class="text-xs mt-1">Ajoutez des produits pour composer votre pack</p>
+              </div>
+            }
+          </div>
         </div>
       </div>
 
-      <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
-        </button>
+      <!-- RIGHT COLUMN: Sticky Sidebar -->
+      <div class="lg:col-span-4">
+        <div class="sticky-wrapper lg:sticky lg:top-6 lg:self-start space-y-6">
+          <!-- Client Preview -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.4s">
+            <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider">Aperçu client</span>
+              <span class="text-[10px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-bold">LIVE</span>
+            </div>
+            <div class="p-4">
+              <!-- Pack Image Carousel -->
+              <div class="aspect-square rounded-lg bg-slate-100 overflow-hidden mb-4 relative">
+                @if (currentPreviewImage()) {
+                  <img
+                    [src]="currentPreviewImage()"
+                    [alt]="previewData().name"
+                    class="w-full h-full object-cover transition-opacity duration-300"
+                  />
+                } @else if (packItems().length > 0 && packItems()[0].product?.mainMedia?.url) {
+                  <img [src]="getMediaUrl(packItems()[0].product!.mainMedia!.url)" class="w-full h-full object-cover" />
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center">
+                    <fa-icon icon="box" class="text-slate-300 text-5xl" />
+                  </div>
+                }
+                @if (previewDiscountPercent() > 0) {
+                  <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                    -{{ previewDiscountPercent() }}%
+                  </div>
+                }
+                @if (previewImages().length > 1) {
+                  <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    @for (img of previewImages(); track $index; let i = $index) {
+                      <button
+                        class="w-2 h-2 rounded-full transition-all"
+                        [class.bg-white]="i === currentPreviewIndex()"
+                        [class.bg-white\/50]="i !== currentPreviewIndex()"
+                        (click)="setPreviewIndex(i)"
+                      ></button>
+                    }
+                  </div>
+                }
+              </div>
 
-        <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
-        >
-          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
-        </button>
+              <h3 class="text-base font-bold text-slate-900 mb-1">{{ previewData().name || 'Nom du pack' }}</h3>
+              <p class="text-xs text-slate-400 mb-3 line-clamp-2">{{ previewData().description || 'Description du pack...' }}</p>
+
+              <div class="flex items-baseline gap-2 mb-4">
+                @if (previewData().originalPrice > 0) {
+                  <span class="text-sm text-slate-400 line-through">{{ previewData().originalPrice | number: '1.0-0' : 'fr-FR' }} XOF</span>
+                }
+                <span class="text-2xl font-bold text-orange-600">{{ previewData().finalPrice | number: '1.0-0' : 'fr-FR' }} XOF</span>
+                @if (previewDiscountPercent() > 0) {
+                  <span class="text-[10px] font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded">PROMO</span>
+                }
+              </div>
+
+              <button
+                type="button"
+                class="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-medium text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <fa-icon icon="shopping-cart" class="text-xs" />
+                Ajouter au panier
+              </button>
+            </div>
+          </div>
+
+          <!-- Pack Summary -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.5s">
+            <div class="px-4 py-3 border-b border-slate-100">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Résumé du pack</span>
+            </div>
+            <div class="p-4 space-y-3">
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">Nombre de produits:</span>
+                <span class="text-sm font-semibold text-slate-900"
+                  >{{ packItems().length }} article{{ packItems().length > 1 ? 's' : '' }}</span
+                >
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">Valeur totale réelle:</span>
+                <span class="text-sm font-semibold text-slate-900">{{ previewData().originalPrice | number: '1.0-0' : 'fr-FR' }} XOF</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">Réduction appliquée:</span>
+                <span class="text-sm font-semibold text-emerald-600"
+                  >-{{ previewData().discountAmount | number: '1.0-0' : 'fr-FR' }} XOF</span
+                >
+              </div>
+              <div class="border-t border-slate-100 pt-3 mt-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-medium text-slate-700">Prix promo final:</span>
+                  <span class="text-lg font-bold text-orange-600">{{ previewData().finalPrice | number: '1.0-0' : 'fr-FR' }} XOF</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quality Score -->
+          @if (qualityScore() !== null) {
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-clip fade-in" style="animation-delay: 0.55s">
+              <div class="px-4 py-3 border-b border-slate-100">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Score qualité</span>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold"
+                    [class.bg-emerald-100]="qualityScore()! >= 80"
+                    [class.text-emerald-700]="qualityScore()! >= 80"
+                    [class.bg-amber-100]="qualityScore()! >= 50 && qualityScore()! < 80"
+                    [class.text-amber-700]="qualityScore()! >= 50 && qualityScore()! < 80"
+                    [class.bg-red-100]="qualityScore()! < 50"
+                    [class.text-red-700]="qualityScore()! < 50"
+                  >
+                    {{ qualityScore() }}
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900">
+                      {{ qualityScore()! >= 80 ? 'Excellent' : qualityScore()! >= 50 ? 'Moyen' : 'À améliorer' }}
+                    </p>
+                    <p class="text-xs text-slate-500">
+                      {{ qualityScore()! >= 80 ? 'Votre pack est optimisé' : "Ajoutez une image pour plus d'impact" }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Actions -->
+          <div class="space-y-3 fade-in" style="animation-delay: 0.6s">
+            <button
+              type="button"
+              (click)="save()"
+              [disabled]="isSaving()"
+              class="btn-primary-orange w-full py-3 text-white font-semibold text-sm rounded-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (isSaving()) {
+                <fa-icon icon="spinner" animation="spin" />
+              } @else {
+                <fa-icon icon="save" />
+              }
+              {{ isSaving() ? 'Enregistrement...' : 'Enregistrer le pack' }}
+            </button>
+            <button
+              type="button"
+              (click)="previousState()"
+              class="w-full py-3 bg-white border border-slate-200 text-slate-600 font-medium text-sm rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all"
+            >
+              Annuler les modifications
+            </button>
+          </div>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 </div>

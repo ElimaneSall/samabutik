@@ -33,7 +33,7 @@ interface GalleryItem {
   selector: 'jhi-product-update',
   templateUrl: './product-update.html',
   styleUrl: './product-update.css',
-  imports: [CommonModule, TranslateDirective, TranslateModule, FontAwesomeModule, ReactiveFormsModule],
+  imports: [CommonModule, TranslateModule, FontAwesomeModule, ReactiveFormsModule],
 })
 export class ProductUpdate implements OnInit {
   readonly isSaving = signal(false);
@@ -83,8 +83,7 @@ export class ProductUpdate implements OnInit {
       if (product) {
         this.updateForm(product);
       }
-      this.loadRelationshipsOptions();
-      this.loadCategories(); // ← Ajoute cette ligne
+      this.loadCategories();
     });
   }
 
@@ -101,7 +100,8 @@ export class ProductUpdate implements OnInit {
     this.product = product;
     this.productFormService.resetForm(this.editForm, product);
     this.mainMediasCollection.set(this.mediaService.addMediaToCollectionIfMissing(this.mainMediasCollection(), product.mainMedia));
-    // Charger les médias existants de la galerie
+
+    // Charger la galerie existante
     if (product.gallery?.length) {
       const existingGallery = product.gallery.map((media, index) => ({
         media,
@@ -111,22 +111,28 @@ export class ProductUpdate implements OnInit {
       }));
       this.selectedGalleryFiles.set(existingGallery);
     }
-    // Charger l'image principale existante
-    if (product.mainMedia?.url) {
+
+    // ✅ CORRECTION : Charger l'image principale existante dans selectedMainFile
+    if (product.mainMedia?.id && product.mainMedia?.url) {
+      // Créer un objet FileWithPreview "virtuel" pour l'affichage
+      this.selectedMainFile = {
+        name: this.extractFilenameFromUrl(product.mainMedia.url),
+        previewUrl: product.mainMedia.url,
+        isMarkedAsMain: true,
+        type: product.mainMedia.type === 'VIDEO' ? 'video/mp4' : 'image/jpeg',
+        size: product.mainMedia.sizeBytes || 0,
+      } as FileWithPreview;
+
       this.isMainFileSet.set(true);
     }
   }
 
-  protected loadRelationshipsOptions(): void {
-    if (this.saveMode() === 'update') {
-      this.mediaService
-        .query({ filter: 'productmain-is-null' })
-        .pipe(
-          map((res: HttpResponse<IMedia[]>) => res.body ?? []),
-          map(medias => this.mediaService.addMediaToCollectionIfMissing(medias, this.product?.mainMedia)),
-        )
-        .subscribe(medias => this.mainMediasCollection.set(medias));
-    }
+  // ✅ Helper privé pour extraire un nom lisible depuis l'URL
+  private extractFilenameFromUrl(url: string): string {
+    if (!url) return 'image.jpg';
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    return filename || 'image.jpg';
   }
 
   onFilesSelected(event: Event): void {
@@ -182,6 +188,7 @@ export class ProductUpdate implements OnInit {
   }
 
   markAsMain(file: FileWithPreview, source: 'main' | 'gallery'): void {
+    // Reset all main flags
     if (this.selectedMainFile) this.selectedMainFile.isMarkedAsMain = false;
     this.selectedGalleryFiles.update(files =>
       files.map(f => {
@@ -189,11 +196,14 @@ export class ProductUpdate implements OnInit {
         return f;
       }),
     );
+
+    // Set new main flag
     if (source === 'main' && this.selectedMainFile) {
       this.selectedMainFile.isMarkedAsMain = true;
     } else if (source === 'gallery') {
       file.isMarkedAsMain = true;
     }
+
     this.isMainFileSet.set(
       this.selectedMainFile?.isMarkedAsMain === true || this.selectedGalleryFiles().some(f => f.file?.isMarkedAsMain === true),
     );
@@ -217,10 +227,6 @@ export class ProductUpdate implements OnInit {
   removeMainImage(): void {
     this.selectedMainFile = null;
     this.isMainFileSet.set(this.selectedGalleryFiles().some(f => f.file?.isMarkedAsMain === true));
-  }
-
-  removeExistingMedia(mediaId: number): void {
-    this.selectedGalleryFiles.update(files => files.filter(f => f.media?.id !== mediaId));
   }
 
   clearAllFiles(): void {
@@ -261,30 +267,83 @@ export class ProductUpdate implements OnInit {
     if (hasFiles && !this.isMainFileSet()) return 'Veuillez sélectionner une image principale';
     return null;
   }
-
   save(): void {
+    console.log('[save] -> Début de la méthode save()');
+
+    console.log('[save] -> Étape 1 : Lancement de la validation...');
     const error = this.validateBeforeSave();
+
     if (error) {
+      console.error('[save] -> ❌ Erreur de validation trouvée :', error);
       this.uploadError.set(error);
       return;
     }
+    console.log('[save] -> ✅ Validation réussie (aucune erreur).');
+
     this.isSaving.set(true);
     this.uploadError.set(null);
+
+    console.log('[save] -> Étape 2 : Préparation du payload...');
     const payload = this.prepareProductPayload();
-    if (this.saveMode() === 'create' && this.hasFilesToUpload()) {
-      this.saveWithMultipart(payload);
+    console.log('[save] -> 📦 Payload généré :', payload);
+
+    console.log('[save] -> Étape 3 : Vérification des fichiers...');
+    const hasFilesToUpload =
+      this.selectedMainFile?.isMarkedAsMain === true || this.selectedGalleryFiles().some(f => f.file?.isMarkedAsMain === true);
+
+    console.log('[save] -> 📁 Y a-t-il des fichiers à uploader ? :', hasFilesToUpload);
+    console.log('[save] -> 🔄 Mode actuel (saveMode) :', this.saveMode());
+
+    console.log('[save] -> Étape 4 : Exécution de la requête...');
+    if (this.saveMode() === 'create') {
+      if (hasFilesToUpload) {
+        console.log('[save] -> 🚀 Action : Création AVEC fichiers (saveWithMultipart)');
+        this.saveWithMultipart(payload);
+      } else {
+        console.log('[save] -> 🚀 Action : Création SANS fichiers (saveWithJson)');
+        this.saveWithJson(payload);
+      }
     } else {
-      this.saveWithJson(payload);
+      if (hasFilesToUpload) {
+        console.log('[save] -> 📝 Action : Mise à jour AVEC fichiers (updateWithMultipart)');
+        this.updateWithMultipart(payload);
+      } else {
+        console.log('[save] -> 📝 Action : Mise à jour SANS fichiers (updateWithJson)');
+        this.updateWithJson(payload);
+      }
     }
   }
-
+  // ✅ CORRECTION CLÉ : Exclure mainMedia de la galerie
   private prepareProductPayload(): Partial<IProduct> {
     const { mainMedia, ...payload } = this.editForm.getRawValue();
-    return { ...payload, currency: 'XOF' } as Partial<IProduct>;
-  }
 
-  private hasFilesToUpload(): boolean {
-    return this.selectedMainFile?.isMarkedAsMain === true || this.selectedGalleryFiles().some(f => f.file?.isMarkedAsMain === true);
+    // IDs à exclure de la galerie :
+    const excludedMediaIds = new Set<number>();
+
+    // Exclure l'ancien mainMedia (si existe)
+    if (this.product?.mainMedia?.id) {
+      excludedMediaIds.add(this.product.mainMedia.id);
+    }
+    // Exclure le nouveau mainFile si marqué comme principal
+    if (this.selectedMainFile?.isMarkedAsMain === true && this.selectedMainFile.previewUrl) {
+      // On ne peut pas exclure par URL, mais on gère via le filtre isNew ci-dessous
+    }
+
+    // Construire la liste des médias de galerie à CONSERVER :
+    const galleryToKeep = this.selectedGalleryFiles()
+      .filter(
+        item =>
+          !item.isNew && // Seulement les médias existants
+          item.media?.id && // Avec un ID valide
+          !excludedMediaIds.has(item.media.id), // ⚠️ EXCLURE si c'est le mainMedia
+      )
+      .map(item => ({ id: item.media!.id, url: item.media!.url }) as Pick<IMedia, 'id' | 'url'>);
+
+    return {
+      ...payload,
+      currency: 'XOF',
+      gallery: galleryToKeep, // ← gallery ne contient PAS mainMedia
+    } as Partial<IProduct>;
   }
 
   private saveWithMultipart(payload: Partial<IProduct>): void {
@@ -300,22 +359,27 @@ export class ProductUpdate implements OnInit {
 
   private buildMultipartFormData(payload: Partial<IProduct>): FormData {
     const formData = new FormData();
+
     formData.append('product', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
-    if (this.selectedMainFile?.isMarkedAsMain === true) {
+
+    if (this.selectedMainFile?.isMarkedAsMain === true && this.selectedMainFile instanceof File) {
       formData.append('mainFile', this.selectedMainFile, this.selectedMainFile.name);
     }
+
     this.selectedGalleryFiles()
-      .filter(item => item.file?.isMarkedAsMain !== true && item.isNew)
+      .filter(item => item.isNew && item.file instanceof File)
       .filter(item => {
-        if (!this.selectedMainFile || !item.file) return true;
+        if (!this.selectedMainFile || !(this.selectedMainFile instanceof File) || !item.file) return true;
         return !(item.file.name === this.selectedMainFile.name && item.file.size === this.selectedMainFile.size);
       })
       .forEach(item => {
-        if (item.file) formData.append('galleryFiles', item.file, item.file.name);
+        if (item.file instanceof File) {
+          formData.append('galleryFiles', item.file, item.file.name);
+        }
       });
+
     return formData;
   }
-
   private saveWithJson(payload: Partial<IProduct>): void {
     const product = payload as IProduct;
     const obs: Observable<IProduct> = product.id
@@ -327,9 +391,36 @@ export class ProductUpdate implements OnInit {
     });
   }
 
+  private updateWithMultipart(payload: Partial<IProduct>): void {
+    const formData = this.buildMultipartFormData(payload);
+    const id = this.product?.id;
+    if (!id) {
+      this.onSaveError('Product ID is required for update');
+      return;
+    }
+    this.productService
+      .updateWithMedia(id, formData)
+      .pipe(finalize(() => this.isSaving.set(false)))
+      .subscribe({
+        next: product => this.onSaveSuccess(product),
+        error: err => this.onSaveError(err),
+      });
+  }
+
+  private updateWithJson(payload: Partial<IProduct>): void {
+    const product = { ...payload, id: this.product?.id } as IProduct;
+    this.productService
+      .update(product)
+      .pipe(finalize(() => this.isSaving.set(false)))
+      .subscribe({
+        next: product => this.onSaveSuccess(product),
+        error: err => this.onSaveError(err),
+      });
+  }
+
   protected onSaveSuccess(product?: IProduct): void {
     this.clearAllFiles();
-    this.router.navigate(['/products', product?.id ?? this.product?.id]);
+    this.router.navigate(['/product']);
   }
 
   protected onSaveError(error?: any): void {
