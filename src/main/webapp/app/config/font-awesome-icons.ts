@@ -84,6 +84,10 @@ import {
   faBoxes,
   faPlusCircle,
   faMinus,
+  faClock,
+  faCalendarTimes,
+  faCheckCircle,
+  faTimesCircle,
 
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
@@ -174,6 +178,10 @@ export const fontAwesomeIcons = [
   faBoxes,
   faPlusCircle,
   faMinus,
+  faClock,
+  faCalendarTimes,
+  faCheckCircle,
+  faTimesCircle,
 
   // jhipster-needle-add-icon-import
 ];

@@ -19,7 +19,12 @@
       "filter": {
         "allTypes": "Tous les types",
         "allStatus": "Tous les statuts",
-        "reset": "Réinitialiser"
+        "reset": "Réinitialiser",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "search": {
+        "placeholder": "Entrer un nom de pack"
       },
       "table": {
         "name": "Nom",

@@ -2,7 +2,6 @@ import dayjs from 'dayjs/esm';
 
 import { DiscountType } from 'app/entities/enumerations/discount-type.model';
 import { IMedia } from 'app/entities/media/media.model';
-import { PackItem } from '../pack-item/list/pack-item';
 import { IPackItem } from '../pack-item/pack-item.model';
 
 export interface IPack {

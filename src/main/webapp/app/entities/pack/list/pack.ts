@@ -193,7 +193,7 @@ export class Pack implements OnInit {
       queryObject.discountType = this.selectedDiscountType;
     }
     if (this.activeFilter !== 'all') {
-      queryObject.activeFilter = this.activeFilter;
+      queryObject.displayOnHomepage = this.activeFilter == 'active' ? true : false;
     }
 
     this.packService.packsParams.set(queryObject);

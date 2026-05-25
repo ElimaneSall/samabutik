@@ -461,9 +461,15 @@ public class PackResource {
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(name = "search", required = false) String search,
         @RequestParam(name = "discountType", required = false) String discountType,
-        @RequestParam(name = "isActive", required = false) Boolean isActive
+        @RequestParam(name = "displayOnHomepage", required = false) Boolean displayOnHomepage
     ) {
-        LOG.debug("REST request to get packs : {}, search={}, discountType={}, isActive={}", pageable, search, discountType, isActive);
+        LOG.debug(
+            "REST request to get packs : {}, search={}, discountType={}, displayOnHomepage={}",
+            pageable,
+            search,
+            discountType,
+            displayOnHomepage
+        );
 
         Specification<Pack> spec = Specification.where((root, query, cb) -> cb.conjunction());
 
@@ -473,8 +479,8 @@ public class PackResource {
         if (discountType != null && !discountType.isBlank()) {
             spec = spec.and(PackSpecifications.byDiscountType(discountType));
         }
-        if (isActive != null) {
-            spec = spec.and(PackSpecifications.byIsActive(isActive));
+        if (displayOnHomepage != null) {
+            spec = spec.and(PackSpecifications.byDisplayOnHomepage(displayOnHomepage));
         }
 
         Page<PackDTO> page = packService.findAll(spec, pageable);

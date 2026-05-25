@@ -19,7 +19,12 @@
       "filter": {
         "allTypes": "All types",
         "allStatus": "All statuses",
-        "reset": "Reset"
+        "reset": "Reset",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "search": {
+        "placeholder": "Enter a pack name"
       },
       "table": {
         "name": "Name",

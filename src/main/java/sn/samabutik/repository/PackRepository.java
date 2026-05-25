@@ -13,23 +13,14 @@ import sn.samabutik.domain.Pack;
 @SuppressWarnings("unused")
 @Repository
 public interface PackRepository extends JpaRepository<Pack, Long>, JpaSpecificationExecutor<Pack> {
-    // Dans PackRepository.java
     @Query(
         "SELECT DISTINCT p FROM Pack p " +
             "LEFT JOIN FETCH p.mainMedia " +
             "LEFT JOIN FETCH p.galleries " +
             "LEFT JOIN FETCH p.packItems pi " +
-            "LEFT JOIN FETCH pi.product " +
+            "LEFT JOIN FETCH pi.product prod " +
+            "LEFT JOIN FETCH prod.mainMedia " +
             "WHERE p.id = :id"
     )
     Optional<Pack> findByIdWithMediaAndItems(@Param("id") Long id);
-
-    @Query("SELECT DISTINCT p FROM Pack p " + "LEFT JOIN FETCH p.mainMedia " + "WHERE p.id = :id")
-    Optional<Pack> findByIdWithMedia(@Param("id") Long id);
-
-    @Query("SELECT DISTINCT p FROM Pack p " + "LEFT JOIN FETCH p.packItems pi " + "LEFT JOIN FETCH pi.product " + "WHERE p.id = :id")
-    Optional<Pack> findByIdWithItems(@Param("id") Long id);
-
-    @EntityGraph(attributePaths = { "mainMedia", "galleries", "packItems", "packItems.product" })
-    Optional<Pack> findById(Long id);
 }

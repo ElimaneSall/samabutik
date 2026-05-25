@@ -1,0 +1,59 @@
+/* pack-detail.css - styles identiques à product-detail.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pack-image-container {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.thumbnail-btn {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.thumbnail-btn:hover {
+  transform: scale(1.02);
+}
+
+.btn-primary-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.btn-primary-orange:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  transform: translateY(-2px);
+}
+
+.btn-buy-now {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.btn-buy-now:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

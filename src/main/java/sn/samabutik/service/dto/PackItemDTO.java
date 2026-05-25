@@ -19,7 +19,7 @@ public class PackItemDTO implements Serializable {
 
     private PackDTO pack;
 
-    @JsonIgnoreProperties(value = { "packItems", "galleries", "mainMedia" }, allowGetters = true)
+    @JsonIgnoreProperties(value = { "packItems", "galleries" }, allowGetters = true)
     private ProductDTO product;
 
     public Long getId() {

@@ -14,7 +14,6 @@ import sn.samabutik.service.dto.ProductDTO;
  */
 @Mapper(componentModel = "spring")
 public interface ProductMapper extends EntityMapper<ProductDTO, Product> {
-    // ─── Mapping principal ─────────────────────────────────────────────
     @Mapping(target = "mainMedia", source = "mainMedia", qualifiedByName = "mediaId")
     @Mapping(target = "gallery", source = "galleries", qualifiedByName = "mediaSetToDtoSet")
     ProductDTO toDto(Product product);
@@ -22,24 +21,38 @@ public interface ProductMapper extends EntityMapper<ProductDTO, Product> {
     @Mapping(target = "galleries", source = "gallery", qualifiedByName = "mediaSetFromDtoSet")
     Product toEntity(ProductDTO productDTO);
 
-    // ─── Mapping pour mainMedia (déjà existant) ────────────────────────
     @Named("mediaId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     @Mapping(target = "url", source = "url")
+    @Mapping(target = "altText", source = "altText")
+    @Mapping(target = "type", source = "type")
+    @Mapping(target = "sizeBytes", source = "sizeBytes")
+    @Mapping(target = "format", source = "format")
+    @Mapping(target = "width", source = "width")
+    @Mapping(target = "height", source = "height")
+    @Mapping(target = "durationSec", source = "durationSec")
+    @Mapping(target = "displayOrder", source = "displayOrder")
+    @Mapping(target = "isMain", source = "isMain")
+    @Mapping(target = "uploadedAt", source = "uploadedAt")
     MediaDTO toDtoMediaId(Media media);
 
-    // ─── NOUVEAU: Mapping pour Set<Media> → Set<MediaDTO> ─────────────
+    // NOUVEAU: Pour charger un Product avec son mainMedia complet
+    @Named("productWithMainMedia")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "price", source = "price")
+    @Mapping(target = "sku", source = "sku")
+    @Mapping(target = "mainMedia", source = "mainMedia", qualifiedByName = "mediaId")
+    ProductDTO toDtoProductWithMainMedia(Product product);
+
     @Named("mediaSetToDtoSet")
     default Set<MediaDTO> mediaSetToDtoSet(Set<Media> medias) {
         if (medias == null) return null;
-        return medias
-            .stream()
-            .map(this::toDtoMediaId) // Réutilise la méthode mediaId
-            .collect(Collectors.toSet());
+        return medias.stream().map(this::toDtoMediaId).collect(Collectors.toSet());
     }
 
-    // ─── NOUVEAU: Mapping inverse Set<MediaDTO> → Set<Media> ──────────
     @Named("mediaSetFromDtoSet")
     default Set<Media> mediaSetFromDtoSet(Set<MediaDTO> mediaDTOs) {
         if (mediaDTOs == null) return null;
@@ -48,12 +61,10 @@ public interface ProductMapper extends EntityMapper<ProductDTO, Product> {
             .map(dto -> {
                 Media media = new Media();
                 media.setId(dto.getId());
-                // On ne mappe que l'ID pour les relations existantes
                 return media;
             })
             .collect(Collectors.toSet());
     }
 
-    // ─── Autres méthodes existantes ───────────────────────────────────
     List<ProductDTO> toDto(List<Product> products);
 }

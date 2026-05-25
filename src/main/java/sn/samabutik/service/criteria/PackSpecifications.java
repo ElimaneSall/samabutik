@@ -23,4 +23,8 @@ public class PackSpecifications {
     public static Specification<Pack> byIsActive(Boolean isActive) {
         return (Root<Pack> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.equal(root.get("isActive"), isActive);
     }
+
+    public static Specification<Pack> byDisplayOnHomepage(Boolean displayOnHomepage) {
+        return (Root<Pack> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.equal(root.get("displayOnHomepage"), displayOnHomepage);
+    }
 }

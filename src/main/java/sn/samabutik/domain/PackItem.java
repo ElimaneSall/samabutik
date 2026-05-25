@@ -32,7 +32,7 @@ public class PackItem implements Serializable {
     private Pack pack;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "mainMedia", "stockMovementses", "galleries", "orderItem" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "stockMovementses", "galleries", "orderItem" }, allowSetters = true)
     private Product product;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
