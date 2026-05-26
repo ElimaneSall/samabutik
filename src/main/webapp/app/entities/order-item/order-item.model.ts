@@ -9,7 +9,7 @@ export interface IOrderItem {
   unitPrice?: number | null;
   subtotal?: number | null;
   isPackItem?: boolean | null;
-  productSnapshot?: Pick<IProduct, 'id'> | null;
+  productSnapshot?: Pick<IProduct, 'id' | 'mainMedia'> | null;
   order?: Pick<IOrder, 'id'> | null;
 }
 

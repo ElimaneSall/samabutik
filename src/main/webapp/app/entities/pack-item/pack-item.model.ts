@@ -5,7 +5,7 @@ export interface IPackItem {
   id: number;
   quantity?: number | null;
   pack?: Pick<IPack, 'id'> | null;
-  product?: Pick<IProduct, 'id' | 'mainMedia' | 'name' | 'price'> | null;
+  product?: Pick<IProduct, 'id' | 'mainMedia' | 'name' | 'price' | 'stock' | 'sku'> | null;
 }
 
 export type NewPackItem = Omit<IPackItem, 'id'> & { id: null };

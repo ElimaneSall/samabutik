@@ -1,0 +1,133 @@
+<div class="relative w-full overflow-hidden rounded-2xl bg-slate-900" style="height: 400px">
+  <!-- Slides Container -->
+  <div class="flex transition-transform duration-500 ease-out h-full" [style.transform]="'translateX(-' + currentSlide() * 100 + '%)'">
+    @for (pack of packs(); track pack.id; let i = $index) {
+      <div class="w-full flex-shrink-0 h-full relative">
+        <!-- 1. Background Image - OPACITÉ 100% (suppression de l'opacité variable) -->
+        @if (getSlideImage(pack)) {
+          <img
+            [src]="getSlideImage(pack)"
+            [alt]="pack.name || 'Pack promo'"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+            loading="eager"
+          />
+        }
+
+        <!-- 2. Gradient Overlay - Plus fort en bas, léger en haut -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10"></div>
+
+        <!-- 3. Content Wrapper -->
+        <div class="absolute inset-0 flex flex-col justify-center" [class.p-4]="variant() === 'compact'" [class.p-6]="variant() === 'hero'">
+          <!-- Glass Card pour garantir la lisibilité du texte sur TOUTES les images -->
+          <div
+            class="bg-black/30 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl"
+            [class.p-4]="variant() === 'compact'"
+            [class.p-5]="variant() === 'hero'"
+          >
+            <!-- Top Badge -->
+            <div class="mb-3">
+              <span
+                class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider bg-green-500/90 text-white shadow-lg shadow-green-500/20"
+              >
+                <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                <span>{{ getDaysLeft(pack.endDate) }}j restants</span>
+              </span>
+            </div>
+
+            <!-- Title -->
+            <h2
+              class="font-bold text-white leading-tight mb-2 drop-shadow-md"
+              [class.text-5xl]="variant() === 'compact'"
+              [class.text-4xl]="variant() === 'hero'"
+            >
+              {{ pack.name || 'Pack Spécial' }}
+            </h2>
+
+            <!-- Discount -->
+            @if (calculateDiscountPercent(pack) > 0) {
+              <p
+                class="font-semibold text-white/90 mb-3 drop-shadow-sm"
+                [class.text-4xl]="variant() === 'compact'"
+                [class.text-3xl]="variant() === 'hero'"
+              >
+                Réduction spéciale jusqu'à <span class="text-yellow-300 font-bold">-{{ calculateDiscountPercent(pack) }}%</span>
+              </p>
+            }
+
+            <!-- Price Info -->
+            <div class="flex items-baseline gap-2 mb-4" [class.mb-2]="variant() === 'compact'" [class.mb-3]="variant() === 'hero'">
+              <span
+                class="font-bold text-white drop-shadow-sm"
+                [class.text-3xl]="variant() === 'compact'"
+                [class.text-2xl]="variant() === 'hero'"
+              >
+                {{ calculateFinalPrice(pack) | number: '1.0-0' : 'fr-FR' }} XOF
+              </span>
+              @if (calculateOriginalPrice(pack) > calculateFinalPrice(pack)) {
+                <span class="text-white/60 line-through" [class.text-xs]="variant() === 'compact'" [class.text-sm]="variant() === 'hero'">
+                  {{ calculateOriginalPrice(pack) | number: '1.0-0' : 'fr-FR' }} XOF
+                </span>
+              }
+            </div>
+
+            <!-- CTA Button -->
+            <button
+              class="self-start bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/30 transition-all active:scale-95 flex items-center gap-2"
+              [class.px-4]="variant() === 'compact'"
+              [class.py-2]="variant() === 'compact'"
+              [class.text-xs]="variant() === 'compact'"
+              [class.px-5]="variant() === 'hero'"
+              [class.py-2.5]="variant() === 'hero'"
+              [class.text-sm]="variant() === 'hero'"
+              (click)="onPackClick(pack, $event)"
+            >
+              En profiter
+              <fa-icon icon="arrow-right" class="text-xs" />
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Navigation Arrows -->
+  @if (packs().length > 1) {
+    <button
+      class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-slate-700 hover:text-orange-500 hover:bg-white transition-all z-10 active:scale-90 group"
+      (click)="previousSlide($event)"
+    >
+      <fa-icon icon="chevron-left" class="text-sm group-hover:scale-110 transition-transform" />
+    </button>
+    <button
+      class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-slate-700 hover:text-orange-500 hover:bg-white transition-all z-10 active:scale-90 group"
+      (click)="nextSlide($event)"
+    >
+      <fa-icon icon="chevron-right" class="text-sm group-hover:scale-110 transition-transform" />
+    </button>
+  }
+
+  <!-- Dots Indicator -->
+  @if (packs().length > 1) {
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      @for (pack of packs(); track pack.id; let i = $index) {
+        <button
+          class="h-1.5 rounded-full transition-all duration-300 cursor-pointer"
+          [class.w-6]="i === currentSlide()"
+          [class.w-1.5]="i !== currentSlide()"
+          [class.bg-white]="i === currentSlide()"
+          [class.bg-white/50]="i !== currentSlide()"
+          (click)="goToSlide(i, $event)"
+        ></button>
+      }
+    </div>
+  }
+
+  <!-- Counter -->
+  @if (packs().length > 1) {
+    <div
+      class="absolute top-4 right-4 bg-black/60 backdrop-blur text-white text-[11px] font-medium px-3 py-1.5 rounded-full z-10 border border-white/10"
+    >
+      {{ currentSlide() + 1 }} / {{ packs().length }}
+    </div>
+  }
+</div>

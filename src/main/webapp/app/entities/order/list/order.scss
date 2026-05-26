@@ -1,0 +1,145 @@
+/* order.scss - Styles pour la page de gestion des commandes */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Fade-in Animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stat Cards Hover Effect */
+.stat-card {
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px -8px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom Select Styling */
+.custom-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2394758e' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.custom-select::-ms-expand {
+  display: none;
+}
+
+/* Search Input Focus Effect */
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
+}
+
+/* Action Buttons */
+.action-btn {
+  transition: all 0.2s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+/* Table Row Hover */
+.order-row {
+  transition: background-color 0.2s ease;
+}
+
+/* Status Badges Animations */
+.inline-flex {
+  transition: all 0.2s ease;
+}
+
+/* Primary Orange Button */
+.btn-primary-orange {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  transition: all 0.3s ease;
+}
+
+.btn-primary-orange:hover {
+  background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -5px rgba(234, 88, 12, 0.4);
+}
+
+.btn-primary-orange:active {
+  transform: translateY(0);
+}
+
+/* Pagination Custom Styling */
+::ng-deep .ngb-pagination .page-item .page-link {
+  @apply text-slate-600 bg-white border-slate-200 hover:bg-slate-50 hover:text-orange-600 rounded-lg mx-1 px-3 py-1.5 text-sm;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .ngb-pagination .page-item.active .page-link {
+  @apply bg-orange-600 border-orange-600 text-white hover:bg-orange-700;
+}
+
+::ng-deep .ngb-pagination .page-item.disabled .page-link {
+  @apply text-slate-300 bg-slate-50 cursor-not-allowed;
+}
+
+/* Scrollbar Styling */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  @apply bg-slate-100 rounded-full;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400;
+}
+
+/* Loading State */
+.btn:disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Empty State Animation */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.text-slate-400 fa-icon {
+  animation: bounce 2s ease-in-out infinite;
+}

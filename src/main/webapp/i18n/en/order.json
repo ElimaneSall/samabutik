@@ -3,19 +3,38 @@
     "order": {
       "home": {
         "title": "Orders",
-        "refreshListLabel": "Refresh list",
-        "createLabel": "Create a new Order",
-        "createOrEditLabel": "Create or edit a Order",
-        "notFound": "No Orders found"
+        "subtitle": "Manage orders, statuses and deliveries",
+        "refreshListLabel": "Refresh",
+        "exportCSV": "Export CSV",
+        "createLabel": "New order",
+        "createOrEditLabel": "Create or edit an order",
+        "notFound": "No orders found"
       },
-      "created": "A new Order is created with identifier {{ param }}",
-      "updated": "A Order is updated with identifier {{ param }}",
-      "deleted": "A Order is deleted with identifier {{ param }}",
+      "created": "A new order has been created with identifier {{ param }}",
+      "updated": "The order with identifier {{ param }} has been updated",
+      "deleted": "The order with identifier {{ param }} has been deleted",
       "delete": {
-        "question": "Are you sure you want to delete Order {{ id }}?"
+        "question": "Are you sure you want to delete order {{ id }}?"
       },
       "detail": {
-        "title": "Order"
+        "title": "Order Details"
+      },
+      "stats": {
+        "totalOrders": "Total Orders",
+        "revenue": "Revenue",
+        "pendingOrders": "Pending",
+        "delivered": "Delivered"
+      },
+      "filter": {
+        "allStatus": "All statuses",
+        "allPaymentStatus": "All payments",
+        "reset": "Reset"
+      },
+      "search": {
+        "placeholder": "Search by order number, customer..."
+      },
+      "table": {
+        "actions": "Actions"
       },
       "id": "ID",
       "orderNumber": "Order Number",
@@ -23,7 +42,7 @@
       "totalAmount": "Total Amount",
       "currency": "Currency",
       "paymentMethod": "Payment Method",
-      "paymentStatus": "Payment Status",
+      "paymentStatus": "Payment",
       "paymentReference": "Payment Reference",
       "shippingAddress": "Shipping Address",
       "shippingCost": "Shipping Cost",
@@ -32,6 +51,25 @@
       "orderItems": "Order Items",
       "transactions": "Transactions",
       "customer": "Customer"
+    },
+    "OrderStatus": {
+      "PENDING": "Pending",
+      "PAID": "Paid",
+      "PREPARING": "Preparing",
+      "SHIPPED": "Shipped",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
+    },
+    "PaymentMethod": {
+      "WAVE": "Wave",
+      "ORANGE_MONEY": "Orange Money",
+      "CASH": "Cash"
+    },
+    "PaymentStatus": {
+      "PENDING": "Pending",
+      "SUCCESS": "Success",
+      "FAILED": "Failed",
+      "REFUNDED": "Refunded"
     }
   }
 }

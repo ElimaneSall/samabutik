@@ -1,5 +1,7 @@
+// navbar.ts
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { FormsModule } from '@angular/forms'; // ✅ AJOUTER CET IMPORT
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap/collapse';
@@ -26,6 +28,7 @@ import ActiveMenuDirective from './active-menu.directive';
     RouterLink,
     RouterLinkActive,
     FontAwesomeModule,
+    FormsModule, // ✅ AJOUTER FORMSMODULE
     NgbCollapse,
     NgbDropdown,
     NgbDropdownMenu,
@@ -44,12 +47,14 @@ export default class Navbar implements OnInit {
   readonly openAPIEnabled = signal(false);
   readonly version: string;
   readonly account = inject(AccountService).account;
+  readonly searchQuery = signal('');
 
   private readonly loginService = inject(LoginService);
   private readonly translateService = inject(TranslateService);
   private readonly stateStorageService = inject(StateStorageService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
+  readonly isSidebarOpen = signal(false);
 
   constructor() {
     const { VERSION } = environment;
@@ -84,5 +89,30 @@ export default class Navbar implements OnInit {
     this.collapseNavbar();
     this.loginService.logout();
     this.router.navigate(['']);
+  }
+
+  onSearch(event: Event): void {
+    event.preventDefault();
+    const query = this.searchQuery().trim();
+    if (query) {
+      this.router.navigate(['/product'], { queryParams: { search: query } });
+      this.searchQuery.set('');
+    }
+  }
+
+  navigateToCart(): void {
+    this.router.navigate(['/order']);
+  }
+
+  // ✅ AJOUTER cette méthode pour gérer la recherche
+  updateSearchQuery(value: string): void {
+    this.searchQuery.set(value);
+  }
+  toggleSidebar(): void {
+    this.isSidebarOpen.update(v => !v);
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen.set(false);
   }
 }

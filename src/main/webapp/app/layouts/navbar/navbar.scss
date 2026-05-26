@@ -1,36 +1,144 @@
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
+/* ==============================================================
+   Navbar Admin - SamaButik (Design moderne)
+   ============================================================== */
 
-/* ==========================================================================
-Navbar
-========================================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.navbar-version {
-  font-size: 0.65em;
-  color: $navbar-dark-color;
+/* Logo image placeholder */
+.logo-img {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  background-size: contain;
 }
 
-.profile-image {
-  height: 1.75em;
-  width: 1.75em;
+/* Dropdown menu styling override */
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
+  border-radius: 0.75rem;
+  padding: 0.375rem 0;
+  min-width: 14rem;
 }
 
-.navbar {
-  padding: 0.2rem 1rem;
+.dropdown-menu .dropdown-item,
+.dropdown-menu button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #475569;
+  transition: all 0.15s ease;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem;
+}
 
-  a.nav-link {
-    font-weight: 400;
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu button:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+/* Active link styling */
+.nav-link.active,
+a[routerLinkActive='text-orange-700 bg-orange-50'].active {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+/* Search input focus */
+input[type='text']:focus {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+/* Avatar hover */
+img[alt='Avatar'] {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+img[alt='Avatar']:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+}
+
+/* Notification badge pulse */
+@keyframes badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
   }
 }
 
-/* ==========================================================================
-Logo styles
-========================================================================== */
-.logo-img {
-  height: 45px;
-  width: 45px;
-  display: inline-block;
-  vertical-align: middle;
-  background: url('/content/images/logo-jhipster.png') no-repeat center center;
-  background-size: contain;
+button .absolute.w-4.h-4 {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+/* Mobile menu transition */
+.collapse:not(.show) {
+  display: none;
+}
+
+.collapsing {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+/* Button active states */
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Smooth navbar shadow on scroll */
+nav {
+  transition: box-shadow 0.3s ease;
+}
+
+nav.scrolled {
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.08);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1023px) {
+  .max-w-7xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .dropdown-menu {
+    position: static !important;
+    transform: none !important;
+    box-shadow: none;
+    border: 1px solid #f1f5f9;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Hide default Bootstrap navbar styles */
+.navbar {
+  padding: 0;
+}
+
+.navbar-nav {
+  flex-direction: row;
+}
+
+.nav-link {
+  padding: 0;
+}
+
+/* Divider styling */
+.w-px.h-6 {
+  background: linear-gradient(to bottom, transparent, #e2e8f0, transparent);
 }

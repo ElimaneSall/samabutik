@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@keyframes pulse-ring {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+.pulse-animation {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// Stepper styles
+.rounded-full {
+  transition: all 0.3s ease;
+}
+
+.rounded-full.completed {
+  background-color: #006d37;
+  color: white;
+}
+
+.rounded-full.active {
+  background-color: #ab3500;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(171, 53, 0, 0.2);
+}
+
+.rounded-full.pending {
+  background-color: #e5e2e1;
+  color: #594139;
+}
+
+// Active scale for buttons
+button:active {
+  transform: scale(0.98);
+}
+
+// Timeline line animation
+.bg-secondary {
+  transition: height 0.5s ease-out;
+}

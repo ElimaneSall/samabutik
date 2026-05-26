@@ -1,358 +1,511 @@
-<nav data-cy="navbar" class="navbar navbar-dark navbar-expand-md bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
-      <span class="logo-img"></span>
-      <span class="navbar-title" jhiTranslate="global.title">Samabutik</span>
-      <span class="navbar-version">{{ version }}</span>
-    </a>
-    <a
-      class="navbar-toggler d-lg-none"
-      href="javascript:void(0);"
-      data-toggle="collapse"
-      data-target="#navbarResponsive"
-      aria-controls="navbarResponsive"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-      (click)="isNavbarCollapsed.update(isNavbarCollapsed => !isNavbarCollapsed)"
-    >
-      <fa-icon icon="bars" />
-    </a>
-    <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
-            <span>
-              <fa-icon icon="home" />
-              <span jhiTranslate="global.menu.home">Accueil</span>
-            </span>
-          </a>
-        </li>
-        @if (account() !== null) {
-          <li
-            ngbDropdown
-            class="nav-item dropdown pointer"
-            display="dynamic"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            data-cy="entity"
+<!-- navbar.html - Admin Navbar SamaButik (design moderne) -->
+@let accountValue = account();
+
+<nav data-cy="navbar" class="bg-white border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- ========== SIDEBAR OVERLAY ========== -->
+      @if (isSidebarOpen()) {
+        <div class="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300" (click)="closeSidebar()"></div>
+      }
+
+      <!-- ========== SIDEBAR MENU ========== -->
+      <div
+        class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out"
+        [class.translate-x-0]="isSidebarOpen()"
+        [class.-translate-x-full]="!isSidebarOpen()"
+      >
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-between p-4 border-b border-slate-100">
+          <div class="flex">
+            <span class="text-xl font-bold text-slate-900 tracking-tight">SamaButik</span>
+          </div>
+          <button
+            class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+            (click)="closeSidebar()"
           >
-            <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu">
-              <span>
-                <fa-icon icon="th-list" />
-                <span jhiTranslate="global.menu.entities.main">Entités</span>
-              </span>
+            <fa-icon icon="times" class="text-sm" />
+          </button>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <div class="p-4 space-y-6">
+          <!-- Main Menu -->
+          <div class="space-y-1">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">Menu principal</p>
+
+            <a
+              routerLink="/"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="home" class="text-slate-400 text-sm w-5" />
+              Tableau de bord
             </a>
-            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/customer"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.customer">Customer</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/product"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.product">Product</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/pack"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.pack">Pack</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/pack-item"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.packItem">Pack Item</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/order"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.order">Order</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/order-item"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.orderItem">Order Item</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/media"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.media">Media</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/payment-transaction"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.paymentTransaction">Payment Transaction</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/user-staff"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.userStaff">User Staff</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/stock-movement"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.stockMovement">Stock Movement</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/app-settings"
-                  routerLinkActive="active"
-                  [routerLinkActiveOptions]="{ exact: true }"
-                  (click)="collapseNavbar()"
-                >
-                  <fa-icon icon="asterisk" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.entities.appSettings">App Settings</span>
-                </a>
-              </li>
-              <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
-            </ul>
-          </li>
-        }
-        <li
-          *jhiHasAnyAuthority="'ROLE_ADMIN'"
-          ngbDropdown
-          class="nav-item dropdown pointer"
-          display="dynamic"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          data-cy="adminMenu"
+
+            <a
+              routerLink="/product"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="box" class="text-slate-400 text-sm w-5" />
+              Produits
+            </a>
+
+            <a
+              routerLink="/pack"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="boxes" class="text-slate-400 text-sm w-5" />
+              Packs / Promos
+            </a>
+
+            <a
+              routerLink="/order"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="clipboard-list" class="text-slate-400 text-sm w-5" />
+              Commandes
+            </a>
+
+            <a
+              routerLink="/customer"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="users" class="text-slate-400 text-sm w-5" />
+              Clients
+            </a>
+
+            <a
+              routerLink="/report"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="chart-line" class="text-slate-400 text-sm w-5" />
+              Rapports
+            </a>
+
+            <a
+              routerLink="/settings"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="cog" class="text-slate-400 text-sm w-5" />
+              Paramètres
+            </a>
+          </div>
+
+          <!-- Admin Section (visible seulement pour les admins) -->
+          <div *jhiHasAnyAuthority="'ROLE_ADMIN'" class="space-y-1">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">Administration</p>
+
+            <a
+              routerLink="/user-management"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="users-cog" class="text-slate-400 text-sm w-5" />
+              Utilisateurs
+            </a>
+
+            <a
+              routerLink="/admin/metrics"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="tachometer-alt" class="text-slate-400 text-sm w-5" />
+              Métriques
+            </a>
+
+            <a
+              routerLink="/admin/configuration"
+              routerLinkActive="bg-orange-50 text-orange-700"
+              (click)="closeSidebar()"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="cogs" class="text-slate-400 text-sm w-5" />
+              Configuration
+            </a>
+          </div>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-100">
+          <div class="flex items-center gap-3 px-3 py-2">
+            @if (accountValue !== null) {
+              <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                <fa-icon icon="user" class="text-orange-600 text-xs" />
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-semibold text-slate-900">{{ accountValue?.login ?? 'Admin User' }}</p>
+                <p class="text-xs text-slate-500">{{ accountValue?.email ?? 'admin@samabutik.com' }}</p>
+              </div>
+              <button (click)="logout(); closeSidebar()" class="text-slate-400 hover:text-red-500 transition-colors">
+                <fa-icon icon="sign-out-alt" class="text-sm" />
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== LEFT: Logo ========== -->
+      <div class="flex items-center flex-shrink-0">
+        <button
+          class="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          (click)="toggleSidebar()"
         >
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="admin-menu">
-            <span>
-              <fa-icon icon="users-cog" />
-              <span jhiTranslate="global.menu.admin.main">Administration</span>
-            </span>
-          </a>
-          <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="admin-menu">
-            <li>
+          <fa-icon icon="bars" class="text-sm" />
+        </button>
+        <a class="flex items-center" routerLink="/" (click)="collapseNavbar()">
+          <span class="text-xl font-bold text-slate-900 tracking-tight" jhiTranslate="global.title">Samabutik</span>
+        </a>
+      </div>
+
+      <!-- ========== CENTER: Search Bar (Desktop) ========== -->
+      <div class="hidden lg:flex flex-1 max-w-xl mx-8">
+        <form (submit)="onSearch($event)" class="w-full relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <fa-icon icon="search" class="text-slate-400 text-sm" />
+          </div>
+          <input
+            type="text"
+            [value]="searchQuery()"
+            (input)="updateSearchQuery($any($event.target).value)"
+            name="search"
+            class="w-full pl-10 pr-4 py-2 bg-blue-50 border-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:bg-white transition-all"
+            placeholder="Rechercher un produit, une commande..."
+          />
+        </form>
+      </div>
+
+      <!-- ========== RIGHT: Actions ========== -->
+      <div class="flex items-center gap-2">
+        <!-- Mobile Search Toggle -->
+        <button
+          class="lg:hidden w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          (click)="isNavbarCollapsed.update(v => !v)"
+        >
+          <fa-icon icon="search" class="text-sm" />
+        </button>
+
+        <!-- Shopping Cart / Orders -->
+        <button
+          class="relative w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          (click)="navigateToCart()"
+          [attr.aria-label]="'Panier'"
+        >
+          <fa-icon icon="shopping-cart" class="text-sm" />
+          <!-- Badge notification -->
+          <span
+            class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-orange-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white"
+          >
+            3
+          </span>
+        </button>
+
+        <!-- Divider -->
+        <div class="hidden sm:block w-px h-6 bg-slate-200 mx-1"></div>
+
+        <!-- ========== ADMIN MENU ========== -->
+        <div class="hidden md:flex items-center gap-1">
+          <!-- Administration -->
+          <div *jhiHasAnyAuthority="'ROLE_ADMIN'" ngbDropdown class="relative" display="dynamic">
+            <button
+              ngbDropdownToggle
+              class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+            >
+              <fa-icon icon="users-cog" class="text-xs" />
+              <span class="hidden xl:inline" jhiTranslate="global.menu.admin.main">Administration</span>
+              <fa-icon icon="chevron-down" class="text-[10px] text-slate-400" />
+            </button>
+            <div ngbDropdownMenu class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-50">
               <a
-                class="dropdown-item"
+                class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                 routerLink="/authority"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
                 (click)="collapseNavbar()"
               >
-                <fa-icon icon="asterisk" [fixedWidth]="true" />
+                <fa-icon icon="shield-alt" class="text-slate-400 text-xs w-4" />
                 <span jhiTranslate="global.menu.entities.adminAuthority">Authority</span>
               </a>
-            </li>
-            <li>
               <a
-                class="dropdown-item"
+                class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                 routerLink="/user-management"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: true }"
                 (click)="collapseNavbar()"
               >
-                <fa-icon icon="asterisk" [fixedWidth]="true" />
+                <fa-icon icon="users" class="text-slate-400 text-xs w-4" />
                 <span jhiTranslate="userManagement.home.title">User Management</span>
               </a>
-            </li>
-            <!-- jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here -->
-            <li>
-              <a class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tachometer-alt" [fixedWidth]="true" />
+              <div class="border-t border-slate-100 my-1"></div>
+              <a
+                class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                routerLink="/admin/metrics"
+                (click)="collapseNavbar()"
+              >
+                <fa-icon icon="tachometer-alt" class="text-slate-400 text-xs w-4" />
                 <span jhiTranslate="global.menu.admin.metrics">Métriques</span>
               </a>
-            </li>
-            <li>
-              <a class="dropdown-item" routerLink="/admin/health" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="heart" [fixedWidth]="true" />
+              <a
+                class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                routerLink="/admin/health"
+                (click)="collapseNavbar()"
+              >
+                <fa-icon icon="heart" class="text-slate-400 text-xs w-4" />
                 <span jhiTranslate="global.menu.admin.health">Diagnostics</span>
               </a>
-            </li>
-            <li>
-              <a class="dropdown-item" routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="cogs" [fixedWidth]="true" />
+              <a
+                class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                routerLink="/admin/configuration"
+                (click)="collapseNavbar()"
+              >
+                <fa-icon icon="cogs" class="text-slate-400 text-xs w-4" />
                 <span jhiTranslate="global.menu.admin.configuration">Configuration</span>
               </a>
-            </li>
-            <li>
-              <a class="dropdown-item" routerLink="/admin/logs" routerLinkActive="active" (click)="collapseNavbar()">
-                <fa-icon icon="tasks" [fixedWidth]="true" />
+              <a
+                class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                routerLink="/admin/logs"
+                (click)="collapseNavbar()"
+              >
+                <fa-icon icon="tasks" class="text-slate-400 text-xs w-4" />
                 <span jhiTranslate="global.menu.admin.logs">Logs</span>
               </a>
-            </li>
-            @if (openAPIEnabled()) {
-              <li>
-                <a class="dropdown-item" routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
-                  <fa-icon icon="book" [fixedWidth]="true" />
+              @if (openAPIEnabled()) {
+                <a
+                  class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                  routerLink="/admin/docs"
+                  (click)="collapseNavbar()"
+                >
+                  <fa-icon icon="book" class="text-slate-400 text-xs w-4" />
                   <span jhiTranslate="global.menu.admin.apidocs">API</span>
                 </a>
-              </li>
-            }
-          </ul>
-        </li>
-        @if (languages && languages.length > 1) {
-          <li ngbDropdown class="nav-item dropdown pointer" display="dynamic">
-            <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="languagesnavBarDropdown">
-              <span>
-                <fa-icon icon="flag" />
-                <span jhiTranslate="global.menu.language">Langue</span>
-              </span>
-            </a>
-            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="languagesnavBarDropdown">
-              @for (language of languages; track $index) {
-                <li>
-                  <a
-                    class="dropdown-item"
-                    [jhiActiveMenu]="language"
-                    href="javascript:void(0);"
-                    (click)="changeLanguage(language); collapseNavbar()"
-                    >{{ language | findLanguageFromKey }}</a
-                  >
-                </li>
               }
-            </ul>
-          </li>
-        }
-        <li
-          ngbDropdown
-          class="nav-item dropdown pointer"
-          display="dynamic"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          data-cy="accountMenu"
-        >
-          @let accountRef = account();
-          <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu">
-            @if (!accountRef?.imageUrl) {
-              <span>
-                <fa-icon icon="user" />
-                <span jhiTranslate="global.menu.account.main">Compte</span>
+            </div>
+          </div>
+
+          <!-- Langue -->
+          @if (languages && languages.length > 1) {
+            <div ngbDropdown class="relative" display="dynamic">
+              <button
+                ngbDropdownToggle
+                class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+              >
+                <fa-icon icon="globe" class="text-xs" />
+                <span class="hidden xl:inline" jhiTranslate="global.menu.language">Langue</span>
+                <fa-icon icon="chevron-down" class="text-[10px] text-slate-400" />
+              </button>
+              <div ngbDropdownMenu class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-50">
+                @for (language of languages; track $index) {
+                  <button
+                    class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                    [jhiActiveMenu]="language"
+                    (click)="changeLanguage(language); collapseNavbar()"
+                  >
+                    <fa-icon icon="flag" class="text-slate-400 text-xs w-4" />
+                    {{ language | findLanguageFromKey }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Compte -->
+          <div ngbDropdown class="relative" display="dynamic">
+            <button
+              ngbDropdownToggle
+              class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+            >
+              @if (accountValue?.imageUrl) {
+                <img [src]="accountValue!.imageUrl" class="w-8 h-8 rounded-full object-cover border border-slate-200" alt="Avatar" />
+              } @else {
+                <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                  <fa-icon icon="user" class="text-orange-600 text-xs" />
+                </div>
+              }
+              <span class="hidden sm:inline text-sm font-medium text-slate-700">
+                {{ accountValue?.login ?? 'Admin User' }}
               </span>
-            } @else {
-              <span>
-                <img [src]="accountRef!.imageUrl" class="profile-image rounded-circle" alt="Avatar" />
-              </span>
-            }
-          </a>
-          <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
-            @if (accountRef !== null) {
-              <li>
+              <fa-icon icon="chevron-down" class="text-[10px] text-slate-400" />
+            </button>
+            <div ngbDropdownMenu class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-50">
+              @if (accountValue !== null) {
+                <div class="px-4 py-2 border-b border-slate-100">
+                  <p class="text-sm font-semibold text-slate-900">{{ accountValue?.login ?? 'Admin User' }}</p>
+                  <p class="text-xs text-slate-500">{{ accountValue?.email ?? 'admin@samabutik.com' }}</p>
+                </div>
                 <a
-                  class="dropdown-item"
+                  class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                   routerLink="/account/settings"
-                  routerLinkActive="active"
                   (click)="collapseNavbar()"
-                  data-cy="settings"
                 >
-                  <fa-icon icon="wrench" [fixedWidth]="true" />
+                  <fa-icon icon="wrench" class="text-slate-400 text-xs w-4" />
                   <span jhiTranslate="global.menu.account.settings">Profil</span>
                 </a>
-              </li>
-              <li>
                 <a
-                  class="dropdown-item"
+                  class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                   routerLink="/account/password"
-                  routerLinkActive="active"
                   (click)="collapseNavbar()"
-                  data-cy="passwordItem"
                 >
-                  <fa-icon icon="lock" [fixedWidth]="true" />
+                  <fa-icon icon="lock" class="text-slate-400 text-xs w-4" />
                   <span jhiTranslate="global.menu.account.password">Mot de passe</span>
                 </a>
-              </li>
-              <li>
-                <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">
-                  <fa-icon icon="sign-out-alt" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.account.logout">Déconnexion</span>
-                </a>
-              </li>
-            } @else {
-              <li>
-                <a class="dropdown-item" (click)="login()" id="login" data-cy="login">
-                  <fa-icon icon="sign-in-alt" [fixedWidth]="true" />
-                  <span jhiTranslate="global.menu.account.login">S&apos;authentifier</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  routerLink="/account/register"
-                  routerLinkActive="active"
-                  (click)="collapseNavbar()"
-                  data-cy="register"
+                <div class="border-t border-slate-100 my-1"></div>
+                <button
+                  class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  (click)="logout()"
                 >
-                  <fa-icon icon="user-plus" [fixedWidth]="true" />
+                  <fa-icon icon="sign-out-alt" class="text-red-400 text-xs w-4" />
+                  <span jhiTranslate="global.menu.account.logout">Déconnexion</span>
+                </button>
+              } @else {
+                <button
+                  class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                  (click)="login()"
+                >
+                  <fa-icon icon="sign-in-alt" class="text-slate-400 text-xs w-4" />
+                  <span jhiTranslate="global.menu.account.login">S'authentifier</span>
+                </button>
+                <a
+                  class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                  routerLink="/account/register"
+                  (click)="collapseNavbar()"
+                >
+                  <fa-icon icon="user-plus" class="text-slate-400 text-xs w-4" />
                   <span jhiTranslate="global.menu.account.register">Créer un compte</span>
                 </a>
-              </li>
-            }
-          </ul>
-        </li>
-      </ul>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button
+          class="md:hidden w-9 h-9 flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          (click)="isNavbarCollapsed.update(v => !v)"
+          [attr.aria-expanded]="!isNavbarCollapsed()"
+          aria-label="Toggle navigation"
+        >
+          <fa-icon [icon]="isNavbarCollapsed() ? 'bars' : 'times'" class="text-sm" />
+        </button>
+      </div>
+    </div>
+
+    <!-- ========== MOBILE SEARCH (Collapsible) ========== -->
+    <div [ngbCollapse]="isNavbarCollapsed()" class="lg:hidden pb-4">
+      <form (submit)="onSearch($event)" class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <fa-icon icon="search" class="text-slate-400 text-sm" />
+        </div>
+        <input
+          type="text"
+          [value]="searchQuery()"
+          (input)="updateSearchQuery($any($event.target).value)"
+          name="search"
+          class="w-full pl-10 pr-4 py-2.5 bg-blue-50 border-0 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:bg-white transition-all"
+          placeholder="Rechercher un produit, une commande..."
+        />
+      </form>
+
+      <!-- Mobile Menu Links -->
+      <div class="mt-4 space-y-1">
+        <a
+          routerLink="/"
+          routerLinkActive="text-orange-700 bg-orange-50"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+          (click)="collapseNavbar()"
+        >
+          <fa-icon icon="home" class="text-xs w-4" />
+          <span jhiTranslate="global.menu.home">Accueil</span>
+        </a>
+        <a
+          routerLink="/product"
+          routerLinkActive="text-orange-700 bg-orange-50"
+          class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+          (click)="collapseNavbar()"
+        >
+          <fa-icon icon="box" class="text-xs w-4" />
+          Produits
+        </a>
+        <a
+          routerLink="/order"
+          routerLinkActive="text-orange-700 bg-orange-50"
+          class="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+          (click)="collapseNavbar()"
+        >
+          <fa-icon icon="clipboard-list" class="text-xs w-4" />
+          Commandes
+        </a>
+
+        <!-- Mobile Admin Menu -->
+        <div *jhiHasAnyAuthority="'ROLE_ADMIN'" class="border-t border-slate-100 pt-3 mt-3">
+          <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Administration</p>
+          <a
+            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+            routerLink="/user-management"
+            (click)="collapseNavbar()"
+          >
+            <fa-icon icon="users" class="text-xs w-4" />
+            User Management
+          </a>
+          <a
+            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+            routerLink="/admin/metrics"
+            (click)="collapseNavbar()"
+          >
+            <fa-icon icon="tachometer-alt" class="text-xs w-4" />
+            Métriques
+          </a>
+          <a
+            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+            routerLink="/admin/configuration"
+            (click)="collapseNavbar()"
+          >
+            <fa-icon icon="cogs" class="text-xs w-4" />
+            Configuration
+          </a>
+        </div>
+
+        <!-- Mobile Account -->
+        <div class="border-t border-slate-100 pt-3 mt-3">
+          <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Compte</p>
+          @if (accountValue !== null) {
+            <a
+              class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+              routerLink="/account/settings"
+              (click)="collapseNavbar()"
+            >
+              <fa-icon icon="wrench" class="text-xs w-4" />
+              Profil
+            </a>
+            <button
+              class="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-colors"
+              (click)="logout()"
+            >
+              <fa-icon icon="sign-out-alt" class="text-xs w-4" />
+              Déconnexion
+            </button>
+          } @else {
+            <button
+              class="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+              (click)="login()"
+            >
+              <fa-icon icon="sign-in-alt" class="text-xs w-4" />
+              S'authentifier
+            </button>
+          }
+        </div>
+      </div>
     </div>
   </div>
 </nav>

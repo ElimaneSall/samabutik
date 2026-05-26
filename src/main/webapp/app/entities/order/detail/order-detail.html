@@ -1,96 +1,212 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    @if (order(); as orderRef) {
-      <div>
-        <h2 data-cy="orderDetailsHeading"><span jhiTranslate="samabutikApp.order.detail.title">Order</span></h2>
-
-        <hr />
-
-        <jhi-alert-error />
-
-        <jhi-alert />
-
-        <dl class="row-md jh-entity-details">
-          <dt><span jhiTranslate="global.field.id">ID</span></dt>
-          <dd>
-            <span>{{ orderRef.id }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.orderNumber">Order Number</span></dt>
-          <dd>
-            <span>{{ orderRef.orderNumber }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.status">Status</span></dt>
-          <dd>
-            <span [jhiTranslate]="'samabutikApp.OrderStatus.' + (orderRef.status ?? 'null')">{{
-              {
-                null: '',
-                PENDING: 'PENDING',
-                PAID: 'PAID',
-                PREPARING: 'PREPARING',
-                SHIPPED: 'SHIPPED',
-                DELIVERED: 'DELIVERED',
-                CANCELLED: 'CANCELLED',
-              }[orderRef.status ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.totalAmount">Total Amount</span></dt>
-          <dd>
-            <span>{{ orderRef.totalAmount }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.currency">Currency</span></dt>
-          <dd>
-            <span>{{ orderRef.currency }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.paymentMethod">Payment Method</span></dt>
-          <dd>
-            <span [jhiTranslate]="'samabutikApp.PaymentMethod.' + (orderRef.paymentMethod ?? 'null')">{{
-              { null: '', WAVE: 'WAVE', ORANGE_MONEY: 'ORANGE_MONEY', CASH: 'CASH' }[orderRef.paymentMethod ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.paymentStatus">Payment Status</span></dt>
-          <dd>
-            <span [jhiTranslate]="'samabutikApp.PaymentStatus.' + (orderRef.paymentStatus ?? 'null')">{{
-              { null: '', PENDING: 'PENDING', SUCCESS: 'SUCCESS', FAILED: 'FAILED', REFUNDED: 'REFUNDED' }[orderRef.paymentStatus ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.paymentReference">Payment Reference</span></dt>
-          <dd>
-            <span>{{ orderRef.paymentReference }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.shippingAddress">Shipping Address</span></dt>
-          <dd>
-            <span>{{ orderRef.shippingAddress }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.shippingCost">Shipping Cost</span></dt>
-          <dd>
-            <span>{{ orderRef.shippingCost }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.deliveryNote">Delivery Note</span></dt>
-          <dd>
-            <span>{{ orderRef.deliveryNote }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.deliveredAt">Delivered At</span></dt>
-          <dd>
-            <span>{{ orderRef.deliveredAt | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span jhiTranslate="samabutikApp.order.customer">Customer</span></dt>
-          <dd>
-            @if (order()!.customer) {
-              <div>
-                <a [routerLink]="['/customer', order()!.customer?.id, 'view']">{{ orderRef.customer?.id }}</a>
-              </div>
-            }
-          </dd>
-        </dl>
-
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Retour</span>
-        </button>
-
-        <button type="button" [routerLink]="['/order', orderRef.id, 'edit']" class="btn btn-primary">
-          <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Editer</span>
-        </button>
+<div class="min-h-screen bg-slate-50 font-sans pb-8">
+  <!-- Sticky Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-100">
+    <div class="flex items-center gap-3 px-4 h-14">
+      <button
+        class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-all active:scale-95"
+        (click)="router.navigate(['/order'])"
+      >
+        <fa-icon icon="arrow-left" class="text-sm" />
+      </button>
+      <div class="flex-1">
+        <h1 class="text-base font-bold text-slate-900">Commande #{{ order?.orderNumber }}</h1>
       </div>
-    }
-  </div>
+      <span
+        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide"
+        [class]="getStatusClass()"
+      >
+        <span
+          class="w-1.5 h-1.5 rounded-full"
+          [class.animate-pulse]="order?.status === 'PENDING' || order?.status === 'PREPARING' || order?.status === 'SHIPPED'"
+        ></span>
+        {{ getStatusLabel() }}
+      </span>
+    </div>
+  </header>
+
+  <main class="px-4 pt-4 space-y-4 max-w-lg mx-auto">
+    <!-- Order Summary Card -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-50">
+        <div class="flex items-center gap-2 mb-1">
+          <div class="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
+            <fa-icon icon="receipt" class="text-orange-500 text-xs" />
+          </div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Récapitulatif</span>
+        </div>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <span class="text-xs text-slate-400 font-medium uppercase">Date</span>
+            <p class="text-sm font-semibold text-slate-900 mt-0.5">{{ order?.deliveredAt }}</p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 font-medium uppercase">Montant</span>
+            <p class="text-lg font-bold text-orange-600 mt-0.5">{{ order?.totalAmount | number: '1.0-0' : 'fr-FR' }} XOF</p>
+          </div>
+        </div>
+        <div class="pt-3 border-t border-slate-100">
+          <span class="text-xs text-slate-400 font-medium uppercase">Adresse de livraison</span>
+          <div class="flex items-start gap-2 mt-1.5">
+            <fa-icon icon="map-marker-alt" class="text-orange-400 text-sm mt-0.5" />
+            <p class="text-sm text-slate-700 leading-relaxed">{{ order?.shippingAddress || 'Non spécifiée' }}</p>
+          </div>
+        </div>
+        @if (order?.deliveryNote) {
+          <div class="pt-3 border-t border-slate-100">
+            <span class="text-xs text-slate-400 font-medium uppercase">Note de livraison</span>
+            <p class="text-sm text-slate-600 italic mt-1.5 bg-slate-50 p-3 rounded-lg">{{ order?.deliveryNote }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-50">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+            <fa-icon icon="route" class="text-emerald-500 text-xs" />
+          </div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Suivi de livraison</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="relative pl-8">
+          <!-- Vertical Line -->
+          <div class="absolute left-[11px] top-2 bottom-6 w-0.5 bg-slate-200 rounded-full">
+            <div class="bg-orange-500 rounded-full transition-all duration-700 ease-out" [style.height.%]="getTimelineProgress()"></div>
+          </div>
+
+          <!-- Steps -->
+          @for (step of timelineSteps; track step.label; let i = $index) {
+            <div class="relative mb-6 last:mb-0 flex items-start gap-4">
+              <!-- Icon Circle -->
+              <div
+                class="absolute -left-[30px] w-6 h-6 rounded-full flex items-center justify-center z-10 border-2 border-white shadow-sm transition-all duration-300"
+                [class.bg-emerald-500]="step.status === 'completed'"
+                [class.bg-orange-500]="step.status === 'active'"
+                [class.bg-slate-200]="step.status === 'pending'"
+                [class.ring-4]="step.status === 'active'"
+                [class.ring-orange-100]="step.status === 'active'"
+              >
+                @if (step.status === 'completed') {
+                  <fa-icon icon="check" class="text-white text-[10px]" />
+                } @else if (step.status === 'active') {
+                  <fa-icon [icon]="step.icon" class="text-white text-[10px]" />
+                } @else {
+                  <fa-icon [icon]="step.icon" class="text-slate-400 text-[10px]" />
+                }
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 pt-0.5">
+                <p
+                  class="text-sm font-semibold"
+                  [class.text-orange-600]="step.status === 'active'"
+                  [class.text-slate-900]="step.status === 'completed'"
+                  [class.text-slate-400]="step.status === 'pending'"
+                >
+                  {{ step.label }}
+                </p>
+                @if (step.time) {
+                  <p class="text-xs text-slate-400 mt-0.5">{{ step.time | date: 'dd MMM yyyy, HH:mm' }}</p>
+                }
+                @if (step.status === 'active') {
+                  @if (step.label === 'Préparation') {
+                    <p class="text-xs text-orange-500 mt-1 font-medium animate-pulse">L'équipe prépare vos articles...</p>
+                  }
+                  @if (step.label === 'En livraison') {
+                    <p class="text-xs text-orange-500 mt-1 font-medium animate-pulse">Le livreur est en route !</p>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 border-b border-slate-50">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center">
+            <fa-icon icon="shopping-bag" class="text-violet-500 text-xs" />
+          </div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Articles ({{ items.length }})</span>
+        </div>
+      </div>
+      <div class="p-5 space-y-4">
+        @for (item of items; track item.id; let last = $last) {
+          <div class="flex items-center gap-3" [class.pb-4]="!last" [class.border-b]="!last" [class.border-slate-100]="!last">
+            <!-- Product Image -->
+            <div
+              class="w-14 h-14 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 flex items-center justify-center border border-slate-100"
+            >
+              @if (item.productSnapshot?.mainMedia?.url) {
+                <img
+                  [src]="getMediaUrl(item.productSnapshot!.mainMedia!.url)"
+                  class="w-full h-full object-cover"
+                  [alt]="item.productName"
+                />
+              } @else {
+                <fa-icon icon="box" class="text-slate-300 text-lg" />
+              }
+            </div>
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-slate-900 truncate">{{ item.productName }}</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-xs text-slate-500">Qté: {{ item.quantity }}</span>
+                @if (item.isPackItem) {
+                  <span class="inline-flex items-center gap-1 text-[10px] font-medium text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded">
+                    <fa-icon icon="gift" class="text-[8px]" />
+                    Pack
+                  </span>
+                }
+              </div>
+            </div>
+            <!-- Price -->
+            <p class="text-sm font-bold text-orange-600">{{ item.subtotal | number: '1.0-0' : 'fr-FR' }} XOF</p>
+          </div>
+        }
+      </div>
+      <!-- Total -->
+      <div class="px-5 py-4 bg-slate-50 border-t border-slate-100">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-slate-600">Total</span>
+          <span class="text-xl font-bold text-orange-600">{{ order?.totalAmount | number: '1.0-0' : 'fr-FR' }} XOF</span>
+        </div>
+        <div class="flex justify-between items-center mt-2">
+          <span class="text-xs text-slate-400">Paiement</span>
+          <span
+            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase"
+            [class]="getPaymentStatusClass()"
+          >
+            {{ getPaymentStatusLabel() }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="space-y-3 pt-2">
+      <button
+        class="w-full py-3.5 bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold text-sm rounded-xl shadow-lg shadow-green-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+        (click)="openWhatsApp()"
+      >
+        <fa-icon icon="comment" class="text-base" />
+        Contacter le support
+      </button>
+      <button
+        class="w-full py-3.5 bg-white border border-slate-200 text-slate-600 font-semibold text-sm rounded-xl hover:bg-slate-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+        (click)="router.navigate(['/'])"
+      >
+        <fa-icon icon="home" class="text-base" />
+        Retour à l'accueil
+      </button>
+    </div>
+  </main>
 </div>

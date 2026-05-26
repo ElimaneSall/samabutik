@@ -1,83 +1,423 @@
-<div class="row">
-  <div class="col-md-3">
-    <span class="hipster img-fluid rounded"></span>
-  </div>
-
-  <div class="col-md-9">
-    <h1 class="display-4"><span jhiTranslate="home.title">Bienvenue, Java Hipster !</span> (Samabutik)</h1>
-
-    <p class="lead" jhiTranslate="home.subtitle">Ceci est votre page d&apos;accueil</p>
-
-    <div>
-      @if (account() !== null) {
-        <div class="alert alert-success">
-          @if (account(); as accountRef) {
-            <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }"
-              >Vous êtes connecté en tant que &quot;{{ accountRef.login }}&quot;.</span
-            >
-          }
+<!-- home.html - Design mobile-first avec Tailwind -->
+<div class="min-h-screen bg-slate-50 font-sans pb-20">
+  <!-- ========== HERO BANNER ========== -->
+  <section class="px-4 pt-4">
+    @if (featuredPacks().length > 0) {
+      <div class="relative h-[400px] md:h-[500px] lg:h-[550px]">
+        <jhi-pack-carousel
+          [packs]="featuredPacks()"
+          variant="hero"
+          [autoPlay]="true"
+          [autoPlayInterval]="50000"
+          (packClick)="navigateToPackDetail($event)"
+        />
+      </div>
+    } @else {
+      <!-- Fallback skeleton -->
+      <div
+        class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-amber-600 via-orange-600 to-orange-700 aspect-[4/3] shadow-lg animate-pulse"
+      >
+        <div class="absolute inset-0 flex items-center justify-center">
+          <fa-icon icon="boxes" class="text-white/50 text-6xl" />
         </div>
-      } @else {
-        <div class="alert alert-warning">
-          <span jhiTranslate="global.messages.info.authenticated.prefix">Si vous voulez vous </span>
-          <a class="alert-link" (click)="login()" jhiTranslate="global.messages.info.authenticated.link">connecter</a
-          ><span jhiTranslate="global.messages.info.authenticated.suffix"
-            >, vous pouvez utiliser les comptes par défaut : <br />
-            - Administrateur (nom d&apos;utilisateur=&quot;admin&quot; et mot de passe =&quot;admin&quot;) <br />
-            - Utilisateur (nom d&apos;utilisateur=&quot;user&quot; et mot de passe =&quot;user&quot;).</span
+      </div>
+    }
+  </section>
+  <!--  -->
+  <!--  <section class="px-4 pt-4">-->
+  <!--    <div class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-amber-600 via-orange-600 to-orange-700 aspect-[4/3] shadow-lg">-->
+  <!--      @if (heroBannerUrl()) {-->
+  <!--      <img-->
+  <!--        [src]="heroBannerUrl()"-->
+  <!--        alt="Packs Spéciaux"-->
+  <!--        class="absolute inset-0 w-full h-full object-cover opacity-40"-->
+  <!--      />-->
+  <!--      }-->
+  <!--      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>-->
+  <!--      <div class="absolute inset-0 p-6 flex flex-col justify-end">-->
+  <!--        <div class="mb-3">-->
+  <!--          <span class="inline-flex items-center gap-1.5 bg-green-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">-->
+  <!--            <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>-->
+  <!--            Offre Limitée-->
+  <!--          </span>-->
+  <!--        </div>-->
+  <!--        <h2 class="text-2xl font-bold text-white leading-tight mb-1">-->
+  <!--          Packs Spéciaux-->
+  <!--        </h2>-->
+  <!--        <p class="text-lg font-bold text-white/90 mb-3">-->
+  <!--          Jusqu'à <span class="text-yellow-300">-30%</span>-->
+  <!--        </p>-->
+  <!--        <button-->
+  <!--          class="self-start px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-orange-500/30 transition-all active:scale-95"-->
+  <!--          (click)="navigateToPacks()"-->
+  <!--        >-->
+  <!--          En profiter-->
+  <!--        </button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </section>-->
+
+  <!-- ========== CATÉGORIES ========== -->
+  <section class="px-4 pt-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-900">Catégories</h3>
+      <button class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors" (click)="navigateToCategories()">
+        Voir tout
+      </button>
+    </div>
+    <div class="relative flex gap-3 overflow-x-auto pb-4 px-2 snap-x snap-mandatory scrollbar-hide">
+      @for (cat of categoriesList(); track cat.id) {
+        <button
+          type="button"
+          class="group flex flex-col items-center gap-2 min-w-[80px] max-w-[96px] p-3 rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 snap-start active:scale-[0.97]"
+          [class.border-blue-500]="cat.isSelected"
+          [class.bg-blue-50]="cat.isSelected"
+          [class.shadow-blue-100]="cat.isSelected"
+          (click)="filterByCategory(cat)"
+          [attr.aria-label]="'Filtrer par catégorie ' + cat.name"
+          [attr.aria-pressed]="cat.isSelected || false"
+        >
+          <!-- Nom + Compteur -->
+          <span class="text-xs font-semibold text-slate-700 text-center leading-tight line-clamp-2">
+            {{ cat.name }}
+            @if (cat.count !== undefined && cat.count !== null) {
+              <span class="mt-0.5 block text-[10px] font-normal text-slate-400">{{ cat.count }} articles</span>
+            }
+          </span>
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- ========== MEILLEURES VENTES ========== -->
+  <section class="px-4 pt-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-900">Meilleures ventes</h3>
+      <button class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors" (click)="navigateToProducts()">
+        Voir tout
+      </button>
+    </div>
+
+    @if (isLoading()) {
+      <div class="grid grid-cols-2 gap-3">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm animate-pulse">
+            <div class="aspect-square bg-slate-200"></div>
+            <div class="p-3 space-y-2">
+              <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+              <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+              <div class="h-8 bg-slate-200 rounded"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 gap-3">
+        @for (product of bestSellers(); track product.id) {
+          <div
+            class="product-card bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer"
+            (click)="navigateToProductDetail(product)"
           >
-        </div>
+            <!-- Image + Badges -->
+            <div class="relative aspect-square bg-slate-100">
+              @if (product.mainMedia?.url) {
+                <img
+                  [src]="getMediaUrl(product.mainMedia!.url)"
+                  [alt]="product.name ?? 'Produit'"
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="w-full h-full flex items-center justify-center">
+                  <fa-icon icon="box" class="text-slate-300 text-3xl" />
+                </div>
+              }
 
-        <div class="alert alert-warning">
-          <span jhiTranslate="global.messages.info.register.noaccount">Vous n&apos;avez pas encore de compte ?</span>&nbsp;
-          <a class="alert-link" routerLink="/account/register" jhiTranslate="global.messages.info.register.link">Créer un compte</a>
+              <!-- Stock Badge -->
+              <div class="absolute top-2 left-2">
+                @if ((product.stock ?? 0) > 0) {
+                  <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase"> En stock </span>
+                } @else {
+                  <span class="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase"> Rupture </span>
+                }
+              </div>
+
+              <!-- Discount Badge -->
+              @if (calculateDiscount(product) > 0) {
+                <div class="absolute top-2 right-2">
+                  <span class="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
+                    -{{ calculateDiscount(product) }}%
+                  </span>
+                </div>
+              }
+
+              <!-- Quick Add Button -->
+              @if ((product.stock ?? 0) > 0) {
+                <button
+                  class="absolute bottom-2 right-2 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-orange-500 shadow-md hover:bg-orange-500 hover:text-white transition-all active:scale-90 z-10"
+                  (click)="addToCart(product, $event)"
+                  [attr.aria-label]="'Ajouter ' + product.name + ' au panier'"
+                >
+                  <fa-icon icon="plus" class="text-xs" />
+                </button>
+              }
+            </div>
+
+            <!-- Info -->
+            <div class="p-3">
+              <h4 class="text-sm font-semibold text-slate-900 line-clamp-2 leading-tight min-h-[2.5rem]">
+                {{ product.name }}
+              </h4>
+              <div class="flex items-baseline gap-1.5 mt-2">
+                <span class="text-base font-bold text-orange-600"> {{ product.price | number: '1.0-0' : 'fr-FR' }} XOF </span>
+                @if (product.costPrice && product.costPrice < (product.price ?? 0)) {
+                  <span class="text-xs text-slate-400 line-through">
+                    {{ product.costPrice | number: '1.0-0' : 'fr-FR' }}
+                  </span>
+                }
+              </div>
+              <button
+                class="w-full mt-2 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                (click)="addToCart(product, $event)"
+                [disabled]="(product.stock ?? 0) <= 0"
+                [class.opacity-50]="(product.stock ?? 0) <= 0"
+                [class.cursor-not-allowed]="(product.stock ?? 0) <= 0"
+              >
+                <fa-icon icon="plus" class="text-[10px]" />
+                Ajouter
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- ========== PACKS EN PROMO ========== -->
+  <section class="px-4 pt-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-900">Packs en promo</h3>
+      <button class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors" (click)="navigateToPacks()">
+        Voir tout
+      </button>
+    </div>
+
+    @if (isLoading()) {
+      <div class="grid grid-cols-2 gap-3">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm animate-pulse">
+            <div class="aspect-square bg-slate-200"></div>
+            <div class="p-3 space-y-2">
+              <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+              <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+              <div class="h-8 bg-slate-200 rounded"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 gap-3">
+        @for (pack of featuredPacks(); track pack.id) {
+          <div
+            class="product-card bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer"
+            (click)="navigateToPackDetail(pack)"
+          >
+            <!-- Image + Badges -->
+            <div class="relative aspect-square bg-slate-100">
+              @if (pack.mainMedia?.url) {
+                <img
+                  [src]="getMediaUrl(pack.mainMedia!.url)"
+                  [alt]="pack.name ?? 'Pack'"
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              } @else if (pack.packItems?.[0]?.product?.mainMedia?.url) {
+                <img
+                  [src]="getMediaUrl(pack.packItems?.[0]?.product!.mainMedia!.url)"
+                  [alt]="pack.name ?? 'Pack'"
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="w-full h-full flex items-center justify-center">
+                  <fa-icon icon="boxes" class="text-slate-300 text-3xl" />
+                </div>
+              }
+
+              <!-- Stock/Availability Badge -->
+              <div class="absolute top-2 left-2">
+                @if (isPackAvailable(pack)) {
+                  <span class="bg-green-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase"> Disponible </span>
+                } @else {
+                  <span class="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase"> Rupture </span>
+                }
+              </div>
+
+              <!-- Discount Badge -->
+              @if (calculatePackDiscount(pack) > 0) {
+                <div class="absolute top-2 right-2">
+                  <span class="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
+                    -{{ calculatePackDiscount(pack) }}%
+                  </span>
+                </div>
+              }
+
+              <!-- Items Count Badge (en bas) -->
+              <div class="absolute bottom-2 left-2">
+                <span class="bg-black/60 backdrop-blur text-white text-[9px] font-medium px-2 py-0.5 rounded-full">
+                  {{ pack.packItems?.length ?? 0 }} article{{ (pack.packItems?.length ?? 0) > 1 ? 's' : '' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Info -->
+            <div class="p-3">
+              <h4 class="text-sm font-semibold text-slate-900 line-clamp-2 leading-tight min-h-[2.5rem]">
+                {{ pack.name }}
+              </h4>
+              <p class="text-xs text-slate-500 mt-0.5 line-clamp-1">{{ pack.description ?? 'Pack promotionnel' }}</p>
+
+              <div class="flex items-baseline gap-1.5 mt-2">
+                <span class="text-base font-bold text-orange-600">
+                  {{ calculatePackFinalPrice(pack) | number: '1.0-0' : 'fr-FR' }} XOF
+                </span>
+                @if (calculatePackOriginalPrice(pack) > calculatePackFinalPrice(pack)) {
+                  <span class="text-xs text-slate-400 line-through">
+                    {{ calculatePackOriginalPrice(pack) | number: '1.0-0' : 'fr-FR' }}
+                  </span>
+                }
+              </div>
+
+              <!-- Progress bar (offre limitée) -->
+              @if (getDaysLeft(pack.endDate) > 0 && getDaysLeft(pack.endDate) <= 7 && isReady()) {
+                <div class="mt-2">
+                  <div class="flex items-center justify-between text-[10px] text-slate-500 mb-1">
+                    <span>Se termine bientôt</span>
+                    <span>{{ getDaysLeft(pack.endDate) }}j restants</span>
+                  </div>
+                  <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-orange-500 rounded-full transition-all" [style.width.%]="getPackProgress(pack)"></div>
+                  </div>
+                </div>
+              }
+
+              <button
+                class="w-full mt-2 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                (click)="addPackToCart(pack, $event)"
+                [disabled]="!isPackAvailable(pack)"
+                [class.opacity-50]="!isPackAvailable(pack)"
+                [class.cursor-not-allowed]="!isPackAvailable(pack)"
+              >
+                <fa-icon icon="plus" class="text-[10px]" />
+                Ajouter le pack
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+  <!-- ========== NOUVEAUTÉS ========== -->
+  <section class="px-4 pt-6 pb-4">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-900">Nouveautés</h3>
+      <button class="text-sm font-medium text-orange-500 hover:text-orange-600 transition-colors" (click)="navigateToProducts()">
+        Voir tout
+      </button>
+    </div>
+
+    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+      @for (product of newArrivals(); track product.id) {
+        <div
+          class="new-arrival-card flex-shrink-0 snap-start w-40 bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer"
+          (click)="navigateToProductDetail(product)"
+        >
+          <div class="relative aspect-square bg-slate-100">
+            @if (product.mainMedia?.url) {
+              <img
+                [src]="getMediaUrl(product.mainMedia!.url)"
+                [alt]="product.name ?? 'Produit'"
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center">
+                <fa-icon icon="box" class="text-slate-300 text-2xl" />
+              </div>
+            }
+            <div class="absolute top-2 left-2">
+              <span class="bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Nouveau</span>
+            </div>
+          </div>
+          <div class="p-2.5">
+            <h4 class="text-xs font-semibold text-slate-900 line-clamp-2 leading-tight">{{ product.name }}</h4>
+            <p class="text-sm font-bold text-orange-600 mt-1">{{ product.price | number: '1.0-0' : 'fr-FR' }} XOF</p>
+          </div>
         </div>
       }
     </div>
+  </section>
 
-    <p jhiTranslate="home.question">Si vous avez des questions à propos de JHipster :</p>
+  <!-- ========== BOTTOM NAVIGATION ========== -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-2 z-50 safe-area-pb">
+    <div class="flex items-center justify-around">
+      <button
+        class="nav-item flex flex-col items-center gap-0.5 transition-colors"
+        [class.text-orange-500]="activeTab() === 'home'"
+        [class.text-slate-400]="activeTab() !== 'home'"
+        (click)="setActiveTab('home')"
+      >
+        <fa-icon icon="home" class="text-lg" />
+        <span class="text-[10px] font-medium">Accueil</span>
+      </button>
 
-    <ul>
-      <li>
-        <a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer" jhiTranslate="home.link.homepage"
-          >Page d&apos;accueil de JHipster</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://stackoverflow.com/tags/jhipster/info"
-          target="_blank"
-          rel="noopener noreferrer"
-          jhiTranslate="home.link.stackoverflow"
-          >JHipster sur Stack Overflow</a
-        >
-      </li>
-      <li>
-        <a
-          href="https://github.com/jhipster/generator-jhipster/issues?state=open"
-          target="_blank"
-          rel="noopener noreferrer"
-          jhiTranslate="home.link.bugtracker"
-          >JHipster bug tracker</a
-        >
-      </li>
-      <li>
-        <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer" jhiTranslate="home.link.chat"
-          >JHipster public chat room</a
-        >
-      </li>
-      <li>
-        <a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer" jhiTranslate="home.link.follow"
-          >Suivez &#64;jhipster sur Twitter</a
-        >
-      </li>
-    </ul>
+      <button
+        class="nav-item flex flex-col items-center gap-0.5 transition-colors"
+        [class.text-orange-500]="activeTab() === 'categories'"
+        [class.text-slate-400]="activeTab() !== 'categories'"
+        (click)="setActiveTab('categories')"
+      >
+        <fa-icon icon="th-large" class="text-lg" />
+        <span class="text-[10px] font-medium">Catégories</span>
+      </button>
 
-    <p>
-      <span jhiTranslate="home.like">Si vous aimez JHipster, donnez-nous une étoile sur</span>
-      <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer" jhiTranslate="home.github"
-        >GitHub</a
-      >!
-    </p>
-  </div>
+      <button
+        class="nav-item flex flex-col items-center gap-0.5 transition-colors relative"
+        [class.text-orange-500]="activeTab() === 'cart'"
+        [class.text-slate-400]="activeTab() !== 'cart'"
+        (click)="setActiveTab('cart')"
+      >
+        <fa-icon icon="shopping-cart" class="text-lg" />
+        @if (cartCount() > 0) {
+          <span
+            class="absolute -top-1 right-1 w-4 h-4 bg-orange-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center animate-pulse"
+          >
+            {{ cartCount() }}
+          </span>
+        }
+        <span class="text-[10px] font-medium">Panier</span>
+      </button>
+
+      <button
+        class="nav-item flex flex-col items-center gap-0.5 transition-colors"
+        [class.text-orange-500]="activeTab() === 'account'"
+        [class.text-slate-400]="activeTab() !== 'account'"
+        (click)="setActiveTab('account')"
+      >
+        <fa-icon icon="user" class="text-lg" />
+        <span class="text-[10px] font-medium">Compte</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== WHATSAPP FLOATING BUTTON ========== -->
+  <a
+    href="https://wa.me/221771234567?text=Bonjour%20SamaButik,%20j'ai%20une%20question..."
+    target="_blank"
+    rel="noopener noreferrer"
+    class="fixed bottom-20 right-4 w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 transition-all active:scale-95 z-40"
+    aria-label="Contacter sur WhatsApp"
+  >
+    <fa-icon icon="comment" class="text-2xl" />
+  </a>
 </div>

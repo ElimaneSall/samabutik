@@ -179,6 +179,12 @@
                   <fa-icon icon="sort" class="text-slate-400" />
                 </div>
               </th>
+              <th
+                class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                jhiTranslate="samabutikApp.product.table.image"
+              >
+                Image
+              </th>
               <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 <div class="flex items-center gap-1 cursor-pointer" (click)="sort('name')">
                   <span jhiTranslate="samabutikApp.pack.table.name">Nom</span>
@@ -229,6 +235,15 @@
                     [routerLink]="['/pack', pack.id, 'view']"
                     >{{ pack.id }}</a
                   >
+                </td>
+                <td class="px-6 py-4">
+                  <div class="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden">
+                    @if (pack.mainMedia?.url) {
+                      <img [src]="pack.mainMedia?.url" [alt]="pack.name" class="w-full h-full object-cover" />
+                    } @else {
+                      <fa-icon icon="box" class="text-slate-400 text-xl" />
+                    }
+                  </div>
                 </td>
                 <td class="px-6 py-4">
                   <span class="text-sm font-semibold text-slate-900">{{ pack.name }}</span>

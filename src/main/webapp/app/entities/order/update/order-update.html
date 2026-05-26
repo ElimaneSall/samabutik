@@ -1,291 +1,227 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-order-heading" data-cy="OrderCreateUpdateHeading" jhiTranslate="samabutikApp.order.home.createOrEditLabel">
-        Créer ou éditer un Order
-      </h2>
+<div class="min-h-screen bg-background pb-32">
+  <!-- Header -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface shadow-sm px-gutter h-14 flex items-center">
+    <button class="p-2 hover:opacity-80 active:scale-95 transition-all" (click)="previousStep()" *ngIf="currentStep() > 1">
+      <fa-icon icon="arrow-left" class="text-primary text-lg" />
+    </button>
+    <h1 class="font-headline-md-mobile font-bold text-primary ml-2">SamaButik</h1>
+    <div class="flex-1"></div>
+    <fa-icon icon="shopping-cart" class="text-primary text-xl" />
+  </header>
 
-      <div>
-        <jhi-alert-error />
-
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="global.field.id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
-
-        @let orderNumberRef = editForm.get('orderNumber')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_orderNumber" jhiTranslate="samabutikApp.order.orderNumber">Order Number</label>
-          <input
-            type="text"
-            class="form-control"
-            name="orderNumber"
-            id="field_orderNumber"
-            data-cy="orderNumber"
-            formControlName="orderNumber"
-          />
-          @if (orderNumberRef.invalid && (orderNumberRef.dirty || orderNumberRef.touched)) {
-            <div>
-              @if (editForm.get('orderNumber')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('orderNumber')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '20' }"
-                  >Ce champ doit faire au maximum 20 caractères.</small
-                >
-              }
-            </div>
-          }
+  <main class="pt-20 px-container-margin">
+    <!-- Stepper -->
+    <div class="flex items-center justify-between mb-lg">
+      <div class="flex flex-col items-center flex-1">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-label-lg mb-xs" [class]="getStepClass(1)">
+          <fa-icon icon="check" class="text-[14px]" *ngIf="currentStep() > 1" />
+          <span *ngIf="currentStep() <= 1">1</span>
         </div>
-
-        @let statusRef = editForm.get('status')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_status" jhiTranslate="samabutikApp.order.status">Status</label>
-          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
-            <option [ngValue]="null">{{ 'samabutikApp.OrderStatus.null' | translate }}</option>
-            @for (orderStatus of orderStatusValues; track $index) {
-              <option [value]="orderStatus">{{ 'samabutikApp.OrderStatus.' + orderStatus | translate }}</option>
-            }
-          </select>
-          @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
-            <div>
-              @if (editForm.get('status')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-            </div>
-          }
+        <span class="font-label-sm-mobile" [class.text-primary]="currentStep() === 1" [class.text-on-surface-variant]="currentStep() !== 1"
+          >Résumé</span
+        >
+      </div>
+      <div class="h-[2px] w-12" [class.bg-secondary]="currentStep() > 1" [class.bg-outline-variant]="currentStep() <= 1"></div>
+      <div class="flex flex-col items-center flex-1">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-label-lg mb-xs" [class]="getStepClass(2)">
+          <fa-icon icon="check" class="text-[14px]" *ngIf="currentStep() > 2" />
+          <span *ngIf="currentStep() <= 2">2</span>
         </div>
+        <span class="font-label-sm-mobile" [class.text-primary]="currentStep() === 2" [class.text-on-surface-variant]="currentStep() !== 2"
+          >Livraison</span
+        >
+      </div>
+      <div class="h-[2px] w-12" [class.bg-secondary]="currentStep() > 2" [class.bg-outline-variant]="currentStep() <= 2"></div>
+      <div class="flex flex-col items-center flex-1">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-label-lg mb-xs" [class]="getStepClass(3)">3</div>
+        <span class="font-label-sm-mobile" [class.text-primary]="currentStep() === 3" [class.text-on-surface-variant]="currentStep() !== 3"
+          >Paiement</span
+        >
+      </div>
+    </div>
 
-        @let totalAmountRef = editForm.get('totalAmount')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_totalAmount" jhiTranslate="samabutikApp.order.totalAmount">Total Amount</label>
-          <input
-            type="number"
-            class="form-control"
-            name="totalAmount"
-            id="field_totalAmount"
-            data-cy="totalAmount"
-            formControlName="totalAmount"
-          />
-          @if (totalAmountRef.invalid && (totalAmountRef.dirty || totalAmountRef.touched)) {
-            <div>
-              @if (editForm.get('totalAmount')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('totalAmount')?.errors?.min) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
-                  >Ce champ doit être supérieur à 0.</small
-                >
-              }
-              <small
-                class="form-text text-danger"
-                [hidden]="!editForm.get('totalAmount')?.errors?.number"
-                jhiTranslate="entity.validation.number"
-                >Ce champ doit être un nombre.</small
-              >
-            </div>
-          }
-        </div>
+    <!-- Step 1: Order Summary -->
+    <div *ngIf="currentStep() === 1">
+      <h2 class="font-headline-lg mb-md">Résumé de la commande</h2>
 
-        @let currencyRef = editForm.get('currency')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_currency" jhiTranslate="samabutikApp.order.currency">Currency</label>
-          <input type="text" class="form-control" name="currency" id="field_currency" data-cy="currency" formControlName="currency" />
-          @if (currencyRef.invalid && (currencyRef.dirty || currencyRef.touched)) {
-            <div>
-              @if (editForm.get('currency')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('currency')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '3' }"
-                  >Ce champ doit faire au maximum 3 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_paymentMethod" jhiTranslate="samabutikApp.order.paymentMethod">Payment Method</label>
-          <select
-            class="form-control"
-            name="paymentMethod"
-            formControlName="paymentMethod"
-            id="field_paymentMethod"
-            data-cy="paymentMethod"
-          >
-            <option [ngValue]="null">{{ 'samabutikApp.PaymentMethod.null' | translate }}</option>
-            @for (paymentMethod of paymentMethodValues; track $index) {
-              <option [value]="paymentMethod">{{ 'samabutikApp.PaymentMethod.' + paymentMethod | translate }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_paymentStatus" jhiTranslate="samabutikApp.order.paymentStatus">Payment Status</label>
-          <select
-            class="form-control"
-            name="paymentStatus"
-            formControlName="paymentStatus"
-            id="field_paymentStatus"
-            data-cy="paymentStatus"
-          >
-            <option [ngValue]="null">{{ 'samabutikApp.PaymentStatus.null' | translate }}</option>
-            @for (paymentStatus of paymentStatusValues; track $index) {
-              <option [value]="paymentStatus">{{ 'samabutikApp.PaymentStatus.' + paymentStatus | translate }}</option>
-            }
-          </select>
-        </div>
-
-        @let paymentReferenceRef = editForm.get('paymentReference')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_paymentReference" jhiTranslate="samabutikApp.order.paymentReference"
-            >Payment Reference</label
-          >
-          <input
-            type="text"
-            class="form-control"
-            name="paymentReference"
-            id="field_paymentReference"
-            data-cy="paymentReference"
-            formControlName="paymentReference"
-          />
-          @if (paymentReferenceRef.invalid && (paymentReferenceRef.dirty || paymentReferenceRef.touched)) {
-            <div>
-              @if (editForm.get('paymentReference')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '100' }"
-                  >Ce champ doit faire au maximum 100 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        @let shippingAddressRef = editForm.get('shippingAddress')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_shippingAddress" jhiTranslate="samabutikApp.order.shippingAddress">Shipping Address</label>
-          <input
-            type="text"
-            class="form-control"
-            name="shippingAddress"
-            id="field_shippingAddress"
-            data-cy="shippingAddress"
-            formControlName="shippingAddress"
-          />
-          @if (shippingAddressRef.invalid && (shippingAddressRef.dirty || shippingAddressRef.touched)) {
-            <div>
-              @if (editForm.get('shippingAddress')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">Ce champ est obligatoire.</small>
-              }
-              @if (editForm.get('shippingAddress')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '500' }"
-                  >Ce champ doit faire au maximum 500 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        @let shippingCostRef = editForm.get('shippingCost')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_shippingCost" jhiTranslate="samabutikApp.order.shippingCost">Shipping Cost</label>
-          <input
-            type="number"
-            class="form-control"
-            name="shippingCost"
-            id="field_shippingCost"
-            data-cy="shippingCost"
-            formControlName="shippingCost"
-          />
-          @if (shippingCostRef.invalid && (shippingCostRef.dirty || shippingCostRef.touched)) {
-            <div>
-              @if (editForm.get('shippingCost')?.errors?.min) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.min" [translateValues]="{ min: '0' }"
-                  >Ce champ doit être supérieur à 0.</small
-                >
-              }
-              <small
-                class="form-text text-danger"
-                [hidden]="!editForm.get('shippingCost')?.errors?.number"
-                jhiTranslate="entity.validation.number"
-                >Ce champ doit être un nombre.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let deliveryNoteRef = editForm.get('deliveryNote')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_deliveryNote" jhiTranslate="samabutikApp.order.deliveryNote">Delivery Note</label>
-          <input
-            type="text"
-            class="form-control"
-            name="deliveryNote"
-            id="field_deliveryNote"
-            data-cy="deliveryNote"
-            formControlName="deliveryNote"
-          />
-          @if (deliveryNoteRef.invalid && (deliveryNoteRef.dirty || deliveryNoteRef.touched)) {
-            <div>
-              @if (editForm.get('deliveryNote')?.errors?.maxlength) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.maxlength" [translateValues]="{ max: '1000' }"
-                  >Ce champ doit faire au maximum 1000 caractères.</small
-                >
-              }
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_deliveredAt" jhiTranslate="samabutikApp.order.deliveredAt">Delivered At</label>
-          <div class="d-flex">
-            <input
-              id="field_deliveredAt"
-              data-cy="deliveredAt"
-              type="datetime-local"
-              class="form-control"
-              name="deliveredAt"
-              formControlName="deliveredAt"
-              placeholder="YYYY-MM-DD HH:mm"
+      <div class="space-y-gutter mb-lg">
+        <div
+          *ngFor="let item of items()"
+          class="bg-surface-container-low p-md rounded-xl flex gap-md shadow-sm border border-outline-variant/10"
+        >
+          <div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-high flex items-center justify-center">
+            <img
+              [src]="getMediaUrl(item.productSnapshot?.mainMedia?.url)"
+              [alt]="item.productName"
+              class="w-full h-full object-cover"
+              *ngIf="item.productSnapshot?.mainMedia?.url"
             />
+            <fa-icon icon="box" class="text-slate-400 text-3xl" *ngIf="!item.productSnapshot?.mainMedia?.url" />
           </div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_customer" jhiTranslate="samabutikApp.order.customer">Customer</label>
-          <select
-            class="form-control"
-            id="field_customer"
-            data-cy="customer"
-            name="customer"
-            formControlName="customer"
-            [compareWith]="compareCustomer"
-          >
-            <option [ngValue]="null"></option>
-            @for (customerOption of customersSharedCollection(); track $index) {
-              <option [ngValue]="customerOption">{{ customerOption.id }}</option>
-            }
-          </select>
+          <div class="flex-grow">
+            <h3 class="font-title-lg text-on-surface">{{ item.productName }}</h3>
+            <p class="text-on-surface-variant text-label-sm">Quantité: {{ item.quantity }}</p>
+            <div class="flex items-baseline gap-2 mt-xs">
+              <p class="font-title-lg text-primary">{{ item.subtotal | number: '1.0-0' : 'fr-FR' }} XOF</p>
+              <p
+                class="text-label-sm text-on-surface-variant line-through"
+                *ngIf="(item.unitPrice ?? 0) !== (item.subtotal ?? 0) / (item.quantity ?? 1)"
+              >
+                {{ (item.unitPrice ?? 0) * (item.quantity ?? 0) | number: '1.0-0' }}
+              </p>
+            </div>
+            <span class="inline-flex items-center gap-1 text-label-sm text-on-surface-variant mt-1" *ngIf="item.isPackItem">
+              <fa-icon icon="gift" class="text-[12px]" /> Pack promotionnel
+            </span>
+          </div>
         </div>
       </div>
 
-      <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Annuler</span>
+      <div class="bg-surface-container rounded-xl p-md space-y-sm mb-lg border border-outline-variant/20">
+        <div class="flex justify-between text-body-md text-on-surface-variant">
+          <span>Sous-total</span>
+          <span>{{ subtotal() | number: '1.0-0' : 'fr-FR' }} XOF</span>
+        </div>
+        <div class="flex justify-between text-body-md text-on-surface-variant">
+          <span>Frais de livraison</span>
+          <span>{{ shippingCost() | number: '1.0-0' : 'fr-FR' }} XOF</span>
+        </div>
+        <div class="h-px bg-outline-variant/30 my-xs"></div>
+        <div class="flex justify-between items-center">
+          <span class="font-headline-md text-on-surface">Total</span>
+          <span class="font-headline-md text-primary">{{ total() | number: '1.0-0' : 'fr-FR' }} XOF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Shipping Info -->
+    <div *ngIf="currentStep() === 2">
+      <h2 class="font-headline-lg mb-md">Informations de livraison</h2>
+
+      <div class="space-y-md mb-lg">
+        <div>
+          <label class="block font-label-lg text-on-surface mb-xs">Adresse de livraison</label>
+          <textarea
+            [(ngModel)]="shippingAddress"
+            rows="3"
+            class="w-full px-md py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-0 transition-all"
+            placeholder="Rue, quartier, ville..."
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block font-label-lg text-on-surface mb-xs">Note de livraison (optionnel)</label>
+          <textarea
+            [(ngModel)]="deliveryNote"
+            rows="2"
+            class="w-full px-md py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-0 transition-all"
+            placeholder="Instructions pour le livreur..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-md mb-lg">
+        <div class="flex items-center gap-sm p-sm bg-secondary-container/10 border border-secondary/20 rounded-lg">
+          <fa-icon icon="shield-alt" class="text-secondary" />
+          <span class="text-label-sm text-secondary font-bold">Livraison sécurisée</span>
+        </div>
+        <div class="flex items-center gap-sm p-sm bg-secondary-container/10 border border-secondary/20 rounded-lg">
+          <fa-icon icon="truck" class="text-secondary" />
+          <span class="text-label-sm text-secondary font-bold">Suivi en temps réel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Payment -->
+    <div *ngIf="currentStep() === 3">
+      <h2 class="font-headline-lg mb-md">Mode de paiement</h2>
+
+      <div class="grid grid-cols-2 gap-gutter mb-lg">
+        <button
+          class="relative flex flex-col items-center p-md bg-surface-container-lowest border-2 rounded-xl transition-all"
+          [class.border-primary]="selectedPaymentMethod() === PaymentMethod.WAVE"
+          [class.border-outline-variant]="selectedPaymentMethod() !== PaymentMethod.WAVE"
+          [class.bg-primary/5]="selectedPaymentMethod() === PaymentMethod.WAVE"
+          (click)="selectPaymentMethod(PaymentMethod.WAVE)"
+        >
+          <div class="w-16 h-16 rounded-full bg-[#1da1f2] flex items-center justify-center mb-sm">
+            <fa-icon icon="wave-square" class="text-white text-3xl" />
+          </div>
+          <span class="font-label-lg text-on-surface">Wave</span>
+          <div class="absolute top-2 right-2" *ngIf="selectedPaymentMethod() === PaymentMethod.WAVE">
+            <fa-icon icon="check-circle" class="text-primary" />
+          </div>
         </button>
 
         <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
+          class="relative flex flex-col items-center p-md bg-surface-container-lowest border-2 rounded-xl transition-all"
+          [class.border-primary]="selectedPaymentMethod() === PaymentMethod.ORANGE_MONEY"
+          [class.border-outline-variant]="selectedPaymentMethod() !== PaymentMethod.ORANGE_MONEY"
+          [class.bg-primary/5]="selectedPaymentMethod() === PaymentMethod.ORANGE_MONEY"
+          (click)="selectPaymentMethod(PaymentMethod.ORANGE_MONEY)"
         >
-          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Sauvegarder</span>
+          <div class="w-16 h-16 rounded-full bg-[#FF7900] flex items-center justify-center mb-sm">
+            <fa-icon icon="mobile-alt" class="text-white text-3xl" />
+          </div>
+          <span class="font-label-lg text-on-surface">Orange Money</span>
+          <div class="absolute top-2 right-2" *ngIf="selectedPaymentMethod() === PaymentMethod.ORANGE_MONEY">
+            <fa-icon icon="check-circle" class="text-primary" />
+          </div>
         </button>
       </div>
-    </form>
-  </div>
+
+      <div class="mb-lg">
+        <label class="block font-label-lg text-on-surface mb-xs">Numéro de téléphone</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-md pointer-events-none">
+            <span class="text-on-surface-variant font-body-lg">+221</span>
+          </div>
+          <input
+            type="tel"
+            [(ngModel)]="phoneNumber"
+            class="block w-full pl-[60px] pr-md py-3 bg-surface-container-low border border-outline-variant rounded-lg font-body-lg focus:border-primary focus:ring-0 transition-all"
+            placeholder="77 000 00 00"
+          />
+        </div>
+        <p class="mt-xs text-label-sm text-on-surface-variant">Nous utiliserons ce numéro pour initier la transaction.</p>
+      </div>
+
+      <div class="flex flex-col items-center gap-sm mb-xl p-md bg-surface-container-low rounded-xl">
+        <div class="flex items-center gap-xs">
+          <fa-icon icon="lock" class="text-secondary" />
+          <span class="font-label-lg text-on-surface">Paiement sécurisé via Intouch</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <footer
+      class="fixed bottom-0 left-0 w-full bg-surface-container shadow-[0_-4px_16px_rgba(0,0,0,0.08)] px-container-margin py-md rounded-t-xl z-50"
+    >
+      <div class="flex items-center justify-between mb-sm" *ngIf="currentStep() !== 2">
+        <div class="flex flex-col">
+          <span class="text-label-sm text-on-surface-variant">Total à payer</span>
+          <span class="font-title-lg text-primary">{{ total() | number: '1.0-0' : 'fr-FR' }} XOF</span>
+        </div>
+        <div class="flex items-center text-secondary text-label-sm font-bold">
+          <fa-icon icon="lock" class="text-[14px] mr-1" />
+          HTTPS Sécurisé
+        </div>
+      </div>
+
+      <button
+        class="w-full h-14 bg-primary text-on-primary font-title-lg rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+        (click)="nextStep()"
+        [disabled]="isLoading()"
+      >
+        <span *ngIf="!isLoading()">
+          <span *ngIf="currentStep() === 1">Procéder à la livraison</span>
+          <span *ngIf="currentStep() === 2">Procéder au paiement</span>
+          <span *ngIf="currentStep() === 3">Payer maintenant</span>
+        </span>
+        <fa-icon icon="sync" *ngIf="isLoading()" />
+        <fa-icon icon="arrow-right" *ngIf="!isLoading() && currentStep() !== 3" />
+      </button>
+    </footer>
+  </main>
 </div>

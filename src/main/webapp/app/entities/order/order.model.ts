@@ -18,7 +18,7 @@ export interface IOrder {
   shippingCost?: number | null;
   deliveryNote?: string | null;
   deliveredAt?: dayjs.Dayjs | null;
-  customer?: Pick<ICustomer, 'id'> | null;
+  customer?: Pick<ICustomer, 'id' | 'firstName'> | null;
 }
 
 export type NewOrder = Omit<IOrder, 'id'> & { id: null };

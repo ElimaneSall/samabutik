@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { HttpHeaders } from '@angular/common/http';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -24,19 +25,19 @@ import { OrderService } from '../service/order.service';
 @Component({
   selector: 'jhi-order',
   templateUrl: './order.html',
+  styleUrls: ['./order.scss'],
   imports: [
     RouterLink,
     FormsModule,
     FontAwesomeModule,
     AlertError,
     Alert,
-    SortDirective,
-    SortByDirective,
     TranslateDirective,
     TranslateModule,
     FormatMediumDatetimePipe,
     NgbPagination,
     ItemCount,
+    DecimalPipe,
   ],
 })
 export class Order implements OnInit {
@@ -49,9 +50,13 @@ export class Order implements OnInit {
   readonly totalItems = signal(0);
   readonly page = signal(1);
 
+  // Filtres
+  searchTerm = '';
+  selectedStatus = '';
+  selectedPaymentStatus = '';
+
   readonly router = inject(Router);
   protected readonly orderService = inject(OrderService);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly isLoading = this.orderService.ordersResource.isLoading;
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
@@ -64,12 +69,11 @@ export class Order implements OnInit {
         this.fillComponentAttributesFromResponseHeader(headers);
       }
     });
+
     effect(() => {
       this.orders.set(this.fillComponentAttributesFromResponseBody([...this.orderService.orders()]));
     });
   }
-
-  trackId = (item: IOrder): number => this.orderService.getOrderIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
@@ -80,10 +84,24 @@ export class Order implements OnInit {
       .subscribe();
   }
 
+  // Statistiques
+  totalRevenue = (): number => {
+    return this.orders().reduce((sum, order) => sum + (order.totalAmount ?? 0), 0);
+  };
+
+  pendingOrdersCount = (): number => {
+    return this.orders().filter(order => order.status === 'PENDING' || order.status === 'PAID').length;
+  };
+
+  deliveredOrdersCount = (): number => {
+    return this.orders().filter(order => order.status === 'DELIVERED').length;
+  };
+
+  trackId = (item: IOrder): number => this.orderService.getOrderIdentifier(item);
+
   delete(order: IOrder): void {
     const modalRef = this.modalService.open(OrderDeleteDialog, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.order = order;
-    // unsubscribe not needed because closed completes on modal close
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
@@ -108,6 +126,11 @@ export class Order implements OnInit {
     const page = params.get(PAGE_HEADER);
     this.page.set(+(page ?? 1));
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
+
+    // Restaurer les filtres depuis l'URL
+    this.searchTerm = params.get('search') ?? '';
+    this.selectedStatus = params.get('status') ?? '';
+    this.selectedPaymentStatus = params.get('paymentStatus') ?? '';
   }
 
   protected fillComponentAttributesFromResponseBody(data: IOrder[]): IOrder[] {
@@ -125,19 +148,92 @@ export class Order implements OnInit {
       size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(this.sortState()),
     };
+
+    if (this.searchTerm) {
+      queryObject.search = this.searchTerm;
+    }
+    if (this.selectedStatus) {
+      queryObject.status = this.selectedStatus;
+    }
+    if (this.selectedPaymentStatus) {
+      queryObject.paymentStatus = this.selectedPaymentStatus;
+    }
+
     this.orderService.ordersParams.set(queryObject);
   }
 
   protected handleNavigation(page: number, sortState: SortState): void {
-    const queryParamsObj = {
+    const queryParamsObj: any = {
       page,
       size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(sortState),
     };
 
+    if (this.searchTerm) {
+      queryParamsObj.search = this.searchTerm;
+    }
+    if (this.selectedStatus) {
+      queryParamsObj.status = this.selectedStatus;
+    }
+    if (this.selectedPaymentStatus) {
+      queryParamsObj.paymentStatus = this.selectedPaymentStatus;
+    }
+
     this.router.navigate(['./'], {
       relativeTo: this.activatedRoute,
       queryParams: queryParamsObj,
     });
+  }
+
+  // Méthodes de filtrage
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
+    this.page.set(1);
+    this.load();
+  }
+
+  onStatusChange(value: string): void {
+    this.selectedStatus = value;
+    this.page.set(1);
+    this.load();
+  }
+
+  onPaymentStatusChange(value: string): void {
+    this.selectedPaymentStatus = value;
+    this.page.set(1);
+    this.load();
+  }
+
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.selectedStatus = '';
+    this.selectedPaymentStatus = '';
+    this.page.set(1);
+    this.load();
+  }
+
+  // Export CSV
+  exportCSV(): void {
+    this.orderService.exportCSV().subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: err => {
+        console.error("Erreur lors de l'export CSV:", err);
+      },
+    });
+  }
+
+  // Tri des colonnes
+  sort(predicate: string): void {
+    const currentOrder = this.sortState().order;
+    const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+    this.sortState.set({ predicate, order: newOrder });
+    this.navigateToWithComponentValues(this.sortState());
   }
 }

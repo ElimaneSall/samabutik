@@ -1,9 +1,8 @@
+// login.ts
 import { AfterViewInit, Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-
 import { TranslateModule } from '@ngx-translate/core';
-
 import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
 import { TranslateDirective } from 'app/shared/language';
@@ -15,7 +14,6 @@ import { TranslateDirective } from 'app/shared/language';
 })
 export default class Login implements OnInit, AfterViewInit {
   username = viewChild.required<ElementRef>('username');
-
   readonly authenticationError = signal(false);
 
   loginForm = new FormGroup({
@@ -29,10 +27,10 @@ export default class Login implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
 
   ngOnInit(): void {
-    // if already authenticated then navigate to home page
     this.accountService.identity().subscribe(() => {
       if (this.accountService.isAuthenticated()) {
-        this.router.navigate(['']);
+        // Rediriger selon le rôle si déjà authentifié
+        this.accountService.redirectAfterLogin();
       }
     });
   }
@@ -45,10 +43,10 @@ export default class Login implements OnInit, AfterViewInit {
     this.loginService.login(this.loginForm.getRawValue()).subscribe({
       next: () => {
         this.authenticationError.set(false);
-        if (!this.router.currentNavigation()) {
-          // There were no routing during login (eg from navigationToStoredUrl)
-          this.router.navigate(['']);
-        }
+
+        this.accountService.identity(true).subscribe(() => {
+          this.accountService.redirectAfterLogin();
+        });
       },
       error: () => this.authenticationError.set(true),
     });

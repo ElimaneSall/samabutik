@@ -362,11 +362,11 @@
               <div class="space-y-3">
                 @for (item of packItems(); track item.id; let i = $index) {
                   <div class="pack-item-card flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    @if (item.product?.mainMedia?.url) {
+                    @if (item.product.mainMedia?.url) {
                       <img
                         [src]="getMediaUrl(item.product!.mainMedia!.url)"
                         class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                        [alt]="item.product?.name"
+                        [alt]="item.product.name"
                       />
                     } @else {
                       <div class="w-16 h-16 rounded-lg bg-white border border-slate-200 flex items-center justify-center flex-shrink-0">
@@ -374,9 +374,9 @@
                       </div>
                     }
                     <div class="flex-1 min-w-0">
-                      <p class="text-sm font-semibold text-slate-900 truncate">{{ item.product?.name }}</p>
+                      <p class="text-sm font-semibold text-slate-900 truncate">{{ item.product.name }}</p>
                       <p class="text-xs text-slate-500">
-                        {{ item.product?.sku }} • {{ item.product?.price | number: '1.0-0' : 'fr-FR' }} XOF / unité
+                        {{ item.product.sku }} • {{ item.product.price | number: '1.0-0' : 'fr-FR' }} XOF / unité
                       </p>
                     </div>
                     <div class="flex items-center gap-2">
@@ -435,7 +435,7 @@
                     [alt]="previewData().name"
                     class="w-full h-full object-cover transition-opacity duration-300"
                   />
-                } @else if (packItems().length > 0 && packItems()[0].product?.mainMedia?.url) {
+                } @else if (packItems().length > 0 && packItems()[0].product.mainMedia?.url) {
                   <img [src]="getMediaUrl(packItems()[0].product!.mainMedia!.url)" class="w-full h-full object-cover" />
                 } @else {
                   <div class="w-full h-full flex items-center justify-center">

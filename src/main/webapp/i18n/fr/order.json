@@ -2,36 +2,74 @@
   "samabutikApp": {
     "order": {
       "home": {
-        "title": "Orders",
-        "refreshListLabel": "Actualiser la liste",
-        "createLabel": "Créer un nouveau Order",
-        "createOrEditLabel": "Créer ou éditer un Order",
-        "notFound": "Aucun Order trouvé"
+        "title": "Commandes",
+        "subtitle": "Gérez les commandes, les statuts et les livraisons",
+        "refreshListLabel": "Actualiser",
+        "exportCSV": "Exporter CSV",
+        "createLabel": "Nouvelle commande",
+        "createOrEditLabel": "Créer ou éditer une commande",
+        "notFound": "Aucune commande trouvée"
       },
-      "created": "Un nouveau Order a été créé avec l'identifiant {{ param }}",
-      "updated": "Le Order avec l'identifiant {{ param }} a été mis à jour",
-      "deleted": "Le Order avec l'identifiant {{ param }} a été supprimé",
+      "created": "Une nouvelle commande a été créée avec l'identifiant {{ param }}",
+      "updated": "La commande avec l'identifiant {{ param }} a été mise à jour",
+      "deleted": "La commande avec l'identifiant {{ param }} a été supprimée",
       "delete": {
-        "question": "Êtes-vous certain de vouloir supprimer le Order {{ id }} ?"
+        "question": "Êtes-vous certain de vouloir supprimer la commande {{ id }} ?"
       },
       "detail": {
-        "title": "Order"
+        "title": "Détails de la commande"
       },
-      "id": "ID",
-      "orderNumber": "Order Number",
-      "status": "Status",
-      "totalAmount": "Total Amount",
-      "currency": "Currency",
-      "paymentMethod": "Payment Method",
-      "paymentStatus": "Payment Status",
-      "paymentReference": "Payment Reference",
-      "shippingAddress": "Shipping Address",
-      "shippingCost": "Shipping Cost",
-      "deliveryNote": "Delivery Note",
-      "deliveredAt": "Delivered At",
-      "orderItems": "Order Items",
+      "stats": {
+        "totalOrders": "Total commandes",
+        "revenue": "Chiffre d'affaires",
+        "pendingOrders": "En attente",
+        "delivered": "Livrées"
+      },
+      "filter": {
+        "allStatus": "Tous les statuts",
+        "allPaymentStatus": "Tous les paiements",
+        "reset": "Réinitialiser"
+      },
+      "search": {
+        "placeholder": "Rechercher par numéro de commande, client..."
+      },
+      "table": {
+        "actions": "Actions"
+      },
+      "id": "N°",
+      "orderNumber": "N° Commande",
+      "status": "Statut",
+      "totalAmount": "Montant",
+      "currency": "Devise",
+      "paymentMethod": "Mode de paiement",
+      "paymentStatus": "Paiement",
+      "paymentReference": "Référence paiement",
+      "shippingAddress": "Adresse de livraison",
+      "shippingCost": "Frais de livraison",
+      "deliveryNote": "Note de livraison",
+      "deliveredAt": "Date de livraison",
+      "orderItems": "Articles",
       "transactions": "Transactions",
-      "customer": "Customer"
+      "customer": "Client"
+    },
+    "OrderStatus": {
+      "PENDING": "En attente",
+      "PAID": "Payée",
+      "PREPARING": "Préparation",
+      "SHIPPED": "Expédiée",
+      "DELIVERED": "Livrée",
+      "CANCELLED": "Annulée"
+    },
+    "PaymentMethod": {
+      "WAVE": "Wave",
+      "ORANGE_MONEY": "Orange Money",
+      "CASH": "Espèces"
+    },
+    "PaymentStatus": {
+      "PENDING": "En attente",
+      "SUCCESS": "Réussi",
+      "FAILED": "Échoué",
+      "REFUNDED": "Remboursé"
     }
   }
 }

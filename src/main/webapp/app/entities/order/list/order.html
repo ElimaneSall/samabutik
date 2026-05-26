@@ -1,216 +1,398 @@
-<div>
-  <h2 id="page-heading" data-cy="OrderHeading">
-    <span jhiTranslate="samabutikApp.order.home.title">Orders</span>
-
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading()">
-        <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
-        <span jhiTranslate="samabutikApp.order.home.refreshListLabel">Actualiser la liste</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-order"
-        [routerLink]="['/order/new']"
-      >
-        <fa-icon icon="plus" />
-        <span jhiTranslate="samabutikApp.order.home.createLabel">Créer un nouveau Order</span>
-      </button>
+<div class="bg-slate-50 min-h-screen font-sans">
+  <!-- Main Container -->
+  <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4 fade-in">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <span jhiTranslate="samabutikApp.order.home.title">Gestion des Commandes</span>
+        </h1>
+        <p class="text-slate-500 mt-1 text-sm" jhiTranslate="samabutikApp.order.home.subtitle">
+          Gérez les commandes, les statuts et les livraisons.
+        </p>
+      </div>
+      <div class="flex gap-3">
+        <button
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-medium text-sm hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+          (click)="exportCSV()"
+          [disabled]="isLoading()"
+        >
+          <fa-icon icon="download" class="text-slate-400" />
+          <span jhiTranslate="samabutikApp.order.home.exportCSV">Exporter CSV</span>
+        </button>
+        <button
+          id="jh-create-entity"
+          data-cy="entityCreateButton"
+          class="btn-primary-orange inline-flex items-center gap-2 px-5 py-2.5 text-white font-medium text-sm rounded-lg shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40 transition-all"
+          [routerLink]="['/order/new']"
+        >
+          <fa-icon icon="plus" />
+          <span jhiTranslate="samabutikApp.order.home.createLabel">Nouvelle commande</span>
+        </button>
+      </div>
     </div>
-  </h2>
 
-  <jhi-alert-error />
+    <!-- Alerts -->
+    <jhi-alert-error />
+    <jhi-alert />
 
-  <jhi-alert />
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 fade-in" style="animation-delay: 0.1s">
+      <!-- Total Commandes -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.order.stats.totalOrders"
+            >Total Commandes</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+            <fa-icon icon="clipboard-list" class="text-blue-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-900">{{ totalItems() }}</span>
+        </div>
+      </div>
 
-  @if (orders().length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span jhiTranslate="samabutikApp.order.home.notFound">Aucun Order trouvé</span>
+      <!-- Chiffre d'Affaires -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.order.stats.revenue"
+            >Chiffre d'Affaires</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+            <fa-icon icon="money-bill-wave" class="text-indigo-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-900">{{ totalRevenue() | number }} FCFA</span>
+        </div>
+      </div>
+
+      <!-- Commandes en attente -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.order.stats.pendingOrders"
+            >En attente</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+            <fa-icon icon="clock" class="text-orange-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-orange-600">{{ pendingOrdersCount() }}</span>
+        </div>
+      </div>
+
+      <!-- Commandes livrées -->
+      <div class="stat-card rounded-xl border border-slate-200 p-5 shadow-sm bg-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider" jhiTranslate="samabutikApp.order.stats.delivered"
+            >Livrées</span
+          >
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+            <fa-icon icon="check-circle" class="text-emerald-500 text-sm" />
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-emerald-600">{{ deliveredOrdersCount() }}</span>
+        </div>
+      </div>
     </div>
-  } @else {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span jhiTranslate="global.field.id">ID</span>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="orderNumber">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.orderNumber">Order Number</span>
+    <!-- Filters & Search Bar -->
+    <div class="bg-white rounded-xl border border-slate-200 p-4 mb-6 shadow-sm fade-in" style="animation-delay: 0.2s">
+      <div class="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
+        <!-- Search -->
+        <div class="relative flex-1">
+          <fa-icon icon="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            [placeholder]="'samabutikApp.order.search.placeholder' | translate"
+            class="search-input w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 outline-none focus:border-orange-300 focus:ring-1 focus:ring-orange-200 transition-all"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange($event)"
+          />
+        </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="status">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.status">Status</span>
+        <!-- Status Filter -->
+        <div class="relative min-w-[180px]">
+          <select
+            class="custom-select w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none appearance-none cursor-pointer focus:border-orange-300 focus:ring-1 focus:ring-orange-200 transition-all"
+            [(ngModel)]="selectedStatus"
+            (ngModelChange)="onStatusChange($event)"
+          >
+            <option value="">{{ 'samabutikApp.order.filter.allStatus' | translate }}</option>
+            <option value="PENDING">{{ 'samabutikApp.OrderStatus.PENDING' | translate }}</option>
+            <option value="PAID">{{ 'samabutikApp.OrderStatus.PAID' | translate }}</option>
+            <option value="PREPARING">{{ 'samabutikApp.OrderStatus.PREPARING' | translate }}</option>
+            <option value="SHIPPED">{{ 'samabutikApp.OrderStatus.SHIPPED' | translate }}</option>
+            <option value="DELIVERED">{{ 'samabutikApp.OrderStatus.DELIVERED' | translate }}</option>
+            <option value="CANCELLED">{{ 'samabutikApp.OrderStatus.CANCELLED' | translate }}</option>
+          </select>
+          <fa-icon icon="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs" />
+        </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="totalAmount">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.totalAmount">Total Amount</span>
+        <!-- Payment Status Filter -->
+        <div class="relative min-w-[160px]">
+          <select
+            class="custom-select w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 outline-none appearance-none cursor-pointer focus:border-orange-300 focus:ring-1 focus:ring-orange-200 transition-all"
+            [(ngModel)]="selectedPaymentStatus"
+            (ngModelChange)="onPaymentStatusChange($event)"
+          >
+            <option value="">{{ 'samabutikApp.order.filter.allPaymentStatus' | translate }}</option>
+            <option value="PENDING">{{ 'samabutikApp.PaymentStatus.PENDING' | translate }}</option>
+            <option value="SUCCESS">{{ 'samabutikApp.PaymentStatus.SUCCESS' | translate }}</option>
+            <option value="FAILED">{{ 'samabutikApp.PaymentStatus.FAILED' | translate }}</option>
+            <option value="REFUNDED">{{ 'samabutikApp.PaymentStatus.REFUNDED' | translate }}</option>
+          </select>
+          <fa-icon icon="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs" />
+        </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="currency">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.currency">Currency</span>
+        <!-- Reset Button -->
+        <button
+          class="px-4 py-2.5 text-orange-500 font-medium text-sm hover:bg-orange-50 rounded-lg transition-colors whitespace-nowrap"
+          (click)="resetFilters()"
+        >
+          <fa-icon icon="undo-alt" class="mr-1.5" />
+          <span jhiTranslate="samabutikApp.order.filter.reset">Réinitialiser</span>
+        </button>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="paymentMethod">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.paymentMethod">Payment Method</span>
+        <!-- Refresh Button -->
+        <button
+          class="px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-medium text-sm hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm whitespace-nowrap flex items-center gap-2"
+          (click)="load()"
+          [disabled]="isLoading()"
+        >
+          <fa-icon icon="sync" [animation]="isLoading() ? 'spin' : undefined" />
+          <span jhiTranslate="samabutikApp.order.home.refreshListLabel">Actualiser</span>
+        </button>
+      </div>
+    </div>
 
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="paymentStatus">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.paymentStatus">Payment Status</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="paymentReference">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.paymentReference">Payment Reference</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="shippingAddress">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.shippingAddress">Shipping Address</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="shippingCost">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.shippingCost">Shipping Cost</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="deliveryNote">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.deliveryNote">Delivery Note</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="deliveredAt">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.deliveredAt">Delivered At</span>
-
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="customer.id">
-              <div class="d-flex">
-                <span jhiTranslate="samabutikApp.order.customer">Customer</span>
-                <fa-icon class="p-1" icon="sort" />
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (order of orders(); track trackId(order)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/order', order.id, 'view']">{{ order.id }}</a>
-              </td>
-              <td>{{ order.orderNumber }}</td>
-              <td [jhiTranslate]="'samabutikApp.OrderStatus.' + (order.status ?? 'null')">
-                {{
-                  {
-                    null: '',
-                    PENDING: 'PENDING',
-                    PAID: 'PAID',
-                    PREPARING: 'PREPARING',
-                    SHIPPED: 'SHIPPED',
-                    DELIVERED: 'DELIVERED',
-                    CANCELLED: 'CANCELLED',
-                  }[order.status ?? 'null']
-                }}
-              </td>
-              <td>{{ order.totalAmount }}</td>
-              <td>{{ order.currency }}</td>
-              <td [jhiTranslate]="'samabutikApp.PaymentMethod.' + (order.paymentMethod ?? 'null')">
-                {{ { null: '', WAVE: 'WAVE', ORANGE_MONEY: 'ORANGE_MONEY', CASH: 'CASH' }[order.paymentMethod ?? 'null'] }}
-              </td>
-              <td [jhiTranslate]="'samabutikApp.PaymentStatus.' + (order.paymentStatus ?? 'null')">
-                {{
-                  { null: '', PENDING: 'PENDING', SUCCESS: 'SUCCESS', FAILED: 'FAILED', REFUNDED: 'REFUNDED' }[
-                    order.paymentStatus ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>{{ order.paymentReference }}</td>
-              <td>{{ order.shippingAddress }}</td>
-              <td>{{ order.shippingCost }}</td>
-              <td>{{ order.deliveryNote }}</td>
-              <td>{{ order.deliveredAt | formatMediumDatetime }}</td>
-              <td>
-                @if (order.customer) {
-                  <div>
-                    <a [routerLink]="['/customer', order.customer.id, 'view']">{{ order.customer.id }}</a>
-                  </div>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/order', order.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye" />
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">Voir</span>
-                  </a>
-
-                  <a [routerLink]="['/order', order.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt" />
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Editer</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(order)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times" />
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Supprimer</span>
-                  </button>
+    <!-- Orders Table -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden fade-in" style="animation-delay: 0.3s">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200">
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('id')">
+                  <span jhiTranslate="samabutikApp.order.id">N°</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
                 </div>
-              </td>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('orderNumber')">
+                  <span jhiTranslate="samabutikApp.order.orderNumber">N° Commande</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('customer.login')">
+                  <span jhiTranslate="samabutikApp.order.customer">Client</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('totalAmount')">
+                  <span jhiTranslate="samabutikApp.order.totalAmount">Montant</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('status')">
+                  <span jhiTranslate="samabutikApp.order.status">Statut</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('paymentStatus')">
+                  <span jhiTranslate="samabutikApp.order.paymentStatus">Paiement</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <div class="flex items-center gap-1 cursor-pointer" (click)="sort('deliveredAt')">
+                  <span jhiTranslate="samabutikApp.order.deliveredAt">Date livraison</span>
+                  <fa-icon icon="sort" class="text-slate-400" />
+                </div>
+              </th>
+              <th
+                class="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                jhiTranslate="samabutikApp.order.table.actions"
+              >
+                Actions
+              </th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-  @if (orders().length > 0) {
-    <div>
-      <div class="d-flex justify-content-center">
-        <jhi-item-count [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }" />
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (order of orders(); track trackId(order)) {
+              <tr class="order-row hover:bg-slate-50 transition-colors" data-cy="entityTable">
+                <td class="px-6 py-4">
+                  <a
+                    class="text-sm font-mono text-slate-600 bg-slate-100 px-2 py-1 rounded underline"
+                    [routerLink]="['/order', order.id, 'view']"
+                    >{{ order.id }}</a
+                  >
+                </td>
+                <td class="px-6 py-4">
+                  <span class="text-sm font-semibold text-slate-900">{{ order.orderNumber }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold bg-slate-100 text-slate-600">
+                      {{ order.customer?.firstName?.[0] || 'U' }}
+                    </div>
+                    <span class="text-sm text-slate-700">{{ order.customer?.firstName || '-' }}</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="text-sm font-semibold text-slate-900">{{ order.totalAmount | number }} FCFA</span>
+                </td>
+                <td class="px-6 py-4">
+                  @switch (order.status) {
+                    @case ('PENDING') {
+                      <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-600"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                        En attente
+                      </span>
+                    }
+                    @case ('PAID') {
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        Payée
+                      </span>
+                    }
+                    @case ('PREPARING') {
+                      <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                        Préparation
+                      </span>
+                    }
+                    @case ('SHIPPED') {
+                      <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-600"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                        Expédiée
+                      </span>
+                    }
+                    @case ('DELIVERED') {
+                      <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Livrée
+                      </span>
+                    }
+                    @case ('CANCELLED') {
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-600">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                        Annulée
+                      </span>
+                    }
+                  }
+                </td>
+                <td class="px-6 py-4">
+                  @switch (order.paymentStatus) {
+                    @case ('PENDING') {
+                      <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-600"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                        En attente
+                      </span>
+                    }
+                    @case ('SUCCESS') {
+                      <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Réussi
+                      </span>
+                    }
+                    @case ('FAILED') {
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-600">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                        Échoué
+                      </span>
+                    }
+                    @case ('REFUNDED') {
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-50 text-slate-600">
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                        Remboursé
+                      </span>
+                    }
+                  }
+                </td>
+                <td class="px-6 py-4">
+                  <span class="text-sm text-slate-600">{{ order.deliveredAt || '-' }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center justify-end gap-1">
+                    <a
+                      [routerLink]="['/order', order.id, 'view']"
+                      class="action-btn w-8 h-8 rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-400 hover:text-blue-500 flex items-center justify-center transition-all"
+                      [title]="'entity.action.view' | translate"
+                    >
+                      <fa-icon icon="eye" class="text-xs" />
+                    </a>
+                    <a
+                      [routerLink]="['/order', order.id, 'edit']"
+                      class="action-btn w-8 h-8 rounded-lg bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-500 flex items-center justify-center transition-all"
+                      [title]="'entity.action.edit' | translate"
+                    >
+                      <fa-icon icon="pencil-alt" class="text-xs" />
+                    </a>
+                    <button
+                      (click)="delete(order)"
+                      class="action-btn w-8 h-8 rounded-lg bg-slate-50 hover:bg-red-50 text-slate-400 hover:text-red-500 flex items-center justify-center transition-all"
+                      [title]="'entity.action.delete' | translate"
+                    >
+                      <fa-icon icon="times" class="text-xs" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8" class="px-6 py-12 text-center">
+                  <div class="flex flex-col items-center gap-2 text-slate-400">
+                    <fa-icon icon="clipboard-list" size="3x" />
+                    <span jhiTranslate="samabutikApp.order.home.notFound">Aucune commande trouvée</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
 
-      <div class="d-flex justify-content-center">
-        <ngb-pagination
-          [collectionSize]="totalItems()"
-          [page]="page()"
-          [pageSize]="itemsPerPage()"
-          [maxSize]="5"
-          [rotate]="true"
-          [boundaryLinks]="true"
-          (pageChange)="navigateToPage($event)"
-        />
-      </div>
+      <!-- Pagination -->
+      @if (orders().length > 0) {
+        <div class="px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <jhi-item-count
+            [params]="{ page: page(), totalItems: totalItems(), itemsPerPage: itemsPerPage() }"
+            class="text-sm text-slate-500"
+          />
+          <div class="flex items-center gap-1">
+            <ngb-pagination
+              [collectionSize]="totalItems()"
+              [page]="page()"
+              [pageSize]="itemsPerPage()"
+              [maxSize]="5"
+              [rotate]="true"
+              [boundaryLinks]="true"
+              (pageChange)="navigateToPage($event)"
+              [disabled]="isLoading()"
+            />
+          </div>
+        </div>
+      }
     </div>
-  }
+  </div>
 </div>

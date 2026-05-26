@@ -1,0 +1,96 @@
+/* ==============================================================
+   Dashboard Admin - SamaButik
+   ============================================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth transitions */
+.transition-shadow {
+  transition: box-shadow 0.2s ease;
+}
+
+/* Table row hover */
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+/* Status badge pulse for pending */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.bg-amber-500 {
+  animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Chart tooltip on hover */
+svg circle {
+  transition: r 0.2s ease;
+  cursor: pointer;
+}
+
+svg circle:hover {
+  r: 2;
+}
+
+/* Button active states */
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Card entrance animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bg-white {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Scrollbar styling for table */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .max-w-7xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  header .flex {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
