@@ -18,7 +18,8 @@
         "paymentTransaction": "Payment Transaction",
         "userStaff": "User Staff",
         "stockMovement": "Stock Movement",
-        "appSettings": "App Settings"
+        "appSettings": "App Settings",
+        "authority": "Roles"
       },
       "account": {
         "main": "Compte",

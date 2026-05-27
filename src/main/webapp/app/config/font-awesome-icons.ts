@@ -251,5 +251,7 @@ export const fontAwesomeIcons = [
   faShippingFast,
   faRoute,
   faCreditCard,
+  faReceipt,
+  faCheckCircle,
   // jhipster-needle-add-icon-import
 ];

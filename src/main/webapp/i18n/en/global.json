@@ -17,7 +17,8 @@
         "media": "Media",
         "paymentTransaction": "Payment Transaction",
         "userStaff": "User Staff",
-        "stockMovement": "Stock Movement"
+        "stockMovement": "Stock Movement",
+        "authority": "Authorities"
       },
       "account": {
         "main": "Account",

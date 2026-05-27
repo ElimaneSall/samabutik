@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -7,6 +7,7 @@ import { OrderService } from '../service/order.service';
 import { IOrder } from '../order.model';
 import { OrderItemService } from '../../order-item/service/order-item.service';
 import { IOrderItem } from '../../order-item/order-item.model';
+import FormatMediumDatetimePipe from 'app/shared/date/format-medium-datetime.pipe';
 
 type TimelineStep = {
   label: string;
@@ -20,13 +21,14 @@ type TimelineStep = {
   templateUrl: './order-detail.html',
   styleUrl: './order-detail.scss',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, RouterLink, DatePipe, DecimalPipe],
+  imports: [CommonModule, FontAwesomeModule, RouterLink, DecimalPipe, FormatMediumDatetimePipe],
 })
 export class OrderDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   public readonly router = inject(Router);
   private readonly orderService = inject(OrderService);
   private readonly orderItemService = inject(OrderItemService);
+  private readonly cdr = inject(ChangeDetectorRef); // ✅ AJOUTÉ
 
   order: IOrder | null = null;
   items: IOrderItem[] = [];
@@ -53,19 +55,29 @@ export class OrderDetail implements OnInit {
         this.order = res;
         if (this.order) {
           this.buildTimeline();
-          this.orderItemService.query({ 'order.id.equals': this.order.id }).subscribe({
-            next: itemsRes => (this.items = itemsRes.body || []),
-          });
+          this.loadItems(this.order.id!);
         }
+        this.cdr.detectChanges(); // ✅ FORCER LA DÉTECTION
       },
       error: () => this.router.navigate(['/order']),
+    });
+  }
+
+  // ✅ EXTRAIRE le chargement des items dans une méthode séparée
+  private loadItems(orderId: number): void {
+    this.orderItemService.query({ 'order.id.equals': orderId }).subscribe({
+      next: itemsRes => {
+        this.items = itemsRes.body || [];
+        this.cdr.detectChanges(); // ✅ FORCER LA DÉTECTION
+      },
     });
   }
 
   buildTimeline(): void {
     const status = this.order?.status;
 
-    this.timelineSteps = [
+    // ✅ CRÉER UN NOUVEAU TABLEAU (pas de mutation)
+    const steps: TimelineStep[] = [
       {
         label: 'Commande reçue',
         status: 'pending',
@@ -94,18 +106,20 @@ export class OrderDetail implements OnInit {
 
     const activeIndex = statusMap[status || 'PENDING'] ?? 0;
     if (activeIndex === -1) {
-      // Cancelled - all pending except first completed
-      this.timelineSteps[0].status = 'completed';
+      steps[0].status = 'completed';
+      this.timelineSteps = [...steps]; // ✅ NOUVELLE RÉFÉRENCE
       return;
     }
 
-    for (let i = 0; i < this.timelineSteps.length; i++) {
+    for (let i = 0; i < steps.length; i++) {
       if (i < activeIndex) {
-        this.timelineSteps[i].status = 'completed';
+        steps[i].status = 'completed';
       } else if (i === activeIndex) {
-        this.timelineSteps[i].status = 'active';
+        steps[i].status = 'active';
       }
     }
+
+    this.timelineSteps = [...steps]; // ✅ NOUVELLE RÉFÉRENCE (spread operator)
   }
 
   getTimelineProgress(): number {
@@ -167,5 +181,22 @@ export class OrderDetail implements OnInit {
     const phone = '221770000000';
     const message = encodeURIComponent(`Bonjour, j'ai une question concernant ma commande #${this.order?.orderNumber || ''}`);
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+  }
+  // Détection mobile/desktop
+  isMobile = window.innerWidth < 1024;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isMobile = (event.target as Window).innerWidth < 1024;
+    this.cdr.detectChanges();
+  }
+
+  // Helper pour les messages actifs du timeline desktop
+  getActiveStepMessage(label: string): string {
+    const messages: Record<string, string> = {
+      Préparation: "L'équipe prépare vos articles...",
+      'En livraison': 'Le livreur est en route !',
+    };
+    return messages[label] || 'En cours...';
   }
 }
