@@ -121,6 +121,18 @@ import {
   faShippingFast,
   faRoute,
   faCreditCard,
+  faMobileScreenButton,
+  faTruckFast,
+  faEnvelope,
+  // faShieldCheck,
+  faCircleXmark,
+  faCircleInfo,
+  faWallet,
+  faSignal,
+  faClockRotateLeft,
+  faEdit,
+  faWaveSquare,
+  faSms,
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -253,5 +265,16 @@ export const fontAwesomeIcons = [
   faCreditCard,
   faReceipt,
   faCheckCircle,
+  faMobileScreenButton,
+  faTruckFast,
+  faEnvelope,
+  faCircleXmark,
+  faCircleInfo,
+  faWallet,
+  faSignal,
+  faClockRotateLeft,
+  faEdit,
+  faWaveSquare,
+  faSms,
   // jhipster-needle-add-icon-import
 ];

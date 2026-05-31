@@ -1,11 +1,15 @@
-import { Component, input, signal, computed, effect } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, input, signal, computed, effect, inject } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule, DecimalPipe } from '@angular/common';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { IProduct } from '../product.model';
 import { IMedia } from '../../media/media.model';
+import { OrderCheckoutService } from '../../order/service/order-checkout';
+import { ToastService } from '../../../shared/notification/toast.service';
+import { ProductService } from '../service/product.service';
+import { HttpResponse } from '@angular/common/http';
 
 interface ImageItem {
   id: number | null;
@@ -24,28 +28,29 @@ export class ProductDetail {
   protected readonly Math = Math;
   protected readonly serverApiUrl = 'http://localhost:8080';
 
-  // === CAROUSEL STATE ===
   readonly currentImageIndex = signal(0);
   readonly isImageLoading = signal(false);
+  readonly similarProducts = signal<IProduct[]>([]);
 
-  // Touch swipe state
   private touchStartX = 0;
   private touchEndX = 0;
   private readonly SWIPE_THRESHOLD = 50;
 
-  // Computed: all images (main + gallery)
+  private readonly checkoutService = inject(OrderCheckoutService);
+  private readonly toastService = inject(ToastService);
+  private readonly productService = inject(ProductService);
+  private readonly router = inject(Router);
+
   readonly allImages = computed<ImageItem[]>(() => {
     const p = this.product();
     if (!p) return [];
 
     const images: ImageItem[] = [];
 
-    // Main image first
     if (p.mainMedia?.url) {
       images.push({ id: p.mainMedia.id ?? null, url: p.mainMedia.url, isMain: true });
     }
 
-    // Gallery images
     if (p.gallery) {
       for (const media of p.gallery) {
         if (media.url && !images.find(img => img.id === media.id)) {
@@ -57,7 +62,6 @@ export class ProductDetail {
     return images;
   });
 
-  // Computed: current image URL
   readonly currentImageUrl = computed<string>(() => {
     const images = this.allImages();
     const idx = this.currentImageIndex();
@@ -66,23 +70,90 @@ export class ProductDetail {
     return this.getMediaUrl(images[idx].url);
   });
 
-  // Computed: total images count
   readonly totalImages = computed(() => this.allImages().length);
 
   constructor() {
-    // Reset index when product changes
     effect(() => {
-      this.product(); // track
+      const p = this.product();
       this.currentImageIndex.set(0);
       this.isImageLoading.set(true);
+      if (p?.category) {
+        this.loadSimilarProducts(p.category);
+      }
     });
+  }
+
+  private loadSimilarProducts(category: string): void {
+    this.productService
+      .query({
+        category: category,
+        isActive: true,
+        size: 4,
+      })
+      .subscribe({
+        next: (res: HttpResponse<IProduct[]>) => {
+          const products = res.body ?? [];
+          const currentId = this.product()?.id;
+          this.similarProducts.set(products.filter(p => p.id !== currentId).slice(0, 4));
+        },
+        error: () => {
+          this.similarProducts.set([]);
+        },
+      });
+  }
+
+  addToCart(): void {
+    const product = this.product();
+    if (!product) return;
+
+    if (!product.stock || product.stock <= 0) {
+      this.toastService.warning(`${product.name} n'est plus en stock`);
+      return;
+    }
+
+    this.checkoutService.initializeCheckout();
+
+    setTimeout(() => {
+      this.checkoutService.addProductToCart(product).subscribe({
+        next: () => {
+          this.toastService.success(`${product.name} ajouté au panier`);
+        },
+        error: () => {
+          this.toastService.error(`Erreur lors de l'ajout de ${product.name}`);
+        },
+      });
+    }, 5000);
+  }
+
+  buyNow(): void {
+    const product = this.product();
+    if (!product) return;
+
+    if (!product.stock || product.stock <= 0) {
+      this.toastService.warning(`${product.name} n'est plus en stock`);
+      return;
+    }
+
+    this.checkoutService.initializeCheckout();
+
+    setTimeout(() => {
+      this.checkoutService.addProductToCart(product).subscribe({
+        next: order => {
+          this.toastService.success(`${product.name} ajouté au panier`);
+          this.router.navigate(['/order/summary'], {
+            queryParams: { orderId: order.id },
+          });
+        },
+        error: () => {
+          this.toastService.error(`Erreur lors de l'ajout de ${product.name}`);
+        },
+      });
+    }, 500);
   }
 
   previousState(): void {
     globalThis.history.back();
   }
-
-  // === CAROUSEL NAVIGATION ===
 
   nextImage(event?: Event): void {
     event?.stopPropagation();
@@ -106,8 +177,6 @@ export class ProductDetail {
     this.currentImageIndex.set(index);
   }
 
-  // === IMAGE LOADING ===
-
   onImageLoad(): void {
     this.isImageLoading.set(false);
   }
@@ -115,8 +184,6 @@ export class ProductDetail {
   onImageError(): void {
     this.isImageLoading.set(false);
   }
-
-  // === TOUCH SWIPE (Mobile) ===
 
   onTouchStart(event: TouchEvent): void {
     this.touchStartX = event.changedTouches[0].screenX;
@@ -132,13 +199,11 @@ export class ProductDetail {
     if (Math.abs(diff) < this.SWIPE_THRESHOLD) return;
 
     if (diff > 0) {
-      this.nextImage(); // Swipe left → next
+      this.nextImage();
     } else {
-      this.previousImage(); // Swipe right → previous
+      this.previousImage();
     }
   }
-
-  // === HELPERS ===
 
   isInStock(product: IProduct | null): boolean {
     return (product?.stock ?? 0) > 0;

@@ -1,8 +1,11 @@
 package sn.samabutik.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import sn.samabutik.domain.OrderItem;
 import sn.samabutik.service.dto.OrderItemDTO;
 
 /**
@@ -39,7 +42,7 @@ public interface OrderItemService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<OrderItemDTO> findAll(Pageable pageable);
+    Page<OrderItemDTO> findAll(Specification<OrderItem> specification, Pageable pageable);
 
     /**
      * Get the "id" orderItem.
@@ -55,4 +58,8 @@ public interface OrderItemService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<OrderItemDTO> findByOrderId(Long id);
+
+    OrderItemDTO addItemToOrder(Long id, OrderItemDTO orderItemDTO);
 }

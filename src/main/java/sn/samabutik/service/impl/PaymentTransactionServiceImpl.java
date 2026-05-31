@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sn.samabutik.domain.PaymentTransaction;
 import sn.samabutik.repository.PaymentTransactionRepository;
 import sn.samabutik.service.PaymentTransactionService;
+import sn.samabutik.service.dto.OrderDTO;
 import sn.samabutik.service.dto.PaymentTransactionDTO;
 import sn.samabutik.service.mapper.PaymentTransactionMapper;
 
@@ -84,4 +85,7 @@ public class PaymentTransactionServiceImpl implements PaymentTransactionService 
         LOG.debug("Request to delete PaymentTransaction : {}", id);
         paymentTransactionRepository.deleteById(id);
     }
+
+    @Override
+    public void initiatePayment(OrderDTO updated, String phoneNumber) {}
 }

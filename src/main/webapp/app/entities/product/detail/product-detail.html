@@ -18,12 +18,9 @@
         </button>
         <button
           class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-all relative"
+          (click)="addToCart()"
         >
           <fa-icon icon="shopping-cart" class="text-sm" />
-          <span
-            class="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
-            >3</span
-          >
         </button>
       </div>
     </div>
@@ -32,7 +29,6 @@
 
 <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
   @if (product()) {
-    <!-- Breadcrumb -->
     <nav class="hidden lg:flex items-center gap-2 text-sm text-slate-500 mb-6 fade-in">
       <a routerLink="/products" class="hover:text-orange-500 transition-colors">Produits</a>
       @if (product()?.category) {
@@ -46,11 +42,8 @@
     </nav>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-      <!-- LEFT: Product Images Carousel -->
       <div class="lg:col-span-5 space-y-4 fade-in" style="animation-delay: 0.1s">
-        <!-- Main Image Carousel -->
         <div class="product-image-container rounded-2xl overflow-hidden relative aspect-square lg:aspect-[4/5] bg-slate-100">
-          <!-- Image courante -->
           @if (currentImageUrl()) {
             <img
               [src]="currentImageUrl()"
@@ -67,17 +60,15 @@
             </div>
           }
 
-          <!-- Loading spinner -->
           @if (isImageLoading() && currentImageUrl()) {
             <div class="absolute inset-0 flex items-center justify-center">
               <div class="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
           }
 
-          <!-- Badges -->
           <div class="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
             @if (calculateDiscount(product()) !== null) {
-              <span class="badge-discount text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+              <span class="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
                 -{{ calculateDiscount(product()) }}%
               </span>
             }
@@ -86,14 +77,12 @@
             }
           </div>
 
-          <!-- Image counter -->
           @if (totalImages() > 1) {
             <div class="absolute top-4 right-4 bg-black/60 backdrop-blur text-white text-xs font-medium px-3 py-1.5 rounded-full">
               {{ currentImageIndex() + 1 }} / {{ totalImages() }}
             </div>
           }
 
-          <!-- Navigation arrows -->
           @if (totalImages() > 1) {
             <button
               class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur shadow-lg flex items-center justify-center text-slate-600 hover:text-orange-500 hover:bg-white transition-all z-10"
@@ -109,16 +98,13 @@
             </button>
           }
 
-          <!-- Touch swipe zone (mobile) -->
           @if (totalImages() > 1) {
             <div class="absolute inset-0 lg:hidden" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)"></div>
           }
         </div>
 
-        <!-- Thumbnail Gallery -->
         @if (allImages().length > 1) {
           <div class="relative">
-            <!-- Desktop: Grid de thumbnails -->
             <div class="hidden lg:grid grid-cols-5 gap-2">
               @for (image of allImages(); track image.id; let i = $index) {
                 <button
@@ -142,11 +128,10 @@
               }
             </div>
 
-            <!-- Mobile: Horizontal scroll thumbnails -->
             <div class="lg:hidden flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
               @for (image of allImages(); track image.id; let i = $index) {
                 <button
-                  class="thumbnail-btn flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-slate-100 border-2 transition-all duration-200 snap-start relative"
+                  class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-slate-100 border-2 transition-all duration-200 snap-start relative"
                   [class.border-orange-500]="i === currentImageIndex()"
                   [class.border-transparent]="i !== currentImageIndex()"
                   (click)="selectImage(i)"
@@ -161,7 +146,6 @@
           </div>
         }
 
-        <!-- Mobile dots indicator -->
         @if (totalImages() > 1) {
           <div class="flex lg:hidden justify-center gap-2 mt-1">
             @for (img of allImages(); track img.id; let i = $index) {
@@ -177,9 +161,7 @@
         }
       </div>
 
-      <!-- RIGHT: Product Info -->
       <div class="lg:col-span-7 space-y-6 fade-in" style="animation-delay: 0.2s">
-        <!-- Brand & Title -->
         <div>
           <div class="flex items-center gap-2 mb-2">
             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ product()?.category || 'SANS CATÉGORIE' }}</span>
@@ -190,7 +172,6 @@
           <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 leading-tight">{{ product()?.name }}</h1>
         </div>
 
-        <!-- Price Section -->
         <div class="flex items-baseline gap-3 flex-wrap">
           @if (product()?.price) {
             <span class="text-3xl lg:text-4xl font-bold text-slate-900">{{ product()!.price! | number: '1.0-0' : 'fr-FR' }} XOF</span>
@@ -207,27 +188,20 @@
           }
         </div>
 
-        <!-- Stock Status -->
         @if (product()?.stock !== undefined) {
           <div class="flex items-center gap-2">
             @if (product()!.stock! <= 0) {
-              <span
-                class="stock-badge inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-red-50 text-red-600"
-              >
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-red-50 text-red-600">
                 <span class="w-2 h-2 rounded-full bg-red-500"></span>
                 Rupture de stock
               </span>
             } @else if (isLowStock(product())) {
-              <span
-                class="stock-badge inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-orange-50 text-orange-600"
-              >
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-orange-50 text-orange-600">
                 <span class="w-2 h-2 rounded-full bg-orange-500"></span>
                 Stock faible - {{ product()!.stock }} unités
               </span>
             } @else {
-              <span
-                class="stock-badge inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-50 text-emerald-600"
-              >
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-emerald-50 text-emerald-600">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                 En stock - {{ product()!.stock }} unités
               </span>
@@ -235,44 +209,42 @@
           </div>
         }
 
-        <!-- Description -->
         @if (product()?.description) {
           <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
             <p class="text-sm text-slate-600 leading-relaxed">{{ product()?.description }}</p>
           </div>
         }
 
-        <!-- Product Details Grid -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="px-5 py-4 border-b border-slate-100">
             <h3 class="text-sm font-semibold text-slate-700">Caractéristiques techniques</h3>
           </div>
           <div class="divide-y divide-slate-100">
             @if (product()?.sku) {
-              <div class="info-row flex items-center justify-between px-5 py-3">
+              <div class="flex items-center justify-between px-5 py-3">
                 <span class="text-sm text-slate-500">SKU</span>
                 <span class="text-sm font-mono font-medium text-slate-700 bg-slate-100 px-2 py-0.5 rounded">{{ product()?.sku }}</span>
               </div>
             }
             @if (product()?.category) {
-              <div class="info-row flex items-center justify-between px-5 py-3">
+              <div class="flex items-center justify-between px-5 py-3">
                 <span class="text-sm text-slate-500">Catégorie</span>
                 <span class="text-sm font-medium text-slate-700">{{ product()?.category }}</span>
               </div>
             }
             @if (product()?.price !== undefined) {
-              <div class="info-row flex items-center justify-between px-5 py-3">
+              <div class="flex items-center justify-between px-5 py-3">
                 <span class="text-sm text-slate-500">Prix de vente</span>
                 <span class="text-sm font-medium text-slate-700">{{ product()!.price! | number: '1.0-0' : 'fr-FR' }} XOF</span>
               </div>
             }
             @if (product()?.costPrice !== undefined) {
-              <div class="info-row flex items-center justify-between px-5 py-3">
+              <div class="flex items-center justify-between px-5 py-3">
                 <span class="text-sm text-slate-500">Prix de revient</span>
                 <span class="text-sm font-medium text-slate-700">{{ product()!.costPrice! | number: '1.0-0' : 'fr-FR' }} XOF</span>
               </div>
             }
-            <div class="info-row flex items-center justify-between px-5 py-3">
+            <div class="flex items-center justify-between px-5 py-3">
               <span class="text-sm text-slate-500">Statut</span>
               @if (product()?.isActive) {
                 <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
@@ -289,7 +261,6 @@
           </div>
         </div>
 
-        <!-- Admin Actions -->
         <div class="flex flex-wrap gap-3 pt-2">
           <a
             [routerLink]="['/product', product()?.id, 'edit']"
@@ -314,24 +285,24 @@
       </div>
     </div>
 
-    <!-- Desktop Action Buttons -->
     <div class="hidden lg:flex gap-4 mt-8 pt-6 border-t border-slate-200 fade-in" style="animation-delay: 0.3s">
       <button
-        class="btn-primary-orange flex-1 py-4 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 text-base"
+        (click)="addToCart()"
+        class="flex-1 py-4 bg-orange-500 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/30 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 text-base"
       >
         <fa-icon icon="shopping-cart" />
         Ajouter au panier
       </button>
       <button
-        class="btn-buy-now flex-1 py-4 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transition-all flex items-center justify-center gap-2 text-base"
+        (click)="buyNow()"
+        class="flex-1 py-4 bg-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all flex items-center justify-center gap-2 text-base"
       >
         <fa-icon icon="bolt" />
         Acheter maintenant
       </button>
     </div>
 
-    <!-- Recommendations Section -->
-    @if (product()?.category) {
+    @if (similarProducts().length > 0) {
       <div class="mt-12 lg:mt-16 fade-in" style="animation-delay: 0.4s">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-xl font-bold text-slate-900">Produits similaires</h2>
@@ -344,27 +315,46 @@
           </a>
         </div>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          @for (i of [1, 2, 3, 4]; track i) {
-            <div class="recommendation-card bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-              <div class="aspect-square bg-slate-100 relative">
-                <fa-icon icon="box" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-400 text-3xl" />
+          @for (similar of similarProducts(); track similar.id) {
+            <a
+              [routerLink]="['/product', similar.id, 'view']"
+              class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all block group"
+            >
+              <div class="aspect-square bg-slate-100 relative overflow-hidden">
+                @if (similar.mainMedia?.url) {
+                  <img
+                    [src]="getMediaUrl(similar.mainMedia?.url)"
+                    [alt]="similar.name"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center">
+                    <fa-icon icon="box" class="text-slate-400 text-4xl" />
+                  </div>
+                }
+                @if (calculateDiscount(similar) !== null) {
+                  <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    -{{ calculateDiscount(similar) }}%
+                  </div>
+                }
               </div>
               <div class="p-3">
-                <h3 class="text-sm font-semibold text-slate-900 truncate">Produit similaire {{ i }}</h3>
+                <h3 class="text-sm font-semibold text-slate-900 truncate">{{ similar.name }}</h3>
                 <div class="flex items-baseline gap-2 mt-1">
-                  <span class="text-base font-bold text-slate-900">-- XOF</span>
+                  <span class="text-base font-bold text-orange-600">{{ similar.price! | number: '1.0-0' : 'fr-FR' }} XOF</span>
+                  @if (similar.costPrice && similar.costPrice < similar.price!) {
+                    <span class="text-xs text-slate-400 line-through">{{ similar.costPrice! | number: '1.0-0' : 'fr-FR' }}</span>
+                  }
                 </div>
               </div>
-            </div>
+            </a>
           }
         </div>
       </div>
     }
 
-    <!-- Mobile Bottom Spacing -->
     <div class="h-20 lg:hidden"></div>
 
-    <!-- Mobile Sticky Bottom Bar -->
     <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 z-50 shadow-lg">
       <div class="flex items-center gap-3">
         <div class="flex-1">
@@ -374,7 +364,8 @@
           }
         </div>
         <button
-          class="btn-primary-orange flex-1 py-3 text-white font-semibold text-sm rounded-xl shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
+          (click)="addToCart()"
+          class="flex-1 py-3 bg-orange-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
         >
           <fa-icon icon="shopping-cart" />
           Ajouter
@@ -382,7 +373,6 @@
       </div>
     </div>
   } @else {
-    <!-- Loading / Empty state -->
     <div class="text-center py-12">
       <fa-icon icon="box-open" class="text-slate-400 text-6xl mb-4" />
       <p class="text-slate-500">Produit non trouvé</p>

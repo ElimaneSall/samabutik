@@ -44,13 +44,12 @@ export class Order implements OnInit {
   subscription: Subscription | null = null;
   readonly orders = signal<IOrder[]>([]);
 
-  sortState = sortStateSignal({});
+  readonly sortState = sortStateSignal({ predicate: 'id', order: 'desc' });
 
   readonly itemsPerPage = signal(ITEMS_PER_PAGE);
   readonly totalItems = signal(0);
   readonly page = signal(1);
 
-  // Filtres
   searchTerm = '';
   selectedStatus = '';
   selectedPaymentStatus = '';
@@ -84,7 +83,6 @@ export class Order implements OnInit {
       .subscribe();
   }
 
-  // Statistiques
   totalRevenue = (): number => {
     return this.orders().reduce((sum, order) => sum + (order.totalAmount ?? 0), 0);
   };
@@ -125,9 +123,14 @@ export class Order implements OnInit {
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     const page = params.get(PAGE_HEADER);
     this.page.set(+(page ?? 1));
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
 
-    // Restaurer les filtres depuis l'URL
+    const sortParam = params.get(SORT) ?? data[DEFAULT_SORT_DATA];
+    if (sortParam) {
+      this.sortState.set(this.sortService.parseSortParam(sortParam));
+    } else {
+      this.sortState.set({ predicate: 'id', order: 'desc' });
+    }
+
     this.searchTerm = params.get('search') ?? '';
     this.selectedStatus = params.get('status') ?? '';
     this.selectedPaymentStatus = params.get('paymentStatus') ?? '';
@@ -143,10 +146,17 @@ export class Order implements OnInit {
 
   protected queryBackend(): void {
     const pageToLoad: number = this.page();
+    const sortState = this.sortState();
+
+    let sortParam = '';
+    if (sortState.predicate && sortState.order) {
+      sortParam = `${sortState.predicate},${sortState.order}`;
+    }
+
     const queryObject: any = {
       page: pageToLoad - 1,
       size: this.itemsPerPage(),
-      sort: this.sortService.buildSortParam(this.sortState()),
+      sort: sortParam,
     };
 
     if (this.searchTerm) {
@@ -166,8 +176,11 @@ export class Order implements OnInit {
     const queryParamsObj: any = {
       page,
       size: this.itemsPerPage(),
-      sort: this.sortService.buildSortParam(sortState),
     };
+
+    if (sortState.predicate && sortState.order) {
+      queryParamsObj.sort = `${sortState.predicate},${sortState.order}`;
+    }
 
     if (this.searchTerm) {
       queryParamsObj.search = this.searchTerm;
@@ -185,7 +198,6 @@ export class Order implements OnInit {
     });
   }
 
-  // Méthodes de filtrage
   onSearchChange(value: string): void {
     this.searchTerm = value;
     this.page.set(1);
@@ -209,10 +221,10 @@ export class Order implements OnInit {
     this.selectedStatus = '';
     this.selectedPaymentStatus = '';
     this.page.set(1);
+    this.sortState.set({ predicate: 'id', order: 'desc' });
     this.load();
   }
 
-  // Export CSV
   exportCSV(): void {
     this.orderService.exportCSV().subscribe({
       next: (blob: Blob) => {
@@ -229,7 +241,6 @@ export class Order implements OnInit {
     });
   }
 
-  // Tri des colonnes
   sort(predicate: string): void {
     const currentOrder = this.sortState().order;
     const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';

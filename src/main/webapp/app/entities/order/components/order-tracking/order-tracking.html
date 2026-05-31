@@ -1,0 +1,165 @@
+<div class="min-h-screen bg-background pb-32">
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface shadow-sm pt-safe">
+    <div class="flex justify-between items-center px-container-margin h-14">
+      <div class="flex items-center gap-3">
+        <button routerLink="/" class="active:scale-95 duration-150 text-on-surface">
+          <fa-icon icon="arrow-left" class="text-xl"></fa-icon>
+        </button>
+        <div>
+          <h1 class="font-label-lg text-on-surface">Suivi commande #{{ order()?.orderNumber }}</h1>
+          <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Dakar, Sénégal</span>
+        </div>
+      </div>
+      <div class="px-3 py-1 rounded-full text-[11px] font-bold" [class]="getOrderStatusClass()">
+        {{ getOrderStatusText() }}
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-20 pb-40 px-container-margin">
+    <div *ngIf="isLoading()" class="flex flex-col items-center justify-center min-h-[60vh]">
+      <div class="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
+      <p class="text-on-surface-variant">Chargement du suivi...</p>
+    </div>
+
+    <div *ngIf="!isLoading() && order()">
+      <section class="mb-4 p-4 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
+        <div class="flex justify-between items-start mb-2">
+          <div>
+            <p class="text-xs text-on-surface-variant uppercase mb-1">Livraison prévue</p>
+            <p class="font-headline-md text-on-surface">{{ getDeliveryEstimate() }}</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center text-primary">
+            <fa-icon icon="truck" class="text-3xl"></fa-icon>
+          </div>
+        </div>
+        <div class="w-full bg-surface-variant rounded-full h-2 mb-2 overflow-hidden">
+          <div class="bg-primary h-full rounded-full transition-all duration-700" [style.width.%]="getProgressWidth()"></div>
+        </div>
+        <p class="text-xs text-on-surface-variant">La préparation de votre colis est à {{ getProgressWidth() }}% terminée.</p>
+      </section>
+
+      <section class="mb-4 flex items-center justify-between p-3 bg-secondary-container/10 rounded-xl border border-secondary/20">
+        <div class="flex items-center gap-2">
+          <fa-icon icon="sms" class="text-secondary"></fa-icon>
+          <span class="text-sm">Alertes SMS de suivi</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" class="sr-only peer" [checked]="smsEnabled()" (change)="toggleSmsAlerts()" />
+          <div
+            class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"
+          ></div>
+        </label>
+      </section>
+
+      <section class="space-y-0 relative">
+        <div *ngFor="let step of timelineSteps; let i = index" class="relative flex gap-3 pb-6">
+          <div
+            *ngIf="i < timelineSteps.length - 1"
+            class="timeline-line absolute left-[11px] top-6 bottom-0 w-0.5"
+            [class.completed]="step.completed"
+          ></div>
+          <div
+            class="z-10 w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+            [class]="
+              step.completed
+                ? 'bg-primary text-white'
+                : step.active
+                  ? 'bg-white border-2 border-primary text-primary'
+                  : 'bg-surface-variant text-on-surface-variant'
+            "
+          >
+            <fa-icon [icon]="step.completed ? 'check' : step.active ? 'arrow-right' : 'clock'" class="text-xs"></fa-icon>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start flex-wrap gap-1">
+              <h3
+                class="font-bold text-sm"
+                [class.text-primary]="step.active"
+                [class.text-on-surface-variant]="!step.active && !step.completed"
+                [class.text-on-surface]="step.completed"
+              >
+                {{ step.title }}
+              </h3>
+              <span class="text-[10px] text-on-surface-variant" *ngIf="step.timestamp">{{ step.timestamp }}</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-0.5">{{ step.description }}</p>
+            <button
+              *ngIf="step.title === 'En préparation'"
+              (click)="toggleShowItems()"
+              class="mt-2 px-3 py-1.5 bg-surface-container rounded-lg text-xs text-on-surface flex items-center gap-2 active:scale-95 transition-transform"
+            >
+              <fa-icon icon="box"></fa-icon>
+              Voir les {{ getTotalItems() }} articles
+            </button>
+            <div *ngIf="showItems() && step.title === 'En préparation'" class="mt-3 space-y-2">
+              <div *ngFor="let item of getItems()" class="flex gap-2 p-2 bg-white rounded-lg border border-outline-variant/30">
+                <div class="w-10 h-10 rounded-lg bg-surface-container-low flex-shrink-0">
+                  <img *ngIf="item.productImage" [src]="item.productImage" class="w-full h-full object-cover rounded-lg" />
+                  <div *ngIf="!item.productImage" class="w-full h-full flex items-center justify-center">
+                    <fa-icon icon="box-open" class="text-on-surface-variant"></fa-icon>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <p class="text-xs font-bold">{{ item.productName }}</p>
+                  <p class="text-[10px] text-on-surface-variant">Qté: {{ item.quantity }}</p>
+                </div>
+                <p class="text-xs font-bold text-primary">{{ formatPrice(item.subtotal) }}</p>
+              </div>
+            </div>
+            <div *ngIf="step.title === 'En livraison'" class="mt-3 p-3 bg-white border border-outline-variant rounded-xl">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden">
+                  <img
+                    src="https://ui-avatars.com/api/?name=Moussa+Diop&background=ab3500&color=fff&rounded=true&size=40"
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p class="font-bold text-sm">Moussa Diop</p>
+                  <p class="text-[10px] text-on-surface-variant">Livreur certifié Dakar Nord</p>
+                </div>
+                <button
+                  (click)="contactDeliveryPerson()"
+                  class="ml-auto w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center active:scale-90 transition-transform"
+                >
+                  <fa-icon icon="comment" class="text-lg"></fa-icon>
+                </button>
+              </div>
+              <div
+                class="w-full h-24 rounded-lg bg-surface-container overflow-hidden relative bg-gradient-to-br from-orange-100 to-surface-container"
+              >
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="bg-white/90 px-3 py-1 rounded-full shadow-lg border border-primary/20 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                    <span class="text-xs font-medium">Dakar Nord</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="fixed bottom-0 left-0 w-full bg-surface shadow-[0_-4px_16px_rgba(0,0,0,0.05)] px-container-margin pt-3 pb-safe z-50">
+    <div class="flex flex-col gap-2">
+      <button
+        (click)="contactSupport()"
+        class="w-full h-12 bg-[#25D366] text-white rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-lg"
+      >
+        <fa-icon icon="comment"></fa-icon>
+        WhatsApp SamaButik
+      </button>
+      <button
+        (click)="modifyAddress()"
+        class="w-full h-12 border border-outline text-outline rounded-xl font-bold opacity-50 flex items-center justify-center gap-2"
+        disabled
+      >
+        <fa-icon icon="edit"></fa-icon>
+        Modifier l'adresse
+      </button>
+    </div>
+  </div>
+</div>

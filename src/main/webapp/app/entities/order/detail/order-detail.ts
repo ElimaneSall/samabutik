@@ -65,7 +65,7 @@ export class OrderDetail implements OnInit {
 
   // ✅ EXTRAIRE le chargement des items dans une méthode séparée
   private loadItems(orderId: number): void {
-    this.orderItemService.query({ 'order.id.equals': orderId }).subscribe({
+    this.orderItemService.query({ orderId: orderId }).subscribe({
       next: itemsRes => {
         this.items = itemsRes.body || [];
         this.cdr.detectChanges(); // ✅ FORCER LA DÉTECTION

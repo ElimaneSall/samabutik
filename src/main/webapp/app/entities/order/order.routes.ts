@@ -4,6 +4,7 @@ import { ASC } from 'app/config/navigation.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 
 import OrderResolve from './route/order-routing-resolve.service';
+import { orderCheckoutRoutes } from './route/order-checkout.routes';
 
 const orderRoute: Routes = [
   {
@@ -38,6 +39,7 @@ const orderRoute: Routes = [
     },
     canActivate: [UserRouteAccessService],
   },
+  ...orderCheckoutRoutes,
 ];
 
 export default orderRoute;

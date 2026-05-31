@@ -1,8 +1,13 @@
 package sn.samabutik.service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import sn.samabutik.domain.Order;
+import sn.samabutik.domain.enumeration.PaymentMethod;
+import sn.samabutik.domain.enumeration.PaymentStatus;
 import sn.samabutik.service.dto.OrderDTO;
 
 /**
@@ -39,8 +44,7 @@ public interface OrderService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<OrderDTO> findAll(Pageable pageable);
-
+    Page<OrderDTO> findAll(Specification<Order> spec, Pageable pageable);
     /**
      * Get the "id" order.
      *
@@ -55,4 +59,17 @@ public interface OrderService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Optional<OrderDTO> findPendingOrderByCustomer(String customerPhone);
+
+    OrderDTO updateShippingInfo(Long orderId, String shippingAddress, String deliveryNote);
+
+    OrderDTO updatePaymentInfo(Long orderId, PaymentMethod paymentMethod, String phoneNumber, PaymentStatus paymentStatus);
+
+    OrderDTO finalizeOrder(Long orderId, PaymentStatus paymentStatus);
+
+    byte[] exportToCsv(String statusFilter, String paymentStatusFilter);
+    void initiatePayment(OrderDTO order, String phoneNumber);
+
+    void updateOrderTotal(Long orderId, BigDecimal newTotal);
 }

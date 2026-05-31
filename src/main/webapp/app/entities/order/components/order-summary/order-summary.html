@@ -1,0 +1,265 @@
+<div class="min-h-screen bg-background text-on-background pb-40 font-body-md">
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface shadow-sm px-container-margin h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <button routerLink="/" class="p-2 hover:opacity-80 active:scale-95 transition-all text-on-surface">
+        <fa-icon icon="arrow-left" class="text-[20px]"></fa-icon>
+      </button>
+      <h1 class="font-headline-md text-headline-md-mobile font-bold text-primary">Commande #{{ order()?.orderNumber || '...' }}</h1>
+    </div>
+    <button
+      *ngIf="items().length > 0 && !isLoading()"
+      (click)="clearAndRestart()"
+      class="flex items-center gap-1 text-error text-label-sm hover:opacity-80 active:scale-95 transition-transform"
+    >
+      <fa-icon icon="trash" class="text-[18px]"></fa-icon>
+      <span>Vider</span>
+    </button>
+  </header>
+
+  <div *ngIf="isLoading()" class="pt-24 flex flex-col items-center justify-center min-h-[60vh]">
+    <div class="relative w-16 h-16 mb-4">
+      <div class="absolute inset-0 border-4 border-surface-variant rounded-full"></div>
+      <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <fa-icon icon="shopping-cart" class="text-primary text-[28px]"></fa-icon>
+      </div>
+    </div>
+    <p class="font-label-lg text-on-surface-variant">Chargement de votre commande...</p>
+  </div>
+
+  <div *ngIf="!isLoading() && items().length === 0" class="pt-24 flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+    <div class="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center mb-4">
+      <fa-icon icon="shopping-cart" class="text-3xl text-on-surface-variant"></fa-icon>
+    </div>
+    <h2 class="font-headline-md text-headline-md-mobile mb-2 text-on-surface">Votre commande est vide</h2>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mb-6">Ajoutez des produits pour commencer</p>
+    <button
+      routerLink="/product"
+      class="px-6 py-3 bg-primary-container text-on-primary-container rounded-xl font-label-lg active:scale-95 transition-transform shadow-sm"
+    >
+      Découvrir les produits
+    </button>
+  </div>
+
+  <main *ngIf="!isLoading() && items().length > 0" class="pt-20 px-container-margin space-y-md">
+    <div
+      *ngFor="let item of items()"
+      class="bg-surface rounded-xl p-md shadow-sm border border-outline-variant/30 flex gap-md relative overflow-hidden"
+    >
+      <div *ngIf="item.isPackItem" class="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
+        Pack -20%
+      </div>
+
+      <div class="w-24 h-24 rounded-lg overflow-hidden bg-surface-container-low flex-shrink-0">
+        <img *ngIf="item.productImage" [src]="item.productImage" [alt]="item.productName" class="w-full h-full object-cover" />
+        <div *ngIf="!item.productImage" class="w-full h-full flex items-center justify-center text-on-surface-variant">
+          <fa-icon icon="box-open" class="text-3xl"></fa-icon>
+        </div>
+      </div>
+
+      <div class="flex-grow flex flex-col justify-between">
+        <div>
+          <h3 class="font-title-lg text-title-lg text-on-surface">{{ item.productName }}</h3>
+          <p class="font-body-md text-body-md text-primary font-bold mt-1">{{ formatPrice(item.unitPrice) }} / unité</p>
+          <div
+            *ngIf="item.stockAvailable && item.stockAvailable <= 3"
+            class="mt-1 bg-tertiary-fixed/20 text-tertiary px-2 py-0.5 rounded w-fit flex items-center gap-1"
+          >
+            <fa-icon icon="exclamation-triangle" class="text-[12px]"></fa-icon>
+            <span class="text-[10px] font-bold">Plus que {{ item.stockAvailable }} en stock</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-sm">
+          <div class="flex items-center bg-surface-container-highest rounded-full px-1">
+            <button
+              (click)="updateQuantity(item, -1)"
+              [disabled]="item.quantity <= 1"
+              class="w-8 h-8 flex items-center justify-center text-on-surface-variant disabled:opacity-30 active:scale-95 transition-transform"
+            >
+              <fa-icon icon="minus" class="text-[14px]"></fa-icon>
+            </button>
+            <span class="w-10 text-center font-label-lg text-on-surface">{{ item.quantity }}</span>
+            <button
+              (click)="openQuantitySheet(item)"
+              class="w-8 h-8 flex items-center justify-center text-primary active:scale-95 transition-transform"
+            >
+              <fa-icon icon="pencil-alt" class="text-[14px]"></fa-icon>
+            </button>
+          </div>
+
+          <div class="text-right">
+            <span class="block text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">Sous-total</span>
+            <span class="font-title-lg text-title-lg text-on-surface">{{ formatPrice(item.subtotal) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button
+        (click)="removeItem(item)"
+        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-variant/50 text-on-surface-variant flex items-center justify-center hover:bg-error hover:text-white transition-colors active:scale-95"
+      >
+        <fa-icon icon="times" class="text-[16px]"></fa-icon>
+      </button>
+    </div>
+
+    <div class="py-md text-center">
+      <button
+        (click)="continueShopping()"
+        class="text-primary font-label-lg underline underline-offset-4 hover:opacity-80 active:scale-95 transition-all inline-flex items-center gap-1"
+      >
+        <fa-icon icon="arrow-left" class="text-[18px]"></fa-icon>
+        Continuer mes achats
+      </button>
+    </div>
+  </main>
+
+  <section
+    *ngIf="!isLoading() && items().length > 0"
+    class="fixed bottom-0 left-0 w-full z-40 bg-surface shadow-[0_-4px_16px_rgba(0,0,0,0.08)] rounded-t-3xl px-container-margin pt-md pb-safe"
+  >
+    <div class="space-y-sm mb-md">
+      <div class="flex justify-between text-body-md">
+        <span class="text-on-surface-variant font-body-md">Sous-total</span>
+        <span class="font-body-md text-on-surface">{{ formatPrice(items().reduce((s, i) => s + i.subtotal, 0)) }}</span>
+      </div>
+      <div class="flex justify-between text-body-md">
+        <span class="text-on-surface-variant font-body-md">Livraison</span>
+        <span class="font-body-md text-on-surface">{{ formatPrice(order()?.shippingCost || 1500) }}</span>
+      </div>
+      <div class="h-px bg-outline-variant/30 my-xs"></div>
+      <div class="flex justify-between items-center">
+        <span class="font-headline-md text-headline-md-mobile text-on-surface font-bold">Total</span>
+        <span class="font-headline-md text-headline-md-mobile text-primary-container font-extrabold">{{
+          formatPrice(order()?.totalAmount || 0)
+        }}</span>
+      </div>
+    </div>
+
+    <button
+      (click)="proceedToCheckout()"
+      [disabled]="items().length === 0 || !order()?.id"
+      class="w-full h-12 bg-primary-container text-on-primary-container rounded-xl font-label-lg text-label-lg shadow-lg active:scale-95 transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
+    >
+      <span>Procéder à la livraison</span>
+      <fa-icon icon="chevron-right"></fa-icon>
+    </button>
+
+    <div class="h-4"></div>
+  </section>
+
+  <a
+    href="https://wa.me/2210000000"
+    target="_blank"
+    class="fixed bottom-32 right-container-margin z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-xl active:scale-90 transition-transform"
+  >
+    <fa-icon icon="comment" class="text-[28px]"></fa-icon>
+  </a>
+</div>
+
+<div *ngIf="selectedItem()" class="fixed inset-0 z-[100]" [class.hidden]="!isSheetOpen()">
+  <div
+    class="sheet-overlay fixed inset-0 bg-black/40 z-[60]"
+    [class.opacity-100]="isSheetOpen()"
+    [class.opacity-0]="!isSheetOpen()"
+    [class.pointer-events-none]="!isSheetOpen()"
+    (click)="closeQuantitySheet()"
+  ></div>
+
+  <div
+    class="bottom-sheet fixed bottom-0 left-0 w-full z-[70] bg-surface rounded-t-[24px] shadow-2xl"
+    [class.translate-y-0]="isSheetOpen()"
+    [class.translate-y-full]="!isSheetOpen()"
+  >
+    <div class="w-12 h-1.5 bg-outline-variant rounded-full mx-auto mt-3 mb-2"></div>
+
+    <div class="px-gutter pb-4 flex justify-between items-start">
+      <div class="flex gap-4">
+        <div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container-low border border-outline-variant/20">
+          <img
+            *ngIf="selectedItem()?.productImage"
+            [src]="selectedItem()?.productImage"
+            [alt]="selectedItem()?.productName"
+            class="w-full h-full object-cover"
+          />
+          <div *ngIf="!selectedItem()?.productImage" class="w-full h-full flex items-center justify-center">
+            <fa-icon icon="box-open" class="text-on-surface-variant text-2xl"></fa-icon>
+          </div>
+        </div>
+        <div>
+          <h2 class="font-headline-md text-headline-md-mobile text-on-surface">Modifier la quantité</h2>
+          <p class="font-body-md text-body-md text-on-surface-variant">{{ selectedItem()?.productName }}</p>
+          <p class="font-label-lg text-label-lg text-primary mt-0.5">{{ formatPrice(selectedItem()?.unitPrice || 0) }} / unité</p>
+        </div>
+      </div>
+      <button
+        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors active:scale-95"
+        (click)="closeQuantitySheet()"
+      >
+        <fa-icon icon="times" class="text-on-surface-variant"></fa-icon>
+      </button>
+    </div>
+
+    <div
+      *ngIf="(selectedItem()?.stockAvailable || 0) <= 3"
+      class="mx-gutter bg-primary/10 border border-primary/20 rounded-lg p-3 mb-6 flex items-center gap-3"
+    >
+      <fa-icon icon="exclamation-triangle" class="text-primary"></fa-icon>
+      <p class="font-label-lg text-label-lg text-on-primary-container leading-tight">
+        ⚠️ Attention : seulement {{ selectedItem()?.stockAvailable }} unités disponibles
+      </p>
+    </div>
+
+    <div class="px-gutter pb-8">
+      <div class="flex flex-col items-center gap-4 py-4">
+        <div class="flex items-center gap-8">
+          <button
+            (click)="decrementQuantity()"
+            [disabled]="sheetQuantity() <= 1"
+            class="w-12 h-12 rounded-full border border-outline flex items-center justify-center text-primary active:scale-95 transition-transform disabled:opacity-30"
+          >
+            <fa-icon icon="minus"></fa-icon>
+          </button>
+          <span class="font-display-sm text-display-sm w-12 text-center font-bold text-on-surface">{{ sheetQuantity() }}</span>
+          <button
+            (click)="incrementQuantity()"
+            [disabled]="sheetQuantity() >= (selectedItem()?.stockAvailable || 99)"
+            class="w-12 h-12 rounded-full border border-outline flex items-center justify-center text-primary active:scale-95 transition-transform disabled:opacity-30"
+          >
+            <fa-icon icon="plus"></fa-icon>
+          </button>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-secondary"></span>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">
+            🟢 {{ selectedItem()?.stockAvailable || 0 }} disponibles (Max: {{ selectedItem()?.stockAvailable || 0 }})
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-surface-container-lowest rounded-xl p-4 flex justify-between items-center border border-outline-variant/30">
+        <span class="font-title-lg text-title-lg text-on-surface-variant">Sous-total</span>
+        <span class="font-headline-lg text-headline-lg-mobile text-primary font-bold">{{
+          formatPrice((selectedItem()?.unitPrice || 0) * sheetQuantity())
+        }}</span>
+      </div>
+    </div>
+
+    <div class="px-gutter pb-10 pt-4 bg-surface border-t border-outline-variant/20">
+      <button
+        (click)="saveQuantityFromSheet()"
+        class="w-full h-14 bg-primary-container text-on-primary-container font-title-lg text-title-lg rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md"
+      >
+        <fa-icon icon="save"></fa-icon>
+        Mettre à jour
+      </button>
+      <button
+        (click)="removeItem(selectedItem()!)"
+        class="w-full mt-4 py-2 text-error font-label-lg text-label-lg flex items-center justify-center gap-1 active:opacity-70 transition-opacity"
+      >
+        <fa-icon icon="trash"></fa-icon>
+        Supprimer l'article
+      </button>
+    </div>
+  </div>
+</div>

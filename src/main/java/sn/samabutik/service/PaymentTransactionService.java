@@ -3,6 +3,7 @@ package sn.samabutik.service;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import sn.samabutik.service.dto.OrderDTO;
 import sn.samabutik.service.dto.PaymentTransactionDTO;
 
 /**
@@ -55,4 +56,6 @@ public interface PaymentTransactionService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    void initiatePayment(OrderDTO updated, String phoneNumber);
 }

@@ -1,4 +1,4 @@
-// home.ts - Refactor complet avec Order/OrderItem + catégories dynamiques
+// home.ts - Version corrigée avec notifications
 import { Component, OnInit, inject, signal, computed, effect, afterNextRender } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule, DecimalPipe } from '@angular/common';
@@ -6,8 +6,7 @@ import dayjs from 'dayjs/esm';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { HttpResponse, HttpHeaders } from '@angular/common/http';
-
-// Entities & Services générés par JHipster
+import { ToastService } from 'app/shared/notification/toast.service';
 import { IProduct } from 'app/entities/product/product.model';
 import { ProductService } from 'app/entities/product/service/product.service';
 import { IPack } from 'app/entities/pack/pack.model';
@@ -19,6 +18,7 @@ import { OrderService } from 'app/entities/order/service/order.service';
 import { OrderItemService } from 'app/entities/order-item/service/order-item.service';
 import { OrderStatus } from 'app/entities/enumerations/order-status.model';
 import { PackCarousel } from '../entities/pack/pack-carousel/pack-carousel';
+import { ToastComponent } from '../shared/notification/toast.component/toast.component';
 
 interface Category {
   id: string;
@@ -32,7 +32,7 @@ interface Category {
   templateUrl: './home.html',
   styleUrl: './home.scss',
   standalone: true,
-  imports: [CommonModule, DecimalPipe, FontAwesomeModule, TranslateModule, PackCarousel],
+  imports: [CommonModule, DecimalPipe, FontAwesomeModule, TranslateModule, PackCarousel, ToastComponent],
 })
 export default class Home implements OnInit {
   // 🔹 Données produits/packs
@@ -59,8 +59,10 @@ export default class Home implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly packService = inject(PackService);
   private readonly accountService = inject(AccountService);
-  private readonly orderService = inject(OrderService); // ✅ Pour gérer le panier (Order CART)
-  private readonly orderItemService = inject(OrderItemService); // ✅ Pour gérer les OrderItem
+  private readonly orderService = inject(OrderService);
+  private readonly orderItemService = inject(OrderItemService);
+  private readonly toastService = inject(ToastService); // ✅ Injection du ToastService
+
   readonly isReady = signal(false);
   readonly categoriesList = signal<Category[]>([]);
 
@@ -69,6 +71,7 @@ export default class Home implements OnInit {
       this.isReady.set(true);
     });
   }
+
   ngOnInit(): void {
     this.loadData();
     this.refreshCartState();
@@ -89,21 +92,32 @@ export default class Home implements OnInit {
           this.bestSellers.set(res.body ?? []);
           this.setCategoriesFromProducts(res.body);
         },
-        error: () => this.bestSellers.set([]),
+        error: () => {
+          this.bestSellers.set([]);
+          this.toastService.error('Erreur lors du chargement des meilleures ventes');
+        },
       });
 
     // Featured packs
     this.packService
       .query({
-        'displayOnHomepage.equals': true,
-        'isActive.equals': true,
-        'endDate.greaterThan': new Date().toISOString(),
-        sort: ['discountValue,desc'],
+        displayOnHomepage: true,
+        isActive: true,
+        sort: ['id,desc'],
         size: 5,
       })
       .subscribe({
-        next: (res: HttpResponse<IPack[]>) => this.featuredPacks.set(res.body ?? []),
-        error: () => this.featuredPacks.set([]),
+        next: (res: HttpResponse<IPack[]>) => {
+          const now = dayjs();
+          const activePacks = (res.body ?? []).filter(
+            pack => pack.isActive && pack.displayOnHomepage && (!pack.endDate || dayjs(pack.endDate).isAfter(now)),
+          );
+          this.featuredPacks.set(activePacks.slice(0, 5));
+        },
+        error: () => {
+          this.featuredPacks.set([]);
+          this.toastService.error('Erreur lors du chargement des packs');
+        },
       });
 
     // New arrivals
@@ -121,55 +135,96 @@ export default class Home implements OnInit {
         error: () => {
           this.newArrivals.set([]);
           this.isLoading.set(false);
+          this.toastService.error('Erreur lors du chargement des nouveautés');
         },
       });
   }
-
+  // home.ts - refreshCartState corrigé
   refreshCartState(): void {
+    console.log('🔄 Refreshing cart state...');
+
+    // Récupérer la commande PENDING la PLUS RÉCENTE
     this.orderService
       .query({
         status: OrderStatus.PENDING,
-        // 'customer.id.equals': currentUserId, // ← À ajouter si tu filtres par user
+        sort: ['id,desc'], // Tri par ID descendant pour avoir le plus récent en premier
+        size: 1,
       })
       .subscribe({
         next: (res: HttpResponse<IOrder[]>) => {
-          const cartOrder = res.body?.[0] ?? null;
+          const orders = res.body ?? [];
+          // Prendre la première commande (la plus récente)
+          const cartOrder = orders.length > 0 ? orders[0] : null;
+
+          console.log('📦 Active cart order:', cartOrder);
           this.currentCartOrder.set(cartOrder);
 
           if (cartOrder?.id) {
+            // Récupérer les items de CETTE commande uniquement
             this.orderItemService
               .query({
-                'order.id.equals': cartOrder.id,
+                'orderId.equals': cartOrder.id,
               })
               .subscribe({
-                next: (res: HttpResponse<IOrderItem[]>) => {
-                  this.cartItems.set(res.body ?? []);
+                next: (itemRes: HttpResponse<IOrderItem[]>) => {
+                  const items = itemRes.body ?? [];
+                  console.log(`📋 ${items.length} items in order ${cartOrder.id}:`, items);
+                  this.cartItems.set(items);
                 },
-                error: () => this.cartItems.set([]),
+                error: err => {
+                  console.error('❌ Error loading items:', err);
+                  this.cartItems.set([]);
+                },
               });
           } else {
+            console.log('🛒 No PENDING order found');
             this.cartItems.set([]);
           }
         },
-        error: () => {
+        error: err => {
+          console.error('❌ Error loading orders:', err);
           this.currentCartOrder.set(null);
           this.cartItems.set([]);
         },
       });
   }
 
-  // 🔹 Ajouter un produit au panier (via Order/OrderItem)
+  // Générer un numéro de commande unique
+  private generateOrderNumber(): string {
+    const date = new Date();
+    const yy = String(date.getFullYear()).slice(-2);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    // Keeping a 3-digit random number
+    const random = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0');
+
+    return `ORD-${yy}${month}${day}-${hours}${minutes}-${random}`;
+  }
   addToCart(product: IProduct, event?: Event): void {
     event?.stopPropagation();
-    if (!product.stock || product.stock <= 0) return;
+
+    if (!product.stock || product.stock <= 0) {
+      this.toastService.warning(`⚠️ ${product.name} n'est plus en stock`);
+      return;
+    }
 
     const addOrUpdateItem = (cartOrder: IOrder) => {
-      // Vérifier si l'item existe déjà dans le panier
-      const existingItem = this.cartItems().find(item => item.productSku === product.sku && !item.isPackItem);
+      // RECHERCHE PAR productSnapshot.id au lieu de productSku
+      const existingItem = this.cartItems().find(item => item.productSnapshot?.id === product.id && !item.isPackItem);
 
       if (existingItem?.id) {
-        // ✅ Mise à jour de quantité
         const newQuantity = (existingItem.quantity ?? 0) + 1;
+
+        if (newQuantity > (product.stock ?? 0)) {
+          this.toastService.warning(`Stock limité: seulement ${product.stock} disponible(s)`);
+          return;
+        }
+
+        // Mise à jour de l'item existant
         this.orderItemService
           .update({
             ...existingItem,
@@ -179,18 +234,21 @@ export default class Home implements OnInit {
           .subscribe({
             next: () => {
               this.refreshCartState();
-              // Optionnel: toast de succès
+              this.toastService.success(`✓ ${product.name} ajouté au panier (${newQuantity})`);
             },
-            error: err => console.error('❌ Erreur mise à jour panier:', err),
+            error: err => {
+              console.error('Erreur mise à jour panier:', err);
+              this.toastService.error(`Erreur: Impossible d'ajouter ${product.name}`);
+            },
           });
       } else {
-        // ✅ Création d'un nouvel OrderItem
+        // Création d'un nouvel item
         const newItem: NewOrderItem = {
           id: null,
           productName: product.name,
           productSku: product.sku,
           quantity: 1,
-          unitPrice: 1,
+          unitPrice: product.price ?? 0,
           subtotal: product.price ?? 0,
           isPackItem: false,
           productSnapshot: product,
@@ -200,25 +258,36 @@ export default class Home implements OnInit {
         this.orderItemService.create(newItem).subscribe({
           next: () => {
             this.refreshCartState();
+            this.toastService.success(`✓ ${product.name} ajouté au panier`);
           },
-          error: err => console.error('❌ Erreur ajout au panier:', err),
+          error: err => {
+            console.error('Erreur ajout au panier:', err);
+            this.toastService.error(`Erreur: Impossible d'ajouter ${product.name}`);
+          },
         });
       }
     };
 
     const cartOrder = this.currentCartOrder();
     if (cartOrder?.id) {
-      // Panier existe → ajouter l'item
       addOrUpdateItem(cartOrder);
     } else {
-      // Pas de panier → en créer un nouveau d'abord
+      const orderNumber = this.generateOrderNumber();
+
       const newCart: NewOrder = {
         id: null,
+        orderNumber: orderNumber,
         status: OrderStatus.PENDING,
-        currency: 'XOF',
         totalAmount: 0,
+        currency: 'XOF',
+        paymentMethod: null,
+        paymentStatus: null,
+        paymentReference: null,
+        shippingAddress: '',
         shippingCost: 0,
-        // customer: { id: currentUserId }, // ← Si nécessaire
+        deliveryNote: null,
+        deliveredAt: null,
+        customer: null,
       };
 
       this.orderService.create(newCart).subscribe({
@@ -226,12 +295,134 @@ export default class Home implements OnInit {
           this.currentCartOrder.set(createdOrder);
           addOrUpdateItem(createdOrder);
         },
-        error: err => console.error('❌ Erreur création panier:', err),
+        error: err => {
+          console.error('Erreur création panier:', err);
+          this.toastService.error('Erreur lors de la création du panier');
+        },
+      });
+    }
+  }
+  // 🔹 Ajouter un pack au panier
+  addPackToCart(pack: IPack, event?: Event): void {
+    event?.stopPropagation();
+
+    if (!this.isPackAvailable(pack)) {
+      this.toastService.warning(`⚠️ Le pack "${pack.name}" n'est pas disponible`);
+      return;
+    }
+
+    const addOrUpdatePackItems = (cartOrder: IOrder) => {
+      let itemsAdded = 0;
+      let itemsFailed = 0;
+
+      pack.packItems?.forEach(packItem => {
+        const product = packItem.product;
+        if (!product || !product.stock || product.stock <= 0) {
+          itemsFailed++;
+          return;
+        }
+
+        const quantity = packItem.quantity ?? 1;
+
+        if (quantity > (product.stock ?? 0)) {
+          itemsFailed++;
+          this.toastService.warning(`${product.name}: stock insuffisant`);
+          return;
+        }
+
+        const existingItem = this.cartItems().find(item => item.productSku === product.sku && !item.isPackItem);
+
+        if (existingItem?.id) {
+          const newQuantity = (existingItem.quantity ?? 0) + quantity;
+          if (newQuantity <= (product.stock ?? 0)) {
+            this.orderItemService
+              .update({
+                ...existingItem,
+                quantity: newQuantity,
+                subtotal: (existingItem.unitPrice ?? 0) * newQuantity,
+              })
+              .subscribe({
+                next: () => {
+                  itemsAdded++;
+                  if (itemsAdded + itemsFailed === (pack.packItems?.length ?? 0)) {
+                    this.refreshCartState();
+                    this.toastService.success(`✓ Pack "${pack.name}" ajouté au panier`);
+                  }
+                },
+                error: () => {
+                  itemsFailed++;
+                  this.toastService.error(`Erreur lors de l'ajout de ${product.name}`);
+                },
+              });
+          } else {
+            itemsFailed++;
+            this.toastService.warning(`${product.name}: stock dépassé`);
+          }
+        } else {
+          const newItem: NewOrderItem = {
+            id: null,
+            productName: product.name,
+            productSku: product.sku,
+            quantity: quantity,
+            unitPrice: product.price ?? 0,
+            subtotal: (product.price ?? 0) * quantity,
+            isPackItem: true,
+            productSnapshot: product,
+            order: cartOrder,
+          };
+
+          this.orderItemService.create(newItem).subscribe({
+            next: () => {
+              itemsAdded++;
+              if (itemsAdded + itemsFailed === (pack.packItems?.length ?? 0)) {
+                this.refreshCartState();
+                this.toastService.success(`✓ Pack "${pack.name}" ajouté au panier`);
+              }
+            },
+            error: () => {
+              itemsFailed++;
+              this.toastService.error(`Erreur lors de l'ajout de ${product.name}`);
+            },
+          });
+        }
+      });
+    };
+
+    const cartOrder = this.currentCartOrder();
+    if (cartOrder?.id) {
+      addOrUpdatePackItems(cartOrder);
+    } else {
+      const orderNumber = this.generateOrderNumber();
+
+      const newCart: NewOrder = {
+        id: null,
+        orderNumber: orderNumber, // ✅ Ajouté
+        status: OrderStatus.PENDING,
+        totalAmount: 0,
+        currency: 'XOF',
+        paymentMethod: null,
+        paymentStatus: null,
+        paymentReference: null,
+        shippingAddress: '', // ✅ Ajouté
+        shippingCost: 0,
+        deliveryNote: null,
+        deliveredAt: null,
+        customer: null,
+      };
+
+      this.orderService.create(newCart).subscribe({
+        next: createdOrder => {
+          this.currentCartOrder.set(createdOrder);
+          addOrUpdatePackItems(createdOrder);
+        },
+        error: err => {
+          console.error('❌ Erreur création panier:', err);
+          this.toastService.error('Erreur lors de la création du panier');
+        },
       });
     }
   }
 
-  // 🔹 Navigations
   navigateToProducts(): void {
     this.router.navigate(['/product']);
   }
@@ -277,7 +468,6 @@ export default class Home implements OnInit {
     }
   }
 
-  // 🔹 Helpers UI
   getMediaUrl(url: string | null | undefined): string {
     if (!url) return '/content/images/no-image.png';
     if (url.startsWith('http')) return url;
@@ -326,27 +516,7 @@ export default class Home implements OnInit {
     const diff = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     return Math.max(0, diff);
   }
-  // Alternative sans les .equals
-  getTop5Pack(): void {
-    const params = {
-      displayOnHomepage: true,
-      isActive: true,
-      sort: ['id,desc'],
-      size: 5,
-    };
 
-    this.packService.query(params).subscribe({
-      next: (res: HttpResponse<IPack[]>) => {
-        // Filtrer côté client si nécessaire
-        const now = dayjs();
-        const activePacks = (res.body ?? []).filter(
-          pack => pack.isActive && pack.displayOnHomepage && (!pack.endDate || dayjs(pack.endDate).isAfter(now)),
-        );
-        this.featuredPacks.set(activePacks.slice(0, 5));
-      },
-      error: err => console.error('Erreur:', err),
-    });
-  }
   getPackProgress(pack: IPack): number {
     const startDate = pack.startDate;
     const endDate = pack.endDate;
@@ -372,10 +542,6 @@ export default class Home implements OnInit {
 
   private readonly AVAILABLE_ICONS = ['folder', 'tag', 'shopping-bag', 'box', 'star', 'heart', 'bookmark', 'layer-group'];
 
-  /**
-   * Extrait les catégories uniques depuis le body des produits et met à jour le signal.
-   * @param productsBody Le tableau de produits reçu de l'API
-   */
   setCategoriesFromProducts(productsBody: any[] | null | undefined): void {
     if (!productsBody) {
       this.categoriesList.set([]);
@@ -386,91 +552,15 @@ export default class Home implements OnInit {
 
     const mappedCategories: Category[] = uniqueNames.map((name, index) => {
       return {
-        id: `cat-${index + 1}-${Math.random().toString(36).substring(2, 5)}`, // ID unique
+        id: `cat-${index + 1}-${Math.random().toString(36).substring(2, 5)}`,
         name: name,
-        count: productsBody.filter(p => p.category === name).length, // Optionnel
+        count: productsBody.filter(p => p.category === name).length,
       };
     });
 
     this.categoriesList.set(mappedCategories);
   }
 
-  // home.ts - Ajouter cette méthode
-  addPackToCart(pack: IPack, event?: Event): void {
-    event?.stopPropagation();
-
-    // Vérifier la disponibilité de tous les produits du pack
-    if (!this.isPackAvailable(pack)) return;
-
-    const addOrUpdatePackItems = (cartOrder: IOrder) => {
-      // Pour chaque produit dans le pack, l'ajouter au panier
-      pack.packItems?.forEach(packItem => {
-        const product = packItem.product;
-        if (!product || !product.stock || product.stock <= 0) return;
-
-        const quantity = packItem.quantity ?? 1;
-
-        // Vérifier si l'item existe déjà
-        const existingItem = this.cartItems().find(item => item.productSku === product.sku && !item.isPackItem);
-
-        if (existingItem?.id) {
-          // Mettre à jour la quantité
-          const newQuantity = (existingItem.quantity ?? 0) + quantity;
-          this.orderItemService
-            .update({
-              ...existingItem,
-              quantity: newQuantity,
-              subtotal: (existingItem.unitPrice ?? 0) * newQuantity,
-            })
-            .subscribe({
-              next: () => this.refreshCartState(),
-              error: err => console.error('❌ Erreur mise à jour panier:', err),
-            });
-        } else {
-          // Créer un nouvel OrderItem
-          const newItem: NewOrderItem = {
-            id: null,
-            productName: product.name,
-            productSku: product.sku,
-            quantity: quantity,
-            unitPrice: product.price ?? 0,
-            subtotal: (product.price ?? 0) * quantity,
-            isPackItem: true,
-            // packId: pack.id,
-            // packName: pack.name,
-            productSnapshot: product,
-            order: cartOrder,
-          };
-
-          this.orderItemService.create(newItem).subscribe({
-            next: () => this.refreshCartState(),
-            error: err => console.error('❌ Erreur ajout pack au panier:', err),
-          });
-        }
-      });
-    };
-
-    const cartOrder = this.currentCartOrder();
-    if (cartOrder?.id) {
-      addOrUpdatePackItems(cartOrder);
-    } else {
-      const newCart: NewOrder = {
-        id: null,
-        status: OrderStatus.PENDING,
-        currency: 'XOF',
-        totalAmount: 0,
-        shippingCost: 0,
-      };
-
-      this.orderService.create(newCart).subscribe({
-        next: createdOrder => {
-          this.currentCartOrder.set(createdOrder);
-          addOrUpdatePackItems(createdOrder);
-        },
-        error: err => console.error('❌ Erreur création panier:', err),
-      });
-    }
-  }
   filterByCategory(selected: Category) {
     this.categoriesList.update(cats =>
       cats.map(cat => ({

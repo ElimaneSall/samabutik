@@ -1,0 +1,209 @@
+<div class="min-h-screen bg-surface">
+  <main class="pt-14 pb-32 px-container-margin pattern-bg min-h-screen">
+    <!-- Progress Indicator -->
+    <nav class="flex items-center justify-center py-3 gap-2">
+      <div class="flex items-center gap-1">
+        <span class="text-on-surface-variant text-xs">Résumé</span>
+        <fa-icon icon="chevron-right" class="text-on-surface-variant text-xs"></fa-icon>
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+        <span class="text-primary font-bold text-sm">Paiement</span>
+        <fa-icon icon="chevron-right" class="text-on-surface-variant text-xs"></fa-icon>
+      </div>
+      <div class="flex items-center gap-1 opacity-40">
+        <span class="text-on-surface-variant text-xs">Confirmation</span>
+      </div>
+    </nav>
+
+    <!-- Header & Total -->
+    <section class="mb-4">
+      <h2 class="font-headline-lg text-on-surface mb-2">Choisissez votre moyen de paiement</h2>
+      <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex justify-between items-baseline">
+        <span class="text-on-surface-variant font-label-lg">Montant total</span>
+        <span class="text-primary font-display-sm text-3xl">{{ formatPrice(order()?.totalAmount || 0) }}</span>
+      </div>
+    </section>
+
+    <!-- Payment Options -->
+    <form class="space-y-4">
+      <!-- Wave Option -->
+      <label class="relative block cursor-pointer group">
+        <input type="radio" name="payment_method" [value]="PaymentMethod.WAVE" [(ngModel)]="selectedPayment" class="peer sr-only" />
+        <div
+          class="selection-ring p-4 rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm peer-checked:ring-2 peer-checked:ring-primary flex flex-col gap-4 transition-all"
+          [class.opacity-70]="selectedPayment() !== PaymentMethod.WAVE"
+          [class.opacity-100]="selectedPayment() === PaymentMethod.WAVE"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex gap-4">
+              <div class="w-12 h-12 rounded-lg bg-[#1da1f2] flex items-center justify-center text-white shadow-sm overflow-hidden">
+                <fa-icon icon="wave-square" class="text-3xl"></fa-icon>
+              </div>
+              <div>
+                <h3 class="font-title-lg text-on-surface">Wave</h3>
+                <p class="text-on-surface-variant text-sm">Paiement instantané</p>
+              </div>
+            </div>
+            <div
+              class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center peer-checked:border-primary transition-colors"
+            >
+              <div class="w-3 h-3 rounded-full bg-primary opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+            </div>
+          </div>
+          <div class="space-y-2" [class.hidden]="selectedPayment() !== PaymentMethod.WAVE">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none gap-1">
+                <img src="https://flagcdn.com/w20/sn.png" alt="Sénégal" class="w-5 h-4 rounded-sm" />
+                <span class="font-label-lg text-on-surface">+221</span>
+              </div>
+              <input
+                type="tel"
+                [(ngModel)]="phoneNumber"
+                (ngModelChange)="phoneNumber.set(checkoutService.formatPhone($event))"
+                name="wave_phone"
+                class="w-full h-12 pl-28 pr-4 rounded-lg bg-surface-variant focus:ring-2 focus:ring-primary text-lg text-on-surface placeholder-on-surface-variant/60"
+                placeholder="77 XXX XX XX"
+              />
+            </div>
+            <p class="text-on-surface-variant text-xs flex items-center gap-1">
+              <fa-icon icon="bell" class="text-xs"></fa-icon>
+              Notification push pour confirmer
+            </p>
+          </div>
+        </div>
+      </label>
+
+      <!-- Orange Money Option -->
+      <label class="relative block cursor-pointer group">
+        <input type="radio" name="payment_method" [value]="PaymentMethod.ORANGE_MONEY" [(ngModel)]="selectedPayment" class="peer sr-only" />
+        <div
+          class="selection-ring p-4 rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm peer-checked:ring-2 peer-checked:ring-primary flex flex-col gap-4 transition-all"
+          [class.opacity-70]="selectedPayment() !== PaymentMethod.ORANGE_MONEY"
+          [class.opacity-100]="selectedPayment() === PaymentMethod.ORANGE_MONEY"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex gap-4">
+              <div class="w-12 h-12 rounded-lg bg-[#FF7900] flex items-center justify-center text-white shadow-sm overflow-hidden">
+                <fa-icon icon="mobile-alt" class="text-3xl"></fa-icon>
+              </div>
+              <div>
+                <h3 class="font-title-lg text-on-surface">Orange Money</h3>
+                <p class="text-on-surface-variant text-sm">Paiement sécurisé</p>
+              </div>
+            </div>
+            <div
+              class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center peer-checked:border-primary transition-colors"
+            >
+              <div class="w-3 h-3 rounded-full bg-primary opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+            </div>
+          </div>
+          <div class="space-y-2" [class.hidden]="selectedPayment() !== PaymentMethod.ORANGE_MONEY">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none gap-1">
+                <img src="https://flagcdn.com/w20/sn.png" alt="Sénégal" class="w-5 h-4 rounded-sm" />
+                <span class="font-label-lg text-on-surface">+221</span>
+              </div>
+              <input
+                type="tel"
+                [(ngModel)]="phoneNumber"
+                (ngModelChange)="phoneNumber.set(checkoutService.formatPhone($event))"
+                name="om_phone"
+                class="w-full h-12 pl-28 pr-4 rounded-lg bg-surface-variant focus:ring-2 focus:ring-primary text-lg text-on-surface placeholder-on-surface-variant/60"
+                placeholder="77 XXX XX XX"
+              />
+            </div>
+            <p class="text-on-surface-variant text-xs flex items-center gap-1">
+              <fa-icon icon="signal" class="text-xs"></fa-icon>
+              Code USSD ou notification
+            </p>
+          </div>
+        </div>
+      </label>
+
+      <!-- Cash on Delivery Option -->
+      <label class="relative block cursor-pointer group">
+        <input type="radio" name="payment_method" [value]="PaymentMethod.CASH" [(ngModel)]="selectedPayment" class="peer sr-only" />
+        <div
+          class="selection-ring p-4 rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm peer-checked:ring-2 peer-checked:ring-primary flex flex-col gap-4 transition-all"
+          [class.opacity-70]="selectedPayment() !== PaymentMethod.CASH"
+          [class.opacity-100]="selectedPayment() === PaymentMethod.CASH"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex gap-4">
+              <div class="w-12 h-12 rounded-lg bg-tertiary-container flex items-center justify-center text-white shadow-sm overflow-hidden">
+                <fa-icon icon="money-bill-wave" class="text-3xl"></fa-icon>
+              </div>
+              <div>
+                <h3 class="font-title-lg text-on-surface">Espèces à la livraison</h3>
+                <p class="text-on-surface-variant text-sm">Paiement en main propre</p>
+              </div>
+            </div>
+            <div
+              class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center peer-checked:border-primary transition-colors"
+            >
+              <div class="w-3 h-3 rounded-full bg-primary opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+            </div>
+          </div>
+          <p class="text-on-surface-variant text-xs flex items-center gap-1 mt-2">
+            <fa-icon icon="info-circle" class="text-xs"></fa-icon>
+            Prévoyez le montant exact pour faciliter la livraison
+          </p>
+        </div>
+      </label>
+    </form>
+
+    <!-- Security Badge -->
+    <section class="mt-6 p-4 border-t border-outline-variant flex flex-col items-center gap-2">
+      <div class="flex items-center gap-2 text-secondary">
+        <fa-icon icon="shield-alt" class="text-lg"></fa-icon>
+        <p class="font-label-lg">Paiement crypté via Intouch</p>
+      </div>
+      <p class="text-on-surface-variant text-xs">Conformité CNPD Sénégal</p>
+      <div class="flex gap-4 mt-2 opacity-60 grayscale">
+        <div class="h-6 w-10 bg-on-surface-variant/10 rounded flex items-center justify-center">
+          <span class="text-[10px] font-bold">PCI</span>
+        </div>
+        <div class="h-6 w-10 bg-on-surface-variant/10 rounded flex items-center justify-center">
+          <span class="text-[10px] font-bold">DSS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Back Link -->
+    <div class="mt-8 text-center">
+      <button
+        (click)="checkoutService.previousStep()"
+        class="text-primary font-label-lg hover:underline underline-offset-4 decoration-primary/30 inline-flex items-center gap-1 active:scale-95 transition-transform"
+      >
+        <fa-icon icon="arrow-left" class="text-lg"></fa-icon>
+        Retour au résumé
+      </button>
+    </div>
+  </main>
+
+  <!-- Persistent CTA Bar -->
+  <div class="fixed bottom-0 left-0 w-full bg-surface shadow-[0_-4px_16px_rgba(0,0,0,0.08)] px-container-margin py-4 pb-safe z-40">
+    <button
+      (click)="confirmOrder()"
+      [disabled]="isLoading() || !canProceed()"
+      class="w-full h-14 bg-secondary text-on-secondary rounded-xl font-headline-md flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <span *ngIf="!isLoading()">Payer maintenant</span>
+      <span *ngIf="isLoading()" class="flex items-center gap-2">
+        <fa-icon icon="spinner" class="animate-spin"></fa-icon>
+        Traitement...
+      </span>
+      <fa-icon icon="lock" class="text-lg"></fa-icon>
+    </button>
+  </div>
+
+  <!-- WhatsApp FAB -->
+  <a
+    href="https://wa.me/2210000000"
+    target="_blank"
+    class="fixed bottom-24 right-4 w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-xl z-40 whatsapp-pulse transition-transform hover:scale-110 active:scale-90"
+  >
+    <fa-icon icon="comment" class="text-2xl"></fa-icon>
+  </a>
+</div>

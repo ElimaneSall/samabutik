@@ -186,3 +186,19 @@ Main page styles
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* styles.css ou styles.scss */
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: slide-in-from-top 0.3s ease-out;
+}

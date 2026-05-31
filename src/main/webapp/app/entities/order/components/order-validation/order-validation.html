@@ -1,0 +1,239 @@
+<div class="min-h-screen bg-background pb-32 relative overflow-hidden">
+  <div
+    class="absolute inset-0 opacity-[0.03] pointer-events-none"
+    style="background-image: radial-gradient(#ab3500 0.5px, transparent 0.5px); background-size: 16px 16px"
+  ></div>
+
+  <header class="fixed top-0 left-0 w-full z-50 bg-surface shadow-sm px-container-margin h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <button routerLink="/" class="p-2 hover:opacity-80 active:scale-95 transition-all">
+        <fa-icon icon="arrow-left" class="text-primary"></fa-icon>
+      </button>
+      <h1 class="font-headline-md font-bold text-primary">SamaButik</h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-label-sm text-on-surface-variant" *ngIf="order()?.orderNumber">#{{ order()?.orderNumber }}</span>
+      <button (click)="copyOrderNumber()" class="p-1 hover:opacity-80" title="Copier">
+        <fa-icon icon="copy" class="text-on-surface-variant text-sm"></fa-icon>
+      </button>
+    </div>
+  </header>
+
+  <main class="pt-20 px-container-margin">
+    <div class="flex items-center justify-center gap-2 py-3 mb-4">
+      <div class="flex items-center gap-1">
+        <span class="text-on-surface-variant text-xs">Résumé</span>
+        <fa-icon icon="chevron-right" class="text-on-surface-variant text-[10px]"></fa-icon>
+      </div>
+      <div class="flex items-center gap-1">
+        <span class="text-on-surface-variant text-xs">Livraison</span>
+        <fa-icon icon="chevron-right" class="text-on-surface-variant text-[10px]"></fa-icon>
+      </div>
+      <div class="flex items-center gap-1">
+        <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+        <span class="text-primary font-bold text-xs">Validation</span>
+      </div>
+    </div>
+
+    <section *ngIf="validationStatus() === 'waiting'" class="flex flex-col items-center justify-center min-h-[60vh] py-6">
+      <div class="relative w-24 h-24 mb-6">
+        <div class="absolute inset-0 border-4 border-surface-variant rounded-full"></div>
+        <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <fa-icon icon="mobile-alt" class="text-primary text-3xl"></fa-icon>
+        </div>
+      </div>
+
+      <h2 class="font-headline-md text-center mb-2">Validation de votre paiement...</h2>
+
+      <div class="bg-surface-container-low px-4 py-1 rounded-full mb-6 flex items-center gap-2">
+        <fa-icon icon="clock" class="text-tertiary text-sm"></fa-icon>
+        <span class="font-label-lg text-tertiary">Temps restant: {{ getFormattedTime() }}</span>
+      </div>
+
+      <div class="w-full max-w-sm space-y-3 mb-6">
+        <div
+          *ngFor="let step of getPaymentInstructions().steps; let i = index"
+          class="flex gap-3 items-start p-3 bg-white rounded-xl shadow-sm border border-outline-variant/30"
+        >
+          <span class="bg-primary/10 text-primary w-7 h-7 rounded-full flex items-center justify-center font-bold flex-shrink-0 text-sm">{{
+            i + 1
+          }}</span>
+          <p class="text-sm" [innerHTML]="step"></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-full">
+        <span
+          class="w-5 h-5 rounded bg-[#1da1f2] flex items-center justify-center text-white text-[10px] font-bold"
+          *ngIf="order()?.paymentMethod === 'WAVE'"
+          >W</span
+        >
+        <span
+          class="w-5 h-5 rounded bg-[#FF7900] flex items-center justify-center text-white text-[10px] font-bold"
+          *ngIf="order()?.paymentMethod === 'ORANGE_MONEY'"
+          >OM</span
+        >
+        <span class="text-xs text-on-surface-variant">Ouvrez {{ getPaymentInstructions().app }} pour confirmer</span>
+      </div>
+
+      <button (click)="simulateSuccess()" class="mt-6 text-xs text-on-surface-variant underline opacity-50 hover:opacity-100">
+        [Démo] Simuler un paiement réussi
+      </button>
+    </section>
+
+    <section *ngIf="validationStatus() === 'success'" class="flex flex-col items-center py-6">
+      <div class="w-20 h-20 bg-secondary-container rounded-full flex items-center justify-center mb-4 shadow-sm">
+        <fa-icon icon="circle-check" class="text-on-secondary-container text-4xl"></fa-icon>
+      </div>
+
+      <h2 class="font-headline-lg text-center mb-1">Paiement réussi!</h2>
+      <p class="text-center text-on-surface-variant mb-4">Merci pour votre confiance chez SamaButik.</p>
+
+      <div class="w-full max-w-sm bg-white rounded-xl shadow-lg border border-outline-variant/20 p-4 mb-4">
+        <div class="flex justify-between items-center mb-3 pb-2 border-b border-outline-variant/10">
+          <span class="text-xs text-on-surface-variant uppercase tracking-wider">Commande</span>
+          <div class="flex items-center gap-1 cursor-pointer group" (click)="copyOrderNumber()">
+            <span class="font-label-lg font-bold">#{{ order()?.orderNumber }}</span>
+            <fa-icon icon="copy" class="text-primary text-sm group-hover:scale-110 transition-transform"></fa-icon>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-on-surface-variant text-sm">Articles</span>
+            <span class="text-sm">{{ items().length }} produit(s)</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-on-surface-variant text-sm">Total payé</span>
+            <span class="font-title-lg text-primary">{{ formatPrice(order()?.totalAmount || 0) }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-on-surface-variant text-sm">Livraison</span>
+            <span class="text-sm"
+              >{{ order()?.shippingAddress || '' | slice: 0 : 30 }}{{ (order()?.shippingAddress?.length ?? 0) > 30 ? '...' : '' }}</span
+            >
+          </div>
+        </div>
+
+        <div class="mt-3 p-2 bg-secondary/5 border border-secondary/20 rounded-lg flex items-center gap-2">
+          <fa-icon icon="truck-fast" class="text-secondary"></fa-icon>
+          <p class="text-secondary font-bold text-xs">Livraison prévue: Demain avant 18h</p>
+        </div>
+      </div>
+
+      <div class="w-full max-w-sm space-y-3">
+        <button
+          (click)="primaryAction?.action()"
+          class="w-full h-12 bg-primary-container text-on-primary-container font-bold rounded-xl shadow-md active:scale-95 transition-transform"
+        >
+          {{ primaryAction?.label }}
+        </button>
+
+        <button
+          (click)="contactSupport()"
+          class="w-full h-12 border-2 border-secondary text-secondary font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-transform"
+        >
+          <fa-icon icon="comment"></fa-icon>
+          Contacter sur WhatsApp
+        </button>
+      </div>
+
+      <div class="mt-6 flex flex-col items-center gap-1 opacity-70">
+        <div class="flex items-center gap-1">
+          <fa-icon icon="envelope" class="text-sm"></fa-icon>
+          <span class="text-xs">Email de confirmation envoyé</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <fa-icon icon="shield-check" class="text-sm text-secondary"></fa-icon>
+          <span class="text-xs">Données protégées par la CNPD</span>
+        </div>
+      </div>
+    </section>
+
+    <section *ngIf="validationStatus() === 'failed'" class="flex flex-col items-center text-center py-6">
+      <div class="w-20 h-20 bg-error-container rounded-full flex items-center justify-center mb-4">
+        <fa-icon icon="circle-xmark" class="text-error text-4xl"></fa-icon>
+      </div>
+
+      <h2 class="font-headline-lg mb-1">Paiement échoué</h2>
+      <p class="text-error font-medium mb-3">Transaction non aboutie</p>
+
+      <div class="w-full max-w-sm mb-4 border border-outline-variant rounded-xl bg-white overflow-hidden">
+        <button class="w-full px-4 py-3 flex items-center justify-between text-left" (click)="toggleErrorDetails()">
+          <div class="flex items-center gap-2">
+            <fa-icon icon="circle-info" class="text-on-surface-variant"></fa-icon>
+            <span class="font-bold text-sm">Détails de l'erreur</span>
+          </div>
+          <fa-icon
+            icon="chevron-down"
+            class="text-on-surface-variant transition-transform"
+            [class.rotate-180]="showErrorDetails()"
+          ></fa-icon>
+        </button>
+
+        <div class="px-4 pb-3 border-t border-outline-variant bg-surface-container-lowest" [class.hidden]="!showErrorDetails()">
+          <div class="pt-3">
+            <p class="text-xs text-on-surface-variant mb-1">CODE D'ERREUR</p>
+            <code class="block text-sm text-primary bg-primary-fixed/30 px-2 py-1 rounded mb-2">PAYMENT_DECLINED</code>
+            <p class="text-sm text-on-surface">Vérifiez votre solde et réessayez</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full max-w-sm space-y-3">
+        <button
+          (click)="primaryAction?.action()"
+          class="w-full h-12 bg-primary-container text-on-primary-container font-bold rounded-xl shadow-sm active:scale-95 transition-transform"
+        >
+          {{ primaryAction?.label }}
+        </button>
+
+        <button
+          *ngFor="let action of secondaryActions"
+          (click)="action.action()"
+          [class.border-2]="action.variant === 'outline'"
+          [class.border-primary]="action.variant === 'outline'"
+          [class.text-primary]="action.variant === 'outline'"
+          [class.underline]="action.variant === 'text'"
+          class="w-full h-12 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center gap-2"
+        >
+          {{ action.label }}
+        </button>
+      </div>
+    </section>
+
+    <section *ngIf="validationStatus() === 'expired'" class="flex flex-col items-center text-center py-6">
+      <div class="w-20 h-20 bg-tertiary-container/20 rounded-full flex items-center justify-center mb-4">
+        <fa-icon icon="clock-rotate-left" class="text-tertiary text-4xl"></fa-icon>
+      </div>
+
+      <h2 class="font-headline-lg mb-1">Délai expiré</h2>
+      <p class="text-on-surface-variant mb-4">Le temps de validation du paiement est dépassé</p>
+
+      <div class="w-full max-w-sm space-y-3">
+        <button
+          routerLink="/products"
+          class="w-full h-12 bg-primary-container text-on-primary-container font-bold rounded-xl shadow-sm active:scale-95 transition-transform"
+        >
+          Parcourir les produits
+        </button>
+
+        <button
+          (click)="contactSupport()"
+          class="w-full h-12 border border-outline text-outline font-bold rounded-xl active:scale-95 transition-transform"
+        >
+          Besoin d'aide ?
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <a
+    href="https://wa.me/221771234567"
+    target="_blank"
+    class="fixed bottom-20 right-container-margin z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-xl active:scale-90 transition-transform"
+  >
+    <fa-icon icon="whatsapp" class="text-2xl"></fa-icon>
+  </a>
+</div>

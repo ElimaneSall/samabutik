@@ -12,12 +12,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import sn.samabutik.domain.OrderItem;
 import sn.samabutik.repository.OrderItemRepository;
+import sn.samabutik.repository.OrderRepository;
 import sn.samabutik.service.OrderItemService;
+import sn.samabutik.service.criteria.OrderItemSpecifications;
 import sn.samabutik.service.dto.OrderItemDTO;
 import sn.samabutik.web.rest.errors.BadRequestAlertException;
 import tech.jhipster.web.util.HeaderUtil;
@@ -42,9 +46,12 @@ public class OrderItemResource {
 
     private final OrderItemRepository orderItemRepository;
 
-    public OrderItemResource(OrderItemService orderItemService, OrderItemRepository orderItemRepository) {
+    private final OrderRepository orderRepository;
+
+    public OrderItemResource(OrderItemService orderItemService, OrderItemRepository orderItemRepository, OrderRepository orderRepository) {
         this.orderItemService = orderItemService;
         this.orderItemRepository = orderItemRepository;
+        this.orderRepository = orderRepository;
     }
 
     /**
@@ -142,9 +149,51 @@ public class OrderItemResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Order Items in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<OrderItemDTO>> getAllOrderItems(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        LOG.debug("REST request to get a page of OrderItems");
-        Page<OrderItemDTO> page = orderItemService.findAll(pageable);
+    public ResponseEntity<List<OrderItemDTO>> getAllOrderItems(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(name = "search", required = false) String search,
+        @RequestParam(name = "orderId", required = false) Long orderId,
+        @RequestParam(name = "isPackItem", required = false) Boolean isPackItem,
+        @RequestParam(name = "productId", required = false) Long productId,
+        @RequestParam(name = "productName", required = false) String productName,
+        @RequestParam(name = "minQuantity", required = false) Integer minQuantity,
+        @RequestParam(name = "maxQuantity", required = false) Integer maxQuantity,
+        @RequestParam(name = "orderStatus", required = false) sn.samabutik.domain.enumeration.OrderStatus orderStatus,
+        @RequestParam(name = "paymentMethod", required = false) sn.samabutik.domain.enumeration.PaymentMethod paymentMethod
+    ) {
+        LOG.debug("REST request to get a page of OrderItems with filters");
+
+        Specification<OrderItem> spec = Specification.where((root, query, cb) -> cb.conjunction());
+
+        if (search != null && !search.isBlank()) {
+            spec = spec.and(OrderItemSpecifications.searchByProductOrOrder(search));
+        }
+        if (orderId != null) {
+            spec = spec.and(OrderItemSpecifications.byOrderId(orderId));
+        }
+        if (isPackItem != null) {
+            spec = spec.and(OrderItemSpecifications.byIsPackItem(isPackItem));
+        }
+        if (productId != null) {
+            spec = spec.and(OrderItemSpecifications.byProductId(productId));
+        }
+        if (productName != null && !productName.isBlank()) {
+            spec = spec.and(OrderItemSpecifications.byProductName(productName));
+        }
+        if (minQuantity != null) {
+            spec = spec.and(OrderItemSpecifications.byMinQuantity(minQuantity));
+        }
+        if (maxQuantity != null) {
+            spec = spec.and(OrderItemSpecifications.byMaxQuantity(maxQuantity));
+        }
+        if (orderStatus != null) {
+            spec = spec.and(OrderItemSpecifications.byOrderStatus(orderStatus));
+        }
+        if (paymentMethod != null) {
+            spec = spec.and(OrderItemSpecifications.byPaymentMethod(paymentMethod));
+        }
+
+        Page<OrderItemDTO> page = orderItemService.findAll(spec, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -175,5 +224,22 @@ public class OrderItemResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @PostMapping("/{orderId}/items")
+    public ResponseEntity<OrderItemDTO> addOrderItem(@PathVariable Long orderId, @Valid @RequestBody OrderItemDTO orderItemDTO)
+        throws URISyntaxException {
+        LOG.debug("REST request to add OrderItem to Order : {}", orderId);
+
+        if (!orderRepository.existsById(orderId)) {
+            throw new BadRequestAlertException("Order not found", "order", "notfound");
+        }
+
+        orderItemDTO.setId(null);
+        OrderItemDTO result = orderItemService.addItemToOrder(orderId, orderItemDTO);
+
+        return ResponseEntity.created(new URI("/api/order-items/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, "order_item", result.getId().toString()))
+            .body(result);
     }
 }

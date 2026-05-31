@@ -1,0 +1,20 @@
+<div
+  class="fixed top-4 right-4 left-4 md:left-auto md:right-4 md:min-w-[320px] z-[99999] space-y-2"
+  style="z-index: 99999 !important; pointer-events: none"
+>
+  @for (toast of toastService.getToasts(); track toast.id) {
+    <div
+      class="flex items-center justify-between p-3 rounded-xl shadow-lg animate-in slide-in-from-top-2 fade-in"
+      [class]="getToastClass(toast.type)"
+      role="alert"
+    >
+      <div class="flex items-center gap-2 flex-1">
+        <fa-icon [icon]="getIcon(toast.type)" class="text-lg" />
+        <span class="text-sm font-medium">{{ toast.message }}</span>
+      </div>
+      <button (click)="toastService.remove(toast.id)" class="ml-3 p-1 hover:opacity-70 transition-opacity" aria-label="Fermer">
+        <fa-icon [icon]="faTimes" class="text-sm" />
+      </button>
+    </div>
+  }
+</div>
